@@ -180,3 +180,20 @@ Added illustrated SVG portraits (drawings, not photos) for the nine fictional ac
 | Production build | Passed |
 | Playwright | 20/20 passed in Chromium (desktop and mobile). WebKit was not available in this environment and was not run. |
 | Manual check | Hosted build loads at 1440×900 and 390×844 with the banner, portraits in the feed, voice post and Who to follow, and no horizontal overflow |
+
+## 2026-10-30 — Dynamic GIF headers, profiles and header uploads
+
+Added X-style profiles for every account (`/profile`, `/u/:handle`), reachable by tapping a name or avatar in the feed, a mobile account drawer, the owner's own photo, and dynamic headers:
+
+- Five headers rendered with three.js (`scripts/render-header.mjs`) and measured with `scripts/analyze-header.py`. Each one is 15 fps, a 10 s loop, 3.6–4.5 MB as a GIF and 0.30–0.37 MB as the WebM that is served, with 0 flashes per second.
+- A header studio that scans samples or a GIF or video the viewer picks. Analysis and transcoding run in the browser and nothing is stored or sent.
+- Rule change: frame rate over 15 fps is transcoded down rather than rejected. Hard blocks now cover over-limit flashing across 25% or more of the header, as well as red flashing and 10 or more flashes per second.
+
+| Check | Actual result |
+|---|---|
+| ESLint | Passed |
+| Strict TypeScript | Passed |
+| Unit/component tests | 19/19 passed (adds header scan, frame-rate and flash-severity tests) |
+| Playwright | 24/24 passed in Chromium, desktop and mobile (adds feed → profile header and strobe hard-block tests). WebKit was not available in this environment and was not run. |
+| Analyzer sanity check | A synthetic full-frame black/white strobe at 10 fps measured 5 flashes/s across 100% of the frame (hard block); a synthetic red pulse was flagged as red flash (hard block). The browser and Python analyzers agreed on four real-world GIFs supplied by the owner (flash counts 3, 1, 0 and 1 per second). Those GIFs were used for local testing only and are not in the repository. |
+| Manual check | Feed → profile navigation, header playback (muted, no autoplay attribute), pause while scrolling, still frame under reduced motion, provisional warning gate, upload of GIF and MP4, mobile drawer, no horizontal overflow at 390×844 |

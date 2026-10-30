@@ -103,3 +103,22 @@ test('presentation 3D intro starts no audio until "Hear it" is pressed', async (
   await page.getByRole('button', { name: 'Hear the applause sound reaction' }).click()
   await expect(page.getByRole('button', { name: 'Stop the applause demo' })).toBeVisible()
 })
+
+test('tapping a name in the feed opens that profile with its dynamic header, silently', async ({ page }) => {
+  await page.getByRole('link', { name: 'Maya Chen, view profile' }).click()
+  await expect(page).toHaveURL(/\/u\/mayamakes$/)
+  const video = page.locator('.dynamic-header video')
+  await expect(video).toHaveJSProperty('muted', true)
+  expect(await video.getAttribute('autoplay')).toBeNull()
+  await expect(page.getByRole('button', { name: 'Pause header animation' })).toBeVisible()
+  expect(await page.evaluate(() => (window as unknown as { __audioContexts?: AudioContext[] }).__audioContexts?.length ?? 0)).toBe(0)
+})
+
+test('the header studio hard-blocks a strobe and keeps the current header', async ({ page }) => {
+  await page.goto('/profile')
+  await page.getByRole('button', { name: 'Edit profile' }).click()
+  await page.getByRole('radio', { name: /Strobe party/ }).click()
+  await page.getByRole('button', { name: 'Run PEA scan' }).click()
+  await expect(page.getByText('HARD BLOCK', { exact: true })).toBeVisible()
+  await expect(page.getByText('This header can’t be published')).toBeVisible()
+})

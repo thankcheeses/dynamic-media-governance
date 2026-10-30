@@ -67,17 +67,24 @@ If Chromium is not discovered automatically, set `CHROME_PATH` to a local Chromi
 - `src/index.css`: visual system and responsive/accessibility styling.
 - `e2e/core.spec.ts`: required cross-browser regression scenarios.
 - `scripts/capture.mjs`: screenshots, console/HTTP/overflow checks and axe scans.
+- `src/accounts.ts`: profiles for every account, including which header each one shows.
+- `src/headers.ts`: header presets, framework limits and the deterministic header scan.
+- `src/analyze.ts`: in-browser measurement and transcoding of uploaded GIF or video headers.
+- `src/components/DynamicHeader.tsx`: the header player (video, canvas and uploaded frames) and its playback rules.
+- `src/pages/Profile.tsx`: X-style profile pages and the header studio (samples, upload, scan, publish).
+- `scripts/render-header.mjs` + `scripts/analyze-header.py`: render the three.js headers and measure them into `src/header-manifest.json`.
+- `scripts/generate-avatars.mjs`: illustrated avatars for the fictional accounts.
 - `src/motion.ts`: all anime.js motion (bursts, pad press, landing, staggers), gated by reduced motion in one place.
 - `src/components/SoundOrb.tsx`: lazy three.js title-slide orb; reads analyser levels only.
 - `scripts/generate-audio.mjs` + `scripts/audio-catalog.mjs`: ElevenLabs generation (`NODE_USE_ENV_PROXY=1 node --env-file=.env.local scripts/generate-audio.mjs`). Writes `public/audio/*.mp3` and `src/audio-manifest.json`; the app uses files automatically when listed.
 
-Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/presentation`.
+Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/presentation`, `/profile` (owner) and `/u/:handle` (other accounts).
 
 ## Non-negotiable product invariants
 
 1. Keep the banner: `CONCEPT PROTOTYPE · NOT AFFILIATED WITH X`.
-2. No X login, API, scraping, posting, logo, Chirp font or copied X assets. All seed data stays fictional.
-3. Never create/resume `AudioContext` or play media on load, scroll, hover, focus or viewport entry. Start only from click/key handlers.
+2. No X login, API, scraping, posting, logo, Chirp font or copied X assets. All seed data stays fictional, except the owner account (@baynardmalone), whose photo the owner supplied. Fictional accounts use illustrated avatars, never realistic photos.
+3. Never create/resume `AudioContext` or play audio on load, scroll, hover, focus or viewport entry. Start only from click/key handlers. Dynamic profile headers are the one kind of media that animates without a tap: they are silent (muted, no audio track), have no `autoplay` attribute, and follow rule 14.
 4. Starting any clip must stop the previous clip, including repeated instances of the same library sound.
 5. Reactions remain compact and default to an 8-second cap. Voice posts are full-width, author-owned and capped separately at 140 seconds.
 6. Every clip needs visible meaning without audio. Captions default on; keep a short text alternative even when detailed captions are disabled.
@@ -88,6 +95,7 @@ Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/pre
 11. Recording requires the permission explainer and browser permission. Denial/unavailability uses a clearly labeled simulated fallback.
 12. Do not add biometric identity requirements or video-only limits to audio.
 13. WCAG 2.2 AA is a design target, not a certification. No ADA Title II applicability or X affiliation claim.
+14. Dynamic headers (`src/headers.ts`, `src/components/DynamicHeader.tsx`): play at most 15 fps on a loop of at most 10 s; pause while scrolling, off-screen and in hidden tabs; show a still frame under reduced motion, low power or data saver; always offer a pause button. Nothing is animated before it passes the scan. Flashing samples are only ever drawn as still frames. Provisional headers stay behind their warning label until the viewer chooses to play them. The analyzers (`scripts/analyze-header.py`, `src/analyze.ts`) are a simplified WCAG 2.3.1 screen, never described as certified. Uploaded headers stay in the browser tab and are never persisted or sent anywhere.
 
 ## Persistence and deployment
 

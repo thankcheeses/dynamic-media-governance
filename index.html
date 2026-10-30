@@ -425,6 +425,11 @@
         .proto__wave span:nth-child(13) { height: 52px; }
         .proto__wave span:nth-child(14) { height: 18px; }
 
+        .proto__media { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 1; background: #1a1513; }
+        .proto__media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .proto__chip { position: absolute; left: 10px; top: 10px; padding: 3px 9px; border-radius: 999px; background: rgba(20, 16, 14, 0.7); color: #f2efe7; font: 600 0.72rem var(--font-body); }
+        @media (min-width: 860px) { .proto { grid-template-columns: 1fr 1fr; } }
+
         /* Footer */
         .footer { padding: 40px 0 56px; color: var(--text-faint); font-size: 0.82rem; }
         .footer__inner { display: flex; flex-direction: column; gap: 10px; }
@@ -462,7 +467,7 @@
                     <a href="#framework">Framework</a>
                     <a href="#controls">Controls</a>
                     <a href="#risk">Risk</a>
-                    <a href="#prototype">Prototype</a>
+                    <a href="sound-reactions/">Sound Reactions</a>
                 </nav>
                 <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch color theme">
                     <svg class="theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -491,7 +496,7 @@
                     <a class="btn btn--primary" href="#framework">Read the framework
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>
                     </a>
-                    <a class="btn btn--ghost" href="sound-reactions/">Try the prototype</a>
+                    <a class="btn btn--ghost" href="sound-reactions/">Open Sound Reactions</a>
                 </div>
             </div>
         </div>
@@ -753,20 +758,23 @@
             <div class="wrap">
                 <div class="section-head">
                     <div class="eyebrow section-num reveal">07 · See it working</div>
-                    <h2 id="proto-title" class="reveal" style="--d: 60ms">Sound reactions, governed by this framework.</h2>
-                    <p class="reveal" style="--d: 120ms">A browser-only concept prototype that applies these controls to short sound reactions on a social feed: a preflight check before anything publishes, per-person mute and volume, captions on by default, and nothing that plays until you press play.</p>
+                    <h2 id="proto-title" class="reveal" style="--d: 60ms">Dynamic headers and sound reactions, governed by this framework.</h2>
+                    <p class="reveal" style="--d: 120ms">A browser-only concept prototype of the two features this framework covers. A dynamic GIF profile header that must pass the photosensitivity scan and guardrails before it goes live, and short sound reactions that never autoplay, carry captions and pass a preflight check.</p>
                 </div>
-                <a class="proto reveal" href="sound-reactions/">
+                <a class="proto reveal" href="sound-reactions/#/profile">
                     <div class="proto__body">
-                        <div class="card__label">Concept prototype</div>
-                        <h3>Open the sound reactions prototype</h3>
-                        <p>Runs entirely in your browser. Feed, composer, governance queue, audit log and an eight-slide walkthrough. All accounts and posts are fictional, and the abuse and copyright checks are labeled as simulated.</p>
-                        <span class="proto__cta">Open prototype
+                        <div class="card__label">Sound Reactions · concept prototype</div>
+                        <h3>See a dynamic header pass the scan</h3>
+                        <p>The header on the right is a real 10-second GIF rendered with three.js: 15 fps, 3.7 MB, 0 flashes per second as measured by the prototype’s analyzer. Open the profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s header, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
+                        <span class="proto__cta">Open Sound Reactions
                             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                         </span>
                     </div>
-                    <div class="proto__wave" aria-hidden="true">
-                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <div class="proto__media">
+                        <video id="proto-header" muted playsinline loop preload="metadata" poster="sound-reactions/headers/clay-orbit.jpg" aria-label="Sample dynamic header: a clay-colored faceted sphere turning slowly inside a wireframe shell.">
+                            <source src="sound-reactions/headers/clay-orbit.webm" type="video/webm">
+                        </video>
+                        <span class="proto__chip">GIF header · PEA passed</span>
                     </div>
                 </a>
                 <p class="note reveal">Not affiliated with X. Source code is in the <a href="https://github.com/thankcheeses/dynamic-media-governance/tree/main/sound-reactions-src">sound-reactions-src</a> folder of this repository.</p>
@@ -857,6 +865,16 @@
                 var s = document.querySelector(a.getAttribute('href'));
                 if (s) sectionIO.observe(s);
             });
+        }
+
+        // ---------- Prototype header preview ----------
+        // Same rules as the prototype: plays only on screen, never under reduced motion.
+        var protoVideo = document.getElementById('proto-header');
+        if (protoVideo && 'IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+                if (entries[0].isIntersecting && !reduceMotion.matches) protoVideo.play().catch(function () {});
+                else protoVideo.pause();
+            }, { threshold: 0.4 }).observe(protoVideo);
         }
 
         // ---------- Card spotlight (pointer devices only) ----------

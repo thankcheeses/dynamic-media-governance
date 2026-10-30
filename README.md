@@ -4,7 +4,7 @@ An independent policy proposal for how a social platform such as X could safely 
 
 **Live page:** https://thankcheeses.github.io/dynamic-media-governance/
 
-**Sound reactions prototype:** https://thankcheeses.github.io/dynamic-media-governance/sound-reactions/
+**Sound Reactions prototype:** https://thankcheeses.github.io/dynamic-media-governance/sound-reactions/ (an X-style feed with dynamic GIF profile headers, sound reactions and a header studio that scans GIF or video uploads in your browser)
 
 ## What it covers
 

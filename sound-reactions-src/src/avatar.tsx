@@ -13,10 +13,11 @@ export function avatarStyle(initials: string): CSSProperties {
 
 /**
  * Illustrated portraits for the fictional accounts, written by
- * scripts/generate-avatars.mjs. They are drawings, not photos. The owner's
- * own photo can be added as public/avatars/bb.jpg with a 'BB' entry here.
+ * scripts/generate-avatars.mjs. They are drawings, not photos. BB is the
+ * prototype owner's own photo, supplied by her.
  */
 const PORTRAITS: Record<string, string> = {
+  BB: 'bb.jpg',
   MC: 'mc.svg',
   TM: 'tm.svg',
   AO: 'ao.svg',

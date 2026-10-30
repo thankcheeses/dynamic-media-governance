@@ -121,4 +121,4 @@ export const SEED_POSTS: Post[] = [
   },
 ]
 
-export const EVENT_TYPES = ['media_submitted', 'preflight_started', 'check_completed', 'flagged', 'review_requested', 'decision_recorded', 'playback_started', 'reaction_reported', 'moderation_action']
+export const EVENT_TYPES = ['media_submitted', 'preflight_started', 'check_completed', 'flagged', 'review_requested', 'decision_recorded', 'playback_started', 'reaction_reported', 'moderation_action', 'header_scanned', 'header_published', 'header_published_provisional']
