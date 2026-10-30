@@ -4,7 +4,7 @@ An independent policy proposal for how a social platform such as X could safely 
 
 **Live page:** https://thankcheeses.github.io/dynamic-media-governance/
 
-**Sound reactions prototype:** https://thankcheeses.github.io/dynamic-media-governance/sound-reactions/
+**Sound Reactions prototype:** https://thankcheeses.github.io/dynamic-media-governance/sound-reactions/ (an X-style feed with dynamic GIF profile headers, sound reactions and a header studio that scans GIF or video uploads in your browser)
 
 ## What it covers
 
@@ -27,6 +27,17 @@ VITE_HASH_ROUTER=1 npx vite build --base ./ --outDir ../sound-reactions --emptyO
 ```
 
 The sound files are already in `sound-reactions-src/public/audio`. Regenerating them needs your own ElevenLabs key in `.env.local`, which is never committed.
+
+## GIPHY search in the prototype
+
+The header studio can search GIPHY. GIPHY licenses its GIFs for display in apps through its API, so the prototype searches GIPHY rather than copying GIFs into this repository. To use it:
+
+1. Create a free app at https://developers.giphy.com/dashboard/ and copy its API key.
+2. Open the prototype, go to Profile → Edit profile, paste the key under **Search GIPHY** and select **Save key**.
+
+The key is saved only in that browser. Every GIF you pick is scanned for flashing before it can play, and nothing is published or stored anywhere.
+
+To let every visitor search without entering a key, build with `VITE_GIPHY_API_KEY=<key>`. The key is then visible to anyone who views the page source. That is normal for GIPHY keys, but keep the key on GIPHY's free beta tier, which is rate-limited.
 
 ## Limits
 

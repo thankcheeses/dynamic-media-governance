@@ -5,64 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-id="th-modified">X · Dynamic Media Governance Framework</title>
     <meta property="og:title" content="X · Dynamic Media Governance Framework" data-id="th-modified"><meta name="description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:image" content="https://xdynamicprofileproposal.tiiny.site/og-image.jpg" data-id="th-modified"><meta property="og:image:width" content="1080" data-id="th-modified"><meta property="og:image:height" content="433" data-id="th-modified"><meta property="og:image:type" content="image/jpeg" data-id="th-modified"><meta property="og:url" content="https://xdynamicprofileproposal.tiiny.site/" data-id="th-modified"><meta property="og:type" content="website" data-id="th-modified"><script defer data-domain="xdynamicprofileproposal.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
-    <meta name="color-scheme" content="light dark">
+    <meta name="color-scheme" content="dark light">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap">
     <style>
         :root {
-            --bg: #f4f1ea;
-            --bg-raised: #ece7dc;
-            --surface: #faf8f3;
-            --surface-solid: #fffdf8;
-            --line: rgba(31, 30, 27, 0.1);
-            --line-strong: rgba(31, 30, 27, 0.2);
-            --text: #1f1e1b;
-            --text-muted: #5c5a53;
-            --text-faint: #8b877d;
-            --accent: #c15f3c;
-            --accent-soft: rgba(193, 95, 60, 0.09);
-            --accent-ink: #b0532f;
-            --danger: #a23b2a;
-            --danger-soft: rgba(162, 59, 42, 0.07);
-            --danger-line: rgba(162, 59, 42, 0.3);
-            --glow: rgba(193, 95, 60, 0.08);
-            --shadow: 0 1px 2px rgba(31, 30, 27, 0.04), 0 18px 40px -28px rgba(31, 30, 27, 0.22);
+            --bg: #000000;
+            --bg-raised: #0b0b0d;
+            --surface: #16181c;
+            --surface-solid: #16181c;
+            --line: #2f3336;
+            --line-strong: #536471;
+            --text: #e7e9ea;
+            --text-muted: #8b98a5;
+            --text-faint: #71767b;
+            --accent: #f0158a;
+            --accent-hover: #ff3fa4;
+            --accent-soft: rgba(240, 21, 138, 0.14);
+            --accent-ink: #ff4fae;
+            --on-accent: #ffffff;
+            --danger: #ff6b7a;
+            --danger-soft: rgba(255, 107, 122, 0.1);
+            --danger-line: rgba(255, 107, 122, 0.4);
+            --glow: rgba(240, 21, 138, 0.18);
+            --shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 24px 48px -28px rgba(0, 0, 0, 0.8);
 
-            --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+            --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
             --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
             --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
             --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
             --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.0625rem);
             --step-1: clamp(1.15rem, 1.05rem + 0.4vw, 1.375rem);
-            --step-2: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
-            --step-3: clamp(2.2rem, 1.6rem + 2.6vw, 3.5rem);
-            --step-4: clamp(3rem, 1.8rem + 5.6vw, 6.25rem);
+            --step-2: clamp(1.4rem, 1.2rem + 0.9vw, 1.9rem);
+            --step-3: clamp(2rem, 1.5rem + 2.2vw, 3.1rem);
+            --step-4: clamp(2.3rem, 1.4rem + 3.4vw, 4.1rem);
 
             --gutter: clamp(16px, 4vw, 40px);
             --radius: 16px;
             --ease: cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        :root[data-theme="dark"] {
-            --bg: #1a1916;
-            --bg-raised: #211f1c;
-            --surface: #252320;
-            --surface-solid: #2a2825;
-            --line: rgba(242, 239, 231, 0.09);
-            --line-strong: rgba(242, 239, 231, 0.18);
-            --text: #f2efe7;
-            --text-muted: #aaa598;
-            --text-faint: #7d786d;
-            --accent: #d97757;
-            --accent-soft: rgba(217, 119, 87, 0.12);
-            --accent-ink: #e08b6c;
-            --danger: #e8907c;
-            --danger-soft: rgba(232, 144, 124, 0.08);
-            --danger-line: rgba(232, 144, 124, 0.3);
-            --glow: rgba(217, 119, 87, 0.07);
-            --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 24px 48px -28px rgba(0, 0, 0, 0.55);
+        :root[data-theme="light"] {
+            --bg: #ffffff;
+            --bg-raised: #f7f9f9;
+            --surface: #f7f9f9;
+            --surface-solid: #ffffff;
+            --line: #eff3f4;
+            --line-strong: #cfd9de;
+            --text: #0f1419;
+            --text-muted: #536471;
+            --text-faint: #6c7a85;
+            --accent: #d1127a;
+            --accent-hover: #b30d68;
+            --accent-soft: rgba(209, 18, 122, 0.09);
+            --accent-ink: #c0106f;
+            --danger: #c4242d;
+            --danger-soft: rgba(196, 36, 45, 0.07);
+            --danger-line: rgba(196, 36, 45, 0.3);
+            --glow: rgba(209, 18, 122, 0.08);
+            --shadow: 0 1px 2px rgba(15, 20, 25, 0.06), 0 18px 40px -28px rgba(15, 20, 25, 0.25);
         }
 
         *, *::before, *::after { box-sizing: border-box; }
@@ -425,6 +428,11 @@
         .proto__wave span:nth-child(13) { height: 52px; }
         .proto__wave span:nth-child(14) { height: 18px; }
 
+        .proto__media { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 1; background: #1a1513; }
+        .proto__media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .proto__chip { position: absolute; left: 10px; top: 10px; padding: 3px 9px; border-radius: 999px; background: rgba(20, 16, 14, 0.7); color: #f2efe7; font: 600 0.72rem var(--font-body); }
+        @media (min-width: 860px) { .proto { grid-template-columns: 1fr 1fr; } }
+
         /* Footer */
         .footer { padding: 40px 0 56px; color: var(--text-faint); font-size: 0.82rem; }
         .footer__inner { display: flex; flex-direction: column; gap: 10px; }
@@ -440,30 +448,132 @@
             .js .reveal { opacity: 1; transform: none; transition: none; }
             *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
         }
+
+        /* ===== X-style magenta theme (overrides) ===== */
+        body { line-height: 1.6; }
+        .hero h1, .section-head h2, .summary__lead, .metric__value, .proto h3, .phase__dot, .layers .card__index {
+            font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em;
+        }
+        .hero h1 { font-size: var(--step-4); line-height: 1.02; margin-top: 16px; }
+        .hero h1 em { font-style: normal; color: var(--accent-ink); }
+        .section-head h2 { font-size: var(--step-3); line-height: 1.08; }
+        .summary__lead { font-weight: 700; letter-spacing: -0.02em; line-height: 1.35; }
+        .metric__value { font-weight: 800; }
+        .layers .card__index { color: var(--accent-soft); font-size: 4rem; }
+        .eyebrow { font-family: var(--font-body); font-weight: 800; letter-spacing: 0.08em; font-size: 0.78rem; }
+        .btn { font-weight: 700; min-height: 48px; }
+        .btn--primary { background: var(--accent); color: var(--on-accent, #fff); }
+        .btn--primary:hover { background: var(--accent-hover); color: #fff; }
+        .btn--ghost { border-color: var(--line-strong); background: transparent; }
+        button.btn { font-family: inherit; font-size: 0.92rem; cursor: pointer; color: var(--text); }
+        .card { box-shadow: none; }
+        .card:hover { border-color: var(--accent); }
+        .progress { height: 3px; }
+
+        /* Site bar: the same two tabs on both pages */
+        .nav { background: color-mix(in srgb, var(--bg) 86%, transparent); }
+        .nav__inner { height: 60px; gap: 12px; }
+        .brand__mark { color: var(--accent); border-color: var(--accent-soft); background: var(--accent-soft); }
+        .brand__mark svg { color: var(--accent); }
+        .site-tabs { display: flex; gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
+        .site-tabs a { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.2s, color 0.2s; }
+        .site-tabs a b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--line); color: var(--text); font-size: 0.75rem; }
+        .site-tabs a:hover { color: var(--text); }
+        .site-tabs a[aria-current="page"] { background: var(--accent); color: #fff; }
+        .site-tabs a[aria-current="page"] b { background: rgba(255, 255, 255, 0.25); color: #fff; }
+        .tour-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px 0 8px; border: 1px solid var(--accent); border-radius: 999px; background: transparent; color: var(--accent-ink); font: 700 0.9rem var(--font-body); cursor: pointer; }
+        .tour-btn > span:first-child { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 0.85rem; }
+        .tour-btn:hover { background: var(--accent-soft); }
+        @media (max-width: 900px) { .brand__name { display: none; } }
+        @media (max-width: 560px) {
+            .nav__inner { flex-wrap: wrap; height: auto; padding-top: 8px; padding-bottom: 8px; }
+            .site-tabs { order: 3; width: 100%; }
+            .site-tabs a { flex: 1; justify-content: center; padding: 0 8px 0 4px; font-size: 0.82rem; }
+            .tour-btn__label { display: none; }
+            .tour-btn { padding: 0 8px; }
+            html { scroll-padding-top: 120px; }
+        }
+
+        /* Hero: text plus a live preview of the proposal */
+        .hero__bg { background: radial-gradient(50% 60% at 78% 40%, var(--glow), transparent 70%), radial-gradient(40% 50% at 10% 100%, var(--accent-soft), transparent 70%); }
+        .hero__inner { display: grid; grid-template-columns: 1fr; gap: clamp(32px, 5vw, 64px); align-items: center; padding-top: clamp(40px, 8vw, 96px); padding-bottom: clamp(48px, 8vw, 96px); }
+        @media (min-width: 980px) { .hero__inner { grid-template-columns: 1.05fr 0.95fr; } }
+        .hero__lede { max-width: 46ch; font-size: var(--step-1); }
+        .hero__actions { margin-top: 28px; }
+        .chips { margin-top: 28px; }
+        .chip { background: transparent; }
+
+        .mock { margin: 0; border: 1px solid var(--line); border-radius: 20px; background: var(--bg); overflow: hidden; box-shadow: 0 30px 80px -40px var(--glow), var(--shadow); }
+        .mock__banner { position: relative; aspect-ratio: 3 / 1; background: #1a1513; }
+        .mock__banner video { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .mock__pause { position: absolute; right: 10px; bottom: 10px; width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.62); color: #fff; cursor: pointer; }
+        .mock__pause svg { width: 14px; height: 14px; }
+        .mock__pause[aria-pressed="true"] svg { display: none; }
+        .mock__pause[aria-pressed="true"]::before { content: ""; width: 0; height: 0; border-left: 11px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
+        .mock__head { display: flex; justify-content: space-between; align-items: flex-start; padding: 0 16px; }
+        .mock__avatar { width: 88px; height: 88px; margin-top: -44px; border-radius: 50%; border: 4px solid var(--bg); object-fit: cover; position: relative; background: var(--surface); }
+        .mock__edit { margin-top: 12px; height: 34px; display: inline-flex; align-items: center; padding: 0 16px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); font-weight: 700; font-size: 0.88rem; text-decoration: none; }
+        .mock__edit:hover { background: var(--accent-soft); border-color: var(--accent); }
+        .mock__who { display: flex; flex-direction: column; padding: 6px 16px 0; }
+        .mock__who strong { display: inline-flex; align-items: center; gap: 4px; font-size: 1.15rem; font-weight: 800; }
+        .mock__badge { width: 18px; height: 18px; color: var(--accent); }
+        .mock__who span { color: var(--text-faint); font-size: 0.92rem; }
+        .mock__post { margin-top: 14px; padding: 14px 16px 18px; border-top: 1px solid var(--line); }
+        .mock__post p { font-size: 0.98rem; }
+        .mock__chip { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; padding: 6px 16px 6px 6px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); text-decoration: none; }
+        .mock__chip:hover { border-color: var(--accent); }
+        .mock__chip span:last-child { display: flex; flex-direction: column; line-height: 1.2; }
+        .mock__chip strong { font-size: 0.92rem; }
+        .mock__chip small { color: var(--text-faint); font-size: 0.75rem; }
+        .mock__play { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: #fff; }
+        .mock__play svg { width: 14px; height: 14px; }
+        .mock__note { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 4px 10px 4px 4px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 0.78rem; font-weight: 700; }
+        .mock__note b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 0.7rem; }
+        .mock__note--banner { position: absolute; left: 10px; top: 10px; margin: 0; background: rgba(0, 0, 0, 0.7); color: #fff; }
+        @media (max-width: 420px) { .mock__note--banner { font-size: 0.7rem; } }
+
+        /* Guided tour */
+        .tour { position: fixed; z-index: 80; left: 50%; bottom: 20px; transform: translateX(-50%); width: min(440px, calc(100vw - 32px)); padding: 16px 18px 16px; border: 1px solid var(--accent); border-radius: 18px; background: var(--bg); color: var(--text); box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7), 0 0 0 6px var(--accent-soft); }
+        .tour__top { display: flex; justify-content: space-between; align-items: center; }
+        .tour__count { color: var(--accent-ink); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+        .tour__close { width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); font-size: 1.4rem; line-height: 1; cursor: pointer; }
+        .tour__close:hover { background: var(--surface); color: var(--text); }
+        .tour__title { margin: 4px 0 6px; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+        .tour__body { color: var(--text-muted); font-size: 0.98rem; line-height: 1.5; }
+        .tour__body b { color: var(--text); }
+        .tour__nav { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 10px; }
+        .tour__btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .tour__btns button, .tour__cta { height: 38px; padding: 0 16px; border-radius: 999px; font: 700 0.9rem var(--font-body); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
+        .tour__back { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
+        .tour__next { border: 0; background: var(--text); color: var(--bg); }
+        .tour__cta { background: var(--accent); color: #fff; }
+        .tour__cta[hidden], .tour__back[hidden] { display: none; }
+        .tour__dots { display: flex; gap: 6px; }
+        .tour__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); }
+        .tour__dots i.on { background: var(--accent); }
+        .tour-spot { outline: 3px solid var(--accent); outline-offset: 6px; border-radius: 20px; box-shadow: 0 0 0 12px var(--accent-soft); transition: outline-color 0.3s; }
+        main > section.tour-spot { outline-offset: -6px; }
     </style>
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="progress" aria-hidden="true"></div>
 
-    <!-- Navigation -->
+    <!-- Site bar: the same two tabs on both pages -->
     <header class="nav">
         <div class="wrap nav__inner">
             <a class="brand" href="#top" aria-label="Dynamic Media Governance, back to top">
                 <span class="brand__mark" aria-hidden="true">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" style="color: var(--accent-ink)"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z"/><path d="M8 5.2 11 7v3.2L8 12 5 10.2V7z" opacity=".6"/></svg>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z"/><path d="M8 5.2 11 7v3.2L8 12 5 10.2V7z" opacity=".6"/></svg>
                 </span>
                 <span class="brand__name">Dynamic Media Governance</span>
-                <span class="badge">v2.1</span>
             </a>
+            <nav class="site-tabs" aria-label="Site">
+                <a href="./" aria-current="page"><b>1</b><span>The proposal</span></a>
+                <a href="sound-reactions/"><b>2</b><span>Try it: Sound Reactions</span></a>
+            </nav>
             <div class="nav__right">
-                <nav class="nav__links" aria-label="Sections">
-                    <a href="#problem">Problem</a>
-                    <a href="#framework">Framework</a>
-                    <a href="#controls">Controls</a>
-                    <a href="#risk">Risk</a>
-                    <a href="#prototype">Prototype</a>
-                </nav>
+                <button class="tour-btn" type="button" data-tour-open aria-label="Take the tour"><span aria-hidden="true">?</span><span class="tour-btn__label">Tour</span></button>
                 <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch color theme">
                     <svg class="theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
                     <svg class="theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
@@ -475,30 +585,53 @@
     <!-- Hero -->
     <div class="hero" id="top">
         <div class="hero__bg" aria-hidden="true"></div>
-        <div class="hero__canvas" id="hero-canvas" aria-hidden="true"></div>
         <div class="wrap hero__inner">
             <div class="hero__content">
-                <div class="eyebrow reveal">Trust &amp; Safety · Product Policy</div>
-                <h1 class="reveal" style="--d: 80ms">Dynamic Media <em>Governance</em> Framework</h1>
-                <p class="hero__lede reveal" style="--d: 160ms">A practical governance system for safely introducing dynamic profile headers on X.</p>
-                <div class="chips reveal" style="--d: 240ms" aria-label="Mapped to">
+                <div class="eyebrow reveal">A safety plan for X</div>
+                <h1 class="reveal" style="--d: 80ms">Moving profile banners and sound reactions, <em>made safe.</em></h1>
+                <p class="hero__lede reveal" style="--d: 160ms">People want GIF banners and quick sound reactions. Fast flashing can cause seizures, and sound can be used to harass. This is the plan for shipping both safely.</p>
+                <div class="hero__actions reveal" style="--d: 240ms">
+                    <a class="btn btn--primary" href="sound-reactions/">Try it live
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                    </a>
+                    <button class="btn btn--ghost" type="button" data-tour-open>Take the 1-minute tour</button>
+                </div>
+                <div class="chips reveal" style="--d: 320ms" aria-label="Mapped to">
                     <span class="chip">WCAG 2.2</span>
                     <span class="chip">EU DSA</span>
                     <span class="chip">EU AI Act</span>
                     <span class="chip">NIST Privacy Framework</span>
                 </div>
-                <div class="hero__actions reveal" style="--d: 320ms">
-                    <a class="btn btn--primary" href="#framework">Read the framework
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>
-                    </a>
-                    <a class="btn btn--ghost" href="sound-reactions/">Try the prototype</a>
-                </div>
             </div>
+
+            <figure class="mock reveal" style="--d: 200ms" id="preview" aria-label="Preview of the proposal: a profile with a GIF banner and a sound reaction">
+                <div class="mock__banner">
+                    <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/clay-orbit.jpg" aria-label="Animated GIF banner: a clay-colored sphere turning slowly inside a wireframe shell.">
+                        <source src="sound-reactions/headers/clay-orbit.webm" type="video/webm">
+                    </video>
+                    <button class="mock__pause" type="button" data-header-pause aria-label="Pause banner animation" aria-pressed="false">
+                        <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg>
+                    </button>
+                    <span class="mock__note mock__note--banner"><b>1</b> GIF banner, checked for seizure-risk flashing</span>
+                </div>
+                <div class="mock__head">
+                    <img class="mock__avatar" src="sound-reactions/avatars/bb.jpg" alt="" width="88" height="88">
+                    <a class="mock__edit" href="sound-reactions/#/profile">View profile</a>
+                </div>
+                <div class="mock__who">
+                    <strong>B. Baynard-Malone <svg class="mock__badge" viewBox="0 0 24 24" aria-label="Verified"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5L9.4 4z"/><path fill="#fff" d="m10.6 15.6-3.3-3.3 1.3-1.3 2 2 4.9-4.9 1.3 1.3z"/></svg></strong>
+                    <span>@baynardmalone</span>
+                </div>
+                <div class="mock__post">
+                    <p>A sound reaction should add tone without demanding attention.</p>
+                    <a class="mock__chip" href="sound-reactions/">
+                        <span class="mock__play" aria-hidden="true"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.5v9l7.5-4.5z"/></svg></span>
+                        <span><strong>Mm-hmm</strong><small>Sound reaction · 2 s</small></span>
+                    </a>
+                    <span class="mock__note"><b>2</b> Sound reaction, silent until you tap ▶</span>
+                </div>
+            </figure>
         </div>
-        <button class="motion-toggle" type="button" id="motion-toggle" aria-pressed="false" hidden>
-            <svg viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><rect x="2" y="1.5" width="2.5" height="9" rx="1"/><rect x="7.5" y="1.5" width="2.5" height="9" rx="1"/></svg>
-            <span>Pause motion</span>
-        </button>
     </div>
 
     <main id="main">
@@ -753,20 +886,23 @@
             <div class="wrap">
                 <div class="section-head">
                     <div class="eyebrow section-num reveal">07 · See it working</div>
-                    <h2 id="proto-title" class="reveal" style="--d: 60ms">Sound reactions, governed by this framework.</h2>
-                    <p class="reveal" style="--d: 120ms">A browser-only concept prototype that applies these controls to short sound reactions on a social feed: a preflight check before anything publishes, per-person mute and volume, captions on by default, and nothing that plays until you press play.</p>
+                    <h2 id="proto-title" class="reveal" style="--d: 60ms">Dynamic headers and sound reactions, governed by this framework.</h2>
+                    <p class="reveal" style="--d: 120ms">A browser-only concept prototype of the two features this framework covers. A dynamic GIF profile header that must pass the photosensitivity scan and guardrails before it goes live, and short sound reactions that never autoplay, carry captions and pass a preflight check.</p>
                 </div>
-                <a class="proto reveal" href="sound-reactions/">
+                <a class="proto reveal" href="sound-reactions/#/profile">
                     <div class="proto__body">
-                        <div class="card__label">Concept prototype</div>
-                        <h3>Open the sound reactions prototype</h3>
-                        <p>Runs entirely in your browser. Feed, composer, governance queue, audit log and an eight-slide walkthrough. All accounts and posts are fictional, and the abuse and copyright checks are labeled as simulated.</p>
-                        <span class="proto__cta">Open prototype
+                        <div class="card__label">Sound Reactions · concept prototype</div>
+                        <h3>See a dynamic header pass the scan</h3>
+                        <p>The header on the right is a real 10-second GIF rendered with three.js: 15 fps, 3.7 MB, 0 flashes per second as measured by the prototype’s analyzer. Open the profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s header, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
+                        <span class="proto__cta">Open Sound Reactions
                             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                         </span>
                     </div>
-                    <div class="proto__wave" aria-hidden="true">
-                        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    <div class="proto__media">
+                        <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/clay-orbit.jpg" aria-label="Sample dynamic header: a clay-colored faceted sphere turning slowly inside a wireframe shell.">
+                            <source src="sound-reactions/headers/clay-orbit.webm" type="video/webm">
+                        </video>
+                        <span class="proto__chip">GIF header · PEA passed</span>
                     </div>
                 </a>
                 <p class="note reveal">Not affiliated with X. Source code is in the <a href="https://github.com/thankcheeses/dynamic-media-governance/tree/main/sound-reactions-src">sound-reactions-src</a> folder of this repository.</p>
@@ -798,7 +934,7 @@
         function currentTheme() {
             var t = root.getAttribute('data-theme');
             if (t) return t;
-            return 'light';
+            return 'dark';
         }
         var themeBtn = document.getElementById('theme-toggle');
         function syncThemeLabel() {
@@ -811,7 +947,6 @@
             root.setAttribute('data-theme', next);
             writeTheme(next);
             syncThemeLabel();
-            if (window.__dmgScene) window.__dmgScene.retheme();
         });
 
         // ---------- Reveal on scroll ----------
@@ -859,6 +994,111 @@
             });
         }
 
+        // ---------- GIF banners ----------
+        // The same rules as the prototype: silent, plays only on screen, pauses while
+        // scrolling and in hidden tabs, never under reduced motion, and can be paused.
+        var banners = Array.prototype.slice.call(document.querySelectorAll('[data-header-video]'));
+        var scrolling = false, scrollTimer = 0;
+        banners.forEach(function (video) {
+            video.dataset.visible = 'false';
+            var pause = video.parentElement.querySelector('[data-header-pause]');
+            if (pause) pause.addEventListener('click', function () {
+                var paused = pause.getAttribute('aria-pressed') === 'true';
+                pause.setAttribute('aria-pressed', String(!paused));
+                pause.setAttribute('aria-label', paused ? 'Pause banner animation' : 'Play banner animation');
+                sync();
+            });
+        });
+        function sync() {
+            banners.forEach(function (video) {
+                var pause = video.parentElement.querySelector('[data-header-pause]');
+                var userPaused = pause && pause.getAttribute('aria-pressed') === 'true';
+                var run = video.dataset.visible === 'true' && !scrolling && !document.hidden && !reduceMotion.matches && !userPaused;
+                if (pause) pause.hidden = reduceMotion.matches;
+                if (run) video.play().catch(function () {}); else video.pause();
+            });
+        }
+        if ('IntersectionObserver' in window) {
+            var bannerIO = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) { e.target.dataset.visible = String(e.isIntersecting); });
+                sync();
+            }, { threshold: 0.3 });
+            banners.forEach(function (v) { bannerIO.observe(v); });
+        }
+        window.addEventListener('scroll', function () {
+            if (!scrolling) { scrolling = true; sync(); }
+            clearTimeout(scrollTimer);
+            scrollTimer = setTimeout(function () { scrolling = false; sync(); }, 450);
+        }, { passive: true });
+        document.addEventListener('visibilitychange', sync);
+        if (reduceMotion.addEventListener) reduceMotion.addEventListener('change', sync);
+
+        // ---------- Guided tour (ELI5) ----------
+        var TOUR = [
+            { title: 'What is this?', body: 'Apps like X want to let people use <b>moving GIFs as profile banners</b> and react to posts with <b>short sounds</b>. Fun! But some flashing pictures can cause <b>seizures</b>, and sounds can be <b>annoying or used to bully</b>. This page is a plan to do it safely.', target: '#preview' },
+            { title: 'The whole idea in one line', body: '<b>Check every GIF before it goes live, keep it small and calm, and never play a sound unless you tap.</b> That’s it. Everything else on this page is the detail.', target: '#preview' },
+            { title: 'How a GIF gets checked', body: 'Think of a lifeguard. Every GIF is scanned for fast flashing. Calm ones go live. Ones that flash a little go up with a <b>warning</b> and a person checks them. Ones that flash a lot are <b>blocked</b>.', target: '#controls' },
+            { title: 'Rolled out slowly', body: 'It starts with a small group, and only grows if complaints stay low. If something goes wrong, it’s caught early.', target: '#rollout' },
+            { title: 'Try it yourself', body: 'Open <b>Sound Reactions</b> (tab 2 at the top). Tap anyone’s name to see their moving banner, tap ▶ to hear a reaction, or go to <b>Profile → Edit profile</b> to check a GIF of your own.', target: '#prototype', cta: { label: 'Open Sound Reactions', href: 'sound-reactions/' } },
+        ];
+        var tourEl = null, tourStep = 0, lastFocus = null;
+        function seen() { try { localStorage.setItem('dmg-tour-seen', '1'); } catch (e) {} }
+        function clearSpot() { var old = document.querySelector('.tour-spot'); if (old) old.classList.remove('tour-spot'); }
+        function renderTour() {
+            var step = TOUR[tourStep];
+            clearSpot();
+            var target = step.target && document.querySelector(step.target);
+            if (target) {
+                target.classList.add('tour-spot');
+                target.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'center' });
+            }
+            tourEl.querySelector('.tour__count').textContent = 'Step ' + (tourStep + 1) + ' of ' + TOUR.length;
+            tourEl.querySelector('.tour__title').textContent = step.title;
+            tourEl.querySelector('.tour__body').innerHTML = step.body;
+            tourEl.querySelector('.tour__back').hidden = tourStep === 0;
+            var next = tourEl.querySelector('.tour__next');
+            var cta = tourEl.querySelector('.tour__cta');
+            cta.hidden = !step.cta;
+            if (step.cta) { cta.textContent = step.cta.label; cta.href = step.cta.href; }
+            next.textContent = tourStep === TOUR.length - 1 ? 'Done' : 'Next';
+            tourEl.querySelector('.tour__dots').innerHTML = TOUR.map(function (_, i) { return '<i' + (i === tourStep ? ' class="on"' : '') + '></i>'; }).join('');
+        }
+        function closeTour() {
+            if (!tourEl) return;
+            seen(); clearSpot();
+            tourEl.remove(); tourEl = null;
+            document.removeEventListener('keydown', tourKeys);
+            if (lastFocus) lastFocus.focus();
+        }
+        function tourKeys(e) { if (e.key === 'Escape') closeTour(); }
+        function openTour() {
+            if (tourEl) return;
+            lastFocus = document.activeElement;
+            tourStep = 0;
+            tourEl = document.createElement('section');
+            tourEl.className = 'tour';
+            tourEl.setAttribute('role', 'dialog');
+            tourEl.setAttribute('aria-labelledby', 'tour-title');
+            tourEl.innerHTML = '<div class="tour__top"><span class="tour__count"></span><button type="button" class="tour__close" aria-label="Close tour">×</button></div>' +
+                '<h2 class="tour__title" id="tour-title"></h2><p class="tour__body" aria-live="polite"></p>' +
+                '<div class="tour__nav"><span class="tour__dots" aria-hidden="true"></span><span class="tour__btns">' +
+                '<button type="button" class="tour__back">Back</button><a class="tour__cta" hidden></a><button type="button" class="tour__next">Next</button></span></div>';
+            document.body.appendChild(tourEl);
+            tourEl.querySelector('.tour__close').addEventListener('click', closeTour);
+            tourEl.querySelector('.tour__back').addEventListener('click', function () { tourStep--; renderTour(); });
+            tourEl.querySelector('.tour__next').addEventListener('click', function () {
+                if (tourStep === TOUR.length - 1) closeTour(); else { tourStep++; renderTour(); }
+            });
+            tourEl.querySelector('.tour__cta').addEventListener('click', seen);
+            document.addEventListener('keydown', tourKeys);
+            renderTour();
+            tourEl.querySelector('.tour__next').focus();
+        }
+        Array.prototype.forEach.call(document.querySelectorAll('[data-tour-open]'), function (b) { b.addEventListener('click', openTour); });
+        var tourSeen = false;
+        try { tourSeen = localStorage.getItem('dmg-tour-seen') === '1'; } catch (e) {}
+        if (!tourSeen) setTimeout(openTour, 900);
+
         // ---------- Card spotlight (pointer devices only) ----------
         if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
             document.querySelectorAll('.card').forEach(function (card) {
@@ -872,164 +1112,6 @@
     })();
     </script>
 
-    <!-- Hero scene: one form per governance layer (core, shell, orbits). Slow, low-contrast, never flashes. -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-    <script>
-    window.addEventListener('DOMContentLoaded', function () {
-        var host = document.getElementById('hero-canvas');
-        var toggle = document.getElementById('motion-toggle');
-        if (!host || typeof THREE === 'undefined') return;
 
-        var renderer;
-        try {
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
-        } catch (e) { return; }
-
-        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-        host.appendChild(renderer.domElement);
-
-        var scene = new THREE.Scene();
-        var camera = new THREE.PerspectiveCamera(32, 1, 0.1, 100);
-        camera.position.set(0, 0, 12.5);
-
-        var group = new THREE.Group();
-        scene.add(group);
-
-        function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-
-        renderer.outputEncoding = THREE.sRGBEncoding;
-
-        // Soft studio light: warm key from the upper left, cool-neutral fill, gentle sky/ground bounce.
-        var hemi = new THREE.HemisphereLight(0xfff6ea, 0xb8ab98, 0.75);
-        scene.add(hemi);
-        var key = new THREE.DirectionalLight(0xffffff, 0.9);
-        key.position.set(-4, 5, 6);
-        scene.add(key);
-        var rim = new THREE.DirectionalLight(0xffe8dc, 0.35);
-        rim.position.set(5, -2, -4);
-        scene.add(rim);
-
-        // Layer 1 (core): screening. A solid, matte, faceted form.
-        var coreMat = new THREE.MeshStandardMaterial({ roughness: 0.82, metalness: 0, flatShading: true });
-        var core = new THREE.Mesh(new THREE.IcosahedronGeometry(1.05, 1), coreMat);
-        core.userData.speed = 0.06;
-        group.add(core);
-
-        // Layer 2: guardrails. A translucent faceted shell with fine edges.
-        var shellGeo = new THREE.IcosahedronGeometry(2.05, 0);
-        var shellMat = new THREE.MeshStandardMaterial({ roughness: 0.6, metalness: 0, flatShading: true, transparent: true, opacity: 0.16, depthWrite: false });
-        var shell = new THREE.Mesh(shellGeo, shellMat);
-        var shellEdgeMat = new THREE.LineBasicMaterial({ transparent: true, opacity: 0.32 });
-        shell.add(new THREE.LineSegments(new THREE.EdgesGeometry(shellGeo), shellEdgeMat));
-        shell.userData.speed = -0.04;
-        group.add(shell);
-
-        // Layer 3 (outer): identity and accountability. Two thin orbits.
-        var ringMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.45 });
-        var rings = [
-            { r: 2.7, tilt: [1.2, 0.2, 0], speed: 0.03 },
-            { r: 2.95, tilt: [0.5, -0.9, 0.3], speed: -0.022 }
-        ].map(function (o) {
-            var m = new THREE.Mesh(new THREE.TorusGeometry(o.r, 0.008, 6, 220), ringMat);
-            m.rotation.set(o.tilt[0], o.tilt[1], o.tilt[2]);
-            m.userData.speed = o.speed;
-            m.userData.orbit = true;
-            var bead = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 16), coreMat);
-            bead.position.set(o.r, 0, 0);
-            m.add(bead);
-            group.add(m);
-            return m;
-        });
-
-        var shells = [core, shell].concat(rings);
-
-        function retheme() {
-            // CSS colours are sRGB; the renderer works in linear space.
-            var accent = new THREE.Color(cssVar('--accent') || '#c15f3c').convertSRGBToLinear();
-            var ink = new THREE.Color(cssVar('--text') || '#1f1e1b').convertSRGBToLinear();
-            var paper = new THREE.Color(cssVar('--surface-solid') || '#fffdf8').convertSRGBToLinear();
-            var dark = document.documentElement.getAttribute('data-theme') === 'dark';
-            coreMat.color.copy(accent);
-            shellMat.color.copy(dark ? accent : paper);
-            shellMat.opacity = dark ? 0.08 : 0.35;
-            shellEdgeMat.color.copy(ink);
-            shellEdgeMat.opacity = dark ? 0.22 : 0.28;
-            ringMat.color.copy(ink);
-            ringMat.opacity = dark ? 0.35 : 0.45;
-            hemi.intensity = dark ? 0.5 : 0.75;
-            render();
-        }
-
-        function resize() {
-            var w = host.clientWidth, h = host.clientHeight;
-            if (!w || !h) return;
-            renderer.setSize(w, h, false);
-            camera.aspect = w / h;
-            camera.updateProjectionMatrix();
-            render();
-        }
-
-        var pointer = { x: 0, y: 0 }, tilt = { x: 0, y: 0 };
-        window.addEventListener('pointermove', function (e) {
-            pointer.x = (e.clientX / window.innerWidth - 0.5);
-            pointer.y = (e.clientY / window.innerHeight - 0.5);
-        }, { passive: true });
-
-        function render() { renderer.render(scene, camera); }
-
-        var userPaused = false, visible = true, raf = 0, last = 0;
-        group.rotation.set(0.35, 0.6, 0);
-
-        function frame(t) {
-            raf = 0;
-            var dt = last ? Math.min((t - last) / 1000, 0.05) : 0;
-            last = t;
-            shells.forEach(function (m) {
-                if (m.userData.orbit) { m.rotation.z += m.userData.speed * 4 * dt; return; }
-                m.rotation.y += m.userData.speed * dt; m.rotation.x += m.userData.speed * 0.4 * dt;
-            });
-            tilt.x += (pointer.y * 0.25 - tilt.x) * 0.03;
-            tilt.y += (pointer.x * 0.35 - tilt.y) * 0.03;
-            group.rotation.x = 0.35 + tilt.x;
-            group.rotation.z = tilt.y * 0.3;
-            render();
-            schedule();
-        }
-        function running() { return visible && !userPaused && !reduceMotion.matches && !document.hidden; }
-        function schedule() { if (!raf && running()) raf = requestAnimationFrame(frame); }
-        function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; last = 0; }
-
-        function syncToggle() {
-            if (reduceMotion.matches) { toggle.hidden = true; return; }
-            toggle.hidden = false;
-            toggle.setAttribute('aria-pressed', String(userPaused));
-            toggle.querySelector('span').textContent = userPaused ? 'Play motion' : 'Pause motion';
-        }
-        toggle.addEventListener('click', function () {
-            userPaused = !userPaused;
-            syncToggle();
-            if (userPaused) stop(); else schedule();
-        });
-
-        if ('IntersectionObserver' in window) {
-            new IntersectionObserver(function (entries) {
-                visible = entries[0].isIntersecting;
-                if (visible) schedule(); else stop();
-            }).observe(host);
-        }
-        document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else schedule(); });
-        if (reduceMotion.addEventListener) {
-            reduceMotion.addEventListener('change', function () { syncToggle(); if (reduceMotion.matches) stop(); else schedule(); });
-        }
-
-        window.addEventListener('resize', resize);
-        window.__dmgScene = { retheme: retheme };
-        retheme();
-        resize();
-        syncToggle();
-        schedule();
-    });
-    </script>
 </body>
 </html>

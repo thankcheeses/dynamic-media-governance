@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { DEFAULT_CONFIG, DEFAULT_SETTINGS, SEED_POSTS } from './data'
+import type { UploadedMedia } from './analyze'
+import { DEFAULT_HEADER_ID, type HeaderDecision } from './headers'
 import type { AppSettings, AuditEvent, Clip, GovernanceConfig, MediaKind, Post, PreflightResult, Submission } from './types'
 
 const isSessionAudio = (url?: string) => Boolean(url?.startsWith('blob:'))
@@ -26,6 +28,12 @@ interface AppState {
   reposted: string[]
   bookmarked: string[]
   favorites: string[]
+  /** The live dynamic profile header. Only PASS or PROVISIONAL headers can be set. */
+  profileHeader: { presetId: string; decision: HeaderDecision }
+  setProfileHeader: (presetId: string, decision: HeaderDecision) => void
+  /** A header the viewer uploaded. Session-only: it is never written to storage. */
+  uploadedHeader: UploadedMedia | null
+  setUploadedHeader: (media: UploadedMedia | null) => void
   toggleFavorite: (soundId: string) => void
   setSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void
   setConfig: (config: GovernanceConfig) => void
@@ -48,12 +56,16 @@ const baseState = {
   reposted: [] as string[],
   bookmarked: [] as string[],
   favorites: [] as string[],
+  profileHeader: { presetId: DEFAULT_HEADER_ID, decision: 'PASS' as HeaderDecision },
+  uploadedHeader: null as UploadedMedia | null,
 }
 
 export const useAppStore = create<AppState>()(persist((set, get) => ({
   ...baseState,
   setSetting: (key, value) => set((state) => ({ settings: { ...state.settings, [key]: value } })),
   setConfig: (config) => set({ config }),
+  setProfileHeader: (presetId, decision) => set({ profileHeader: { presetId, decision } }),
+  setUploadedHeader: (media) => set({ uploadedHeader: media }),
   addAudit: (type, subjectId, detail) => set((state) => ({
     audits: [...state.audits, { id: uid('evt'), timestamp: now(), type, actor: 'local-demo-user', subjectId, detail }],
   })),
@@ -167,5 +179,8 @@ export const useAppStore = create<AppState>()(persist((set, get) => ({
     // library sounds are static files and persist like any other post.
     posts: state.posts.filter((post) => !isSessionAudio(post.voice?.audioUrl) && !isSessionAudio(post.reaction?.audioUrl)),
     submissions: state.submissions.filter((submission) => !isSessionAudio(submission.clip.audioUrl)),
+    // Uploaded headers live only in this tab, like microphone recordings.
+    uploadedHeader: null,
+    profileHeader: state.profileHeader.presetId === 'upload' ? { presetId: DEFAULT_HEADER_ID, decision: 'PASS' as HeaderDecision } : state.profileHeader,
   }),
 }))

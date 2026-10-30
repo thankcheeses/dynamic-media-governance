@@ -5,7 +5,8 @@ import { toast } from 'sonner'
 import { burstRing, popIcon, rollCount } from '../motion'
 import { useAppStore } from '../store'
 import type { Post, QuotedPost } from '../types'
-import { avatarStyle } from '../avatar'
+import { avatarContent, avatarStyle } from '../avatar'
+import { profilePath } from '../accounts'
 import { SoundReactionChip, VoicePostPlayer } from './AudioClip'
 import { ReactionPicker } from './ReactionPicker'
 
@@ -35,8 +36,8 @@ export function Verified() {
 function QuoteCard({ quote }: { quote: QuotedPost }) {
   return <div className="x-quote">
     <header className="x-post-byline">
-      <span className="avatar tiny" aria-hidden="true" style={avatarStyle(quote.initials)}>{quote.initials}</span>
-      <strong>{quote.author}</strong>{quote.verified && <Verified />}
+      <Link to={profilePath(quote.handle)} className="avatar tiny" aria-hidden="true" tabIndex={-1} style={avatarStyle(quote.initials)}>{avatarContent(quote.initials)}</Link>
+      <Link to={profilePath(quote.handle)} className="x-name-link"><strong>{quote.author}</strong></Link>{quote.verified && <Verified />}
       <span className="x-handle">{quote.handle}</span><span aria-hidden="true">·</span><span>{quote.timestamp}</span>
     </header>
     <p className="x-post-text">{quote.body}</p>
@@ -94,10 +95,10 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
 
   return (
     <article className={`x-post ${embedded ? 'embedded' : ''}`} aria-label={`Post by ${post.author}`}>
-      <div className="avatar" aria-hidden="true" style={avatarStyle(post.initials)}>{post.initials}</div>
+      <Link to={profilePath(post.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(post.initials)}>{avatarContent(post.initials)}</Link>
       <div className="x-post-main">
         <header className="x-post-byline">
-          <strong>{post.author}</strong>{post.verified && <Verified />}
+          <Link to={profilePath(post.handle)} className="x-name-link" aria-label={`${post.author}, view profile`}><strong>{post.author}</strong></Link>{post.verified && <Verified />}
           <span className="x-handle">{post.handle}</span>
           <span aria-hidden="true">·</span>
           <span className="x-time">{post.timestamp}</span>

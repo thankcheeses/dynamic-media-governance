@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
+    try { localStorage.setItem('sound-reactions-tour-seen', '1') } catch { /* ignore */ }
     const Original = window.AudioContext
     const tracked = window as unknown as { __audioContexts: AudioContext[] }
     tracked.__audioContexts = []
@@ -102,4 +103,71 @@ test('presentation 3D intro starts no audio until "Hear it" is pressed', async (
   expect(await page.evaluate(() => (window as unknown as { __audioContexts?: AudioContext[] }).__audioContexts?.length ?? 0)).toBe(0)
   await page.getByRole('button', { name: 'Hear the applause sound reaction' }).click()
   await expect(page.getByRole('button', { name: 'Stop the applause demo' })).toBeVisible()
+})
+
+test('tapping a name in the feed opens that profile with its dynamic header, silently', async ({ page }) => {
+  await page.getByRole('link', { name: 'Maya Chen, view profile' }).click()
+  await expect(page).toHaveURL(/\/u\/mayamakes$/)
+  const video = page.locator('.dynamic-header video')
+  await expect(video).toHaveJSProperty('muted', true)
+  expect(await video.getAttribute('autoplay')).toBeNull()
+  await expect(page.getByRole('button', { name: 'Pause header animation' })).toBeVisible()
+  expect(await page.evaluate(() => (window as unknown as { __audioContexts?: AudioContext[] }).__audioContexts?.length ?? 0)).toBe(0)
+})
+
+test('the header studio hard-blocks a strobe and keeps the current header', async ({ page }) => {
+  await page.goto('/profile')
+  await page.getByRole('button', { name: 'Edit profile' }).click()
+  await page.getByRole('radio', { name: /Strobe party/ }).click()
+  await page.getByRole('button', { name: 'Run PEA scan' }).click()
+  await expect(page.getByText('HARD BLOCK', { exact: true })).toBeVisible()
+  await expect(page.getByText('This header can’t be published')).toBeVisible()
+})
+
+test('GIPHY search shows still frames and scans a picked GIF before it can play', async ({ page }) => {
+  const gif = 'public/headers/clay-orbit.gif'
+  const cors = { 'access-control-allow-origin': '*' }
+  await page.route('https://api.giphy.com/**', (route) => route.fulfill({
+    headers: cors, contentType: 'application/json',
+    body: JSON.stringify({ data: [{ id: 'calm1', title: 'Calm orbit', url: 'https://giphy.com/gifs/calm1', images: { downsized: { url: 'https://media.giphy.com/media/calm1/giphy-downsized.gif', width: '1200', height: '400' }, fixed_width_still: { url: 'https://media.giphy.com/media/calm1/200w_s.gif' } } }] }),
+  }))
+  await page.route('https://media.giphy.com/**', (route) => route.fulfill({ headers: cors, contentType: 'image/gif', path: gif }))
+  await page.goto('/profile')
+  await page.getByRole('button', { name: 'Edit profile' }).click()
+  await page.getByLabel('GIPHY API key').fill('test-key')
+  await page.getByRole('button', { name: 'Save key' }).click()
+  await expect(page.getByRole('button', { name: 'Scan Calm orbit' })).toBeVisible()
+  expect(await page.evaluate(() => localStorage.getItem('sound-reactions-giphy-key'))).toBe('test-key')
+  await page.getByRole('button', { name: 'Scan Calm orbit' }).click()
+  await expect(page.getByText('PASS', { exact: true })).toBeVisible({ timeout: 30_000 })
+  await page.getByRole('button', { name: 'Use this header' }).click()
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await expect(page.getByText('A GIF picked from GIPHY')).toBeVisible()
+})
+
+test('the header info tour explains the scan without cluttering the banner', async ({ page }) => {
+  await page.goto('/profile')
+  await expect(page.locator('.header-chip')).toHaveCount(0)
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await expect(page.getByRole('heading', { name: 'Scanned before it went live' })).toBeVisible()
+  await expect(page.getByText('A GIF rendered with three.js for this prototype')).toBeVisible()
+  for (const title of ['Within the limits', 'How it plays', 'Under the hood']) {
+    await page.getByRole('button', { name: /Next/ }).click()
+    await expect(page.getByRole('heading', { name: title })).toBeVisible()
+  }
+  await page.getByRole('button', { name: 'Done' }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
+})
+
+test('the welcome tour opens on a first visit, links back to the proposal, and stays closed after', async ({ page }) => {
+  await page.evaluate(() => localStorage.removeItem('sound-reactions-tour-seen'))
+  await page.addInitScript(() => { if (!sessionStorage.getItem('first')) { sessionStorage.setItem('first', '1'); localStorage.removeItem('sound-reactions-tour-seen') } })
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Site' }).getByRole('link', { name: /The proposal/ })).toHaveAttribute('href', '../')
+  await page.getByRole('button', { name: 'Close tour' }).click()
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Take the tour' }).click()
+  await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toBeVisible()
 })
