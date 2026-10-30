@@ -4,408 +4,968 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-id="th-modified">X · Dynamic Media Governance Framework</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta property="og:title" content="X · Dynamic Media Governance Framework" data-id="th-modified"><meta name="description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:image" content="https://xdynamicprofileproposal.tiiny.site/og-image.jpg" data-id="th-modified"><meta property="og:image:width" content="1080" data-id="th-modified"><meta property="og:image:height" content="433" data-id="th-modified"><meta property="og:image:type" content="image/jpeg" data-id="th-modified"><meta property="og:url" content="https://xdynamicprofileproposal.tiiny.site/" data-id="th-modified"><meta property="og:type" content="website" data-id="th-modified"><script defer data-domain="xdynamicprofileproposal.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
+    <meta name="color-scheme" content="dark light">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
-        
+        :root {
+            --bg: #070b14;
+            --bg-raised: #0c1220;
+            --surface: rgba(17, 25, 43, 0.72);
+            --surface-solid: #111a2c;
+            --line: rgba(148, 163, 184, 0.14);
+            --line-strong: rgba(148, 163, 184, 0.28);
+            --text: #e6ebf3;
+            --text-muted: #9aa6b8;
+            --text-faint: #6b778a;
+            --accent: #2dd4bf;
+            --accent-soft: rgba(45, 212, 191, 0.12);
+            --accent-ink: #5eead4;
+            --danger: #fca5a5;
+            --danger-soft: rgba(239, 68, 68, 0.12);
+            --danger-line: rgba(248, 113, 113, 0.35);
+            --glow: rgba(45, 212, 191, 0.16);
+            --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 24px 48px -24px rgba(0, 0, 0, 0.6);
+
+            --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+            --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+            --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
+            --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.0625rem);
+            --step-1: clamp(1.15rem, 1.05rem + 0.4vw, 1.375rem);
+            --step-2: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+            --step-3: clamp(2.2rem, 1.6rem + 2.6vw, 3.5rem);
+            --step-4: clamp(3rem, 1.8rem + 5.6vw, 6.25rem);
+
+            --gutter: clamp(16px, 4vw, 40px);
+            --radius: 18px;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        :root[data-theme="light"] {
+            --bg: #f6f4ef;
+            --bg-raised: #efece5;
+            --surface: rgba(255, 255, 255, 0.78);
+            --surface-solid: #ffffff;
+            --line: rgba(15, 23, 42, 0.1);
+            --line-strong: rgba(15, 23, 42, 0.2);
+            --text: #0f172a;
+            --text-muted: #475467;
+            --text-faint: #6b7385;
+            --accent: #0f766e;
+            --accent-soft: rgba(15, 118, 110, 0.09);
+            --accent-ink: #0f766e;
+            --danger: #b42318;
+            --danger-soft: rgba(180, 35, 24, 0.07);
+            --danger-line: rgba(180, 35, 24, 0.3);
+            --glow: rgba(15, 118, 110, 0.1);
+            --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 40px -24px rgba(15, 23, 42, 0.25);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme="dark"]) {
+                --bg: #f6f4ef;
+                --bg-raised: #efece5;
+                --surface: rgba(255, 255, 255, 0.78);
+                --surface-solid: #ffffff;
+                --line: rgba(15, 23, 42, 0.1);
+                --line-strong: rgba(15, 23, 42, 0.2);
+                --text: #0f172a;
+                --text-muted: #475467;
+                --text-faint: #6b7385;
+                --accent: #0f766e;
+                --accent-soft: rgba(15, 118, 110, 0.09);
+                --accent-ink: #0f766e;
+                --danger: #b42318;
+                --danger-soft: rgba(180, 35, 24, 0.07);
+                --danger-line: rgba(180, 35, 24, 0.3);
+                --glow: rgba(15, 118, 110, 0.1);
+                --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 18px 40px -24px rgba(15, 23, 42, 0.25);
+            }
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; scroll-padding-top: 88px; -webkit-text-size-adjust: 100%; }
+
         body {
-            font-family: 'Inter', system_ui, sans-serif;
-        }
-        
-        .heading {
-            font-family: 'Space Grotesk', 'Inter', system_ui, sans-serif;
-            font-weight: 600;
-            letter-spacing: -0.03em;
-        }
-
-        .section-header {
-            font-size: 1.4rem;
-            font-weight: 600;
-            letter-spacing: -0.025em;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: var(--step-0);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            overflow-x: hidden;
+            transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
         }
 
-        .prose {
-            max-width: 72ch;
+        a { color: inherit; }
+        strong { color: var(--text); font-weight: 600; }
+        h1, h2, h3, p { margin: 0; }
+
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+        .skip-link {
+            position: absolute; left: 16px; top: -48px; z-index: 100;
+            padding: 10px 16px; border-radius: 10px;
+            background: var(--accent); color: var(--bg); font-weight: 600; text-decoration: none;
+            transition: top 0.2s var(--ease);
+        }
+        .skip-link:focus { top: 12px; }
+
+        .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+
+        .eyebrow {
+            font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
+            letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-ink);
         }
 
-        .metric {
+        /* ---------- Progress + nav ---------- */
+        .progress {
+            position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60;
+            background: var(--accent); transform-origin: 0 50%; transform: scaleX(0);
+        }
+
+        .nav {
+            position: sticky; top: 0; z-index: 50;
+            background: color-mix(in srgb, var(--bg) 78%, transparent);
+            backdrop-filter: blur(14px) saturate(160%);
+            -webkit-backdrop-filter: blur(14px) saturate(160%);
+            border-bottom: 1px solid var(--line);
+        }
+        .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; min-width: 0; }
+        .brand__mark {
+            width: 28px; height: 28px; border-radius: 8px; flex: none;
+            border: 1px solid var(--line-strong);
+            display: grid; place-items: center;
+            background: radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 70%);
+        }
+        .brand__mark svg { width: 16px; height: 16px; }
+        .brand__name { font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .badge {
+            font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);
+            padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px; flex: none;
+        }
+        .nav__links { display: flex; align-items: center; gap: 4px; }
+        .nav__links a {
+            font-size: 0.875rem; color: var(--text-muted); text-decoration: none;
+            padding: 8px 12px; border-radius: 999px;
+            transition: color 0.2s, background-color 0.2s;
+        }
+        .nav__links a:hover { color: var(--text); }
+        .nav__links a[aria-current="true"] { color: var(--text); background: var(--accent-soft); }
+
+        .icon-btn {
+            display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none;
+            border-radius: 999px; border: 1px solid var(--line); background: transparent;
+            color: var(--text-muted); cursor: pointer;
+            transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+        }
+        .icon-btn:hover { color: var(--text); border-color: var(--line-strong); }
+        .icon-btn svg { width: 18px; height: 18px; }
+        .theme-icon--sun { display: none; }
+        #theme-toggle[data-mode="light"] .theme-icon--sun { display: block; }
+        #theme-toggle[data-mode="light"] .theme-icon--moon { display: none; }
+
+        .nav__right { display: flex; align-items: center; gap: 8px; }
+
+        @media (max-width: 760px) {
+            .nav__links { display: none; }
+        }
+
+        /* ---------- Hero ---------- */
+        .hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--line); }
+        .hero__bg {
+            position: absolute; inset: 0; z-index: -2;
+            background:
+                radial-gradient(60% 50% at 78% 38%, var(--glow), transparent 70%),
+                radial-gradient(40% 40% at 10% 90%, var(--accent-soft), transparent 70%);
+        }
+        .hero__grid {
+            position: absolute; inset: 0; z-index: -2; opacity: 0.5;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            -webkit-mask-image: radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 80%);
+            mask-image: radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 80%);
+        }
+        .hero__canvas {
+            position: absolute; z-index: -1;
+            right: -6%; top: 50%; transform: translateY(-50%);
+            width: min(64vw, 720px); aspect-ratio: 1;
+            pointer-events: none;
+        }
+        .hero__canvas canvas { width: 100% !important; height: 100% !important; display: block; }
+        .hero__inner { padding-top: clamp(64px, 12vw, 148px); padding-bottom: clamp(88px, 10vw, 120px); }
+        .hero__content { max-width: 720px; }
+        .hero h1 {
+            font-family: var(--font-display); font-weight: 400;
+            font-size: var(--step-4); line-height: 0.98; letter-spacing: -0.02em;
+            margin-top: 22px;
+        }
+        .hero h1 em { font-style: italic; color: var(--accent-ink); }
+        .hero__lede { margin-top: 26px; font-size: var(--step-1); color: var(--text-muted); max-width: 34ch; line-height: 1.5; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 36px; }
+        .chip {
+            font-size: 0.8rem; color: var(--text-muted);
+            padding: 6px 12px; border-radius: 999px;
+            border: 1px solid var(--line); background: var(--surface);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px; min-height: 46px;
+            padding: 0 22px; border-radius: 999px; text-decoration: none;
+            font-size: 0.92rem; font-weight: 600;
+            transition: transform 0.25s var(--ease), background-color 0.2s, border-color 0.2s;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn:active { transform: translateY(0) scale(0.98); }
+        .btn--primary { background: var(--text); color: var(--bg); }
+        .btn--ghost { border: 1px solid var(--line-strong); color: var(--text); }
+        .btn--ghost:hover { border-color: var(--accent); }
+        .btn svg { width: 16px; height: 16px; }
+
+        .motion-toggle {
+            position: absolute; right: var(--gutter); bottom: 20px;
+            display: inline-flex; align-items: center; gap: 8px; min-height: 36px;
+            padding: 0 14px; border-radius: 999px;
+            border: 1px solid var(--line); background: var(--surface); color: var(--text-muted);
+            font: 500 0.75rem var(--font-body); cursor: pointer;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .motion-toggle:hover { color: var(--text); border-color: var(--line-strong); }
+        .motion-toggle[hidden] { display: none; }
+        .motion-toggle svg { width: 12px; height: 12px; }
+
+        @media (max-width: 760px) {
+            .hero__canvas { width: 120vw; right: -50vw; top: 30%; opacity: 0.55; }
+        }
+
+        /* ---------- Sections ---------- */
+        main > section { padding: clamp(72px, 10vw, 128px) 0; border-bottom: 1px solid var(--line); }
+        .section-head { display: grid; gap: 18px; margin-bottom: clamp(36px, 5vw, 56px); max-width: 760px; }
+        .section-num { display: flex; align-items: center; gap: 12px; }
+        .section-num::after { content: ""; height: 1px; width: 48px; background: var(--line-strong); }
+        .section-head h2 {
+            font-family: var(--font-display); font-weight: 400;
+            font-size: var(--step-3); line-height: 1.05; letter-spacing: -0.015em;
+        }
+        .section-head p { color: var(--text-muted); max-width: 62ch; }
+
+        .prose { max-width: 66ch; color: var(--text-muted); }
+        .prose p + p, .prose p + ul, .prose ul + p { margin-top: 1.1em; }
+
+        .summary { display: grid; grid-template-columns: 1fr; gap: clamp(32px, 5vw, 72px); }
+        @media (min-width: 900px) { .summary { grid-template-columns: 1.1fr 0.9fr; } }
+        .summary__lead { font-family: var(--font-display); font-size: var(--step-2); line-height: 1.25; color: var(--text); }
+        .objectives { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: obj; }
+        .objectives li {
+            counter-increment: obj;
+            display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
+            padding: 20px 22px; border-radius: var(--radius);
+            border: 1px solid var(--line); background: var(--surface);
+            color: var(--text);
+        }
+        .objectives li::before {
+            content: counter(obj, decimal-leading-zero);
+            font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-ink);
+            padding-top: 4px;
+        }
+        .summary__note { margin-top: 28px; padding-left: 18px; border-left: 2px solid var(--accent); color: var(--text-muted); }
+
+        /* Cards */
+        .grid { display: grid; gap: 16px; }
+        .grid--3 { grid-template-columns: 1fr; }
+        .grid--2 { grid-template-columns: 1fr; }
+        .grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        @media (min-width: 760px) {
+            .grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 960px) { .grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+        .card {
+            position: relative; overflow: hidden;
+            padding: clamp(22px, 2.6vw, 30px); border-radius: var(--radius);
+            border: 1px solid var(--line); background: var(--surface);
+            box-shadow: var(--shadow);
+            transition: border-color 0.3s var(--ease), transform 0.4s var(--ease);
+        }
+        .card::before {
+            content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+            background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%), var(--accent-soft), transparent 60%);
+            transition: opacity 0.3s var(--ease);
+        }
+        .card:hover { border-color: var(--line-strong); }
+        .card:hover::before { opacity: 1; }
+        .card > * { position: relative; }
+        .card__icon {
+            width: 40px; height: 40px; border-radius: 12px; margin-bottom: 20px;
+            display: grid; place-items: center;
+            background: var(--accent-soft); color: var(--accent-ink);
+        }
+        .card__icon svg { width: 20px; height: 20px; }
+        .card__label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 10px; }
+        .card h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.35; }
+        .card p { margin-top: 10px; font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* Layers */
+        .layers .card { padding-top: 28px; }
+        .layers .card__index {
+            font-family: var(--font-display); font-size: 3.5rem; line-height: 1;
+            color: var(--line-strong); position: absolute; right: 22px; top: 18px;
+        }
+
+        /* Subsection */
+        .sub { margin-top: clamp(56px, 7vw, 88px); }
+        .sub:first-of-type { margin-top: 0; }
+        .sub__head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
+        .sub__num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-ink); padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); }
+        .sub__head h3 { font-size: var(--step-1); font-weight: 600; letter-spacing: -0.015em; }
+        .sub__intro { color: var(--text-muted); max-width: 66ch; margin-bottom: 28px; }
+
+        /* Flow diagram */
+        .flow {
+            border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px);
+            background: var(--bg-raised); padding: clamp(18px, 3vw, 32px);
+        }
+        .flow__title { margin-bottom: 20px; }
+        .flow__track { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: 1fr; }
+        @media (min-width: 900px) { .flow__track { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; align-items: stretch; } }
+        .flow__step {
+            position: relative; padding: 18px 18px 16px; border-radius: 14px;
+            border: 1px solid var(--line-strong); background: var(--surface-solid);
+        }
+        .flow__step small { display: block; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; color: var(--text-faint); }
+        .flow__step strong { display: block; margin-top: 6px; font-size: 1rem; }
+        .flow__step span { display: block; margin-top: 2px; font-size: 0.85rem; color: var(--text-muted); }
+        .flow__step--block { border-color: var(--danger-line); background: var(--danger-soft); }
+        .flow__step--block strong, .flow__step--block span { color: var(--danger); }
+        .flow__step:not(:last-child)::after {
+            content: ""; position: absolute; background: var(--accent);
+            left: 50%; bottom: -12px; width: 1px; height: 12px;
+        }
+        @media (min-width: 900px) {
+            .flow__step--block { align-self: center; }
+            .flow__step:not(:last-child)::after { left: auto; right: -12px; bottom: auto; top: 50%; width: 12px; height: 1px; }
+        }
+
+        /* Metrics */
+        .metric { padding: 20px 22px; }
+        .metric__label { font-size: 0.78rem; color: var(--text-faint); }
+        .metric__value {
+            margin-top: 8px; font-family: var(--font-display); font-weight: 400;
+            font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem); line-height: 1.05; letter-spacing: -0.01em;
             font-variant-numeric: tabular-nums;
         }
+        .metric__value--sm { font-size: clamp(1.2rem, 1rem + 0.8vw, 1.5rem); line-height: 1.2; }
+        .metrics { margin-top: 16px; }
 
-        .diagram-container {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 20px;
+        .note { margin-top: 20px; font-size: 0.9rem; color: var(--text-muted); max-width: 72ch; }
+
+        /* Strikes */
+        .strikes { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 12px; }
+        .strike {
+            display: grid; grid-template-columns: 56px 1fr; gap: 18px; align-items: start;
+            padding: 20px 22px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface);
+        }
+        .strike__n { position: relative; height: 40px; display: flex; align-items: flex-end; gap: 4px; }
+        .strike__n i { display: block; width: 10px; border-radius: 3px; background: var(--line-strong); }
+        .strike__n i:nth-child(1) { height: 14px; }
+        .strike__n i:nth-child(2) { height: 24px; }
+        .strike__n i:nth-child(3) { height: 36px; }
+        .strike[data-level="1"] .strike__n i:nth-child(-n+1),
+        .strike[data-level="2"] .strike__n i:nth-child(-n+2),
+        .strike[data-level="3"] .strike__n i:nth-child(-n+3) { background: var(--accent); }
+        .strike h4 { margin: 0; font-size: 0.98rem; font-weight: 600; }
+        .strike p { margin-top: 4px; font-size: 0.92rem; color: var(--text-muted); }
+
+        /* Timeline */
+        .timeline { position: relative; list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+        @media (min-width: 860px) {
+            .timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+            .timeline::before {
+                content: ""; position: absolute; left: 28px; right: 28px; top: 27px; height: 1px;
+                background: linear-gradient(90deg, var(--accent), var(--line-strong));
+            }
+        }
+        .phase { position: relative; }
+        .phase__dot {
+            width: 56px; height: 56px; border-radius: 999px; display: grid; place-items: center;
+            border: 1px solid var(--accent); background: var(--bg);
+            font-family: var(--font-display); font-size: 1.5rem; color: var(--accent-ink);
+            position: relative; z-index: 1;
+        }
+        .phase .card { margin-top: 16px; }
+        .phase__gate {
+            display: inline-flex; margin-top: 14px; font-family: var(--font-mono); font-size: 0.72rem;
+            color: var(--accent-ink); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line-strong);
+        }
+
+        /* Limitations */
+        .limits { display: grid; gap: 0; border-top: 1px solid var(--line); }
+        .limit {
+            display: grid; grid-template-columns: 1fr; gap: 8px;
+            padding: 24px 0; border-bottom: 1px solid var(--line);
+        }
+        @media (min-width: 760px) { .limit { grid-template-columns: 280px 1fr; gap: 32px; } }
+        .limit h3 { font-size: 1rem; font-weight: 600; }
+        .limit p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Regulatory */
+        .reg .card__tag { display: inline-flex; margin-top: 18px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); }
+
+        /* Footer */
+        .footer { padding: 40px 0 56px; color: var(--text-faint); font-size: 0.82rem; }
+        .footer__inner { display: flex; flex-direction: column; gap: 10px; }
+        @media (min-width: 760px) { .footer__inner { flex-direction: row; justify-content: space-between; align-items: center; } }
+
+        /* Reveal */
+        .reveal { opacity: 1; transform: none; }
+        .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); transition-delay: var(--d, 0ms); }
+        .js .reveal.is-in { opacity: 1; transform: none; }
+
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            .js .reveal { opacity: 1; transform: none; transition: none; }
+            *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
         }
     </style>
-<meta property="og:title" content="X · Dynamic Media Governance Framework" data-id="th-modified"><meta name="description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:image" content="https://xdynamicprofileproposal.tiiny.site/og-image.jpg" data-id="th-modified"><meta property="og:image:width" content="1080" data-id="th-modified"><meta property="og:image:height" content="433" data-id="th-modified"><meta property="og:image:type" content="image/jpeg" data-id="th-modified"><meta property="og:url" content="https://xdynamicprofileproposal.tiiny.site/" data-id="th-modified"><meta property="og:type" content="website" data-id="th-modified"><script defer data-domain="xdynamicprofileproposal.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script></head>
-<body class="bg-slate-950 text-slate-200">
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="progress" aria-hidden="true"></div>
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-slate-950/95 backdrop-blur border-b border-slate-800">
-        <div class="max-w-5xl mx-auto px-6 h-14 flex items-center justify-between">
-            <div class="flex items-center gap-x-3">
-                <div class="font-semibold tracking-tight">Dynamic Media Governance</div>
-                <div class="text-xs px-2.5 py-1 bg-slate-800 rounded text-slate-400">v2.1</div>
-            </div>
-            <div class="flex items-center gap-x-7 text-sm">
-                <a href="#problem" class="hover:text-white transition-colors">Problem</a>
-                <a href="#framework" class="hover:text-white transition-colors">Framework</a>
-                <a href="#controls" class="hover:text-white transition-colors">Controls</a>
-                <a href="#risk" class="hover:text-white transition-colors">Risk</a>
+    <header class="nav">
+        <div class="wrap nav__inner">
+            <a class="brand" href="#top" aria-label="Dynamic Media Governance, back to top">
+                <span class="brand__mark" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" style="color: var(--accent-ink)"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z"/><path d="M8 5.2 11 7v3.2L8 12 5 10.2V7z" opacity=".6"/></svg>
+                </span>
+                <span class="brand__name">Dynamic Media Governance</span>
+                <span class="badge">v2.1</span>
+            </a>
+            <div class="nav__right">
+                <nav class="nav__links" aria-label="Sections">
+                    <a href="#problem">Problem</a>
+                    <a href="#framework">Framework</a>
+                    <a href="#controls">Controls</a>
+                    <a href="#risk">Risk</a>
+                </nav>
+                <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch color theme">
+                    <svg class="theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                    <svg class="theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                </button>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Hero -->
-    <div class="max-w-5xl mx-auto px-6 pt-14 pb-10">
-        <div class="max-w-3xl">
-            <div class="inline-flex items-center px-3 py-1 rounded-2xl bg-slate-900 text-xs font-medium tracking-widest text-teal-400 mb-6">
-                TRUST &amp; SAFETY • PRODUCT POLICY
-            </div>
-            
-            <h1 class="text-6xl font-semibold tracking-tighter leading-none">
-                Dynamic Media<br>Governance Framework
-            </h1>
-            <p class="mt-6 text-2xl text-slate-400 tracking-tight max-w-2xl">
-                A practical governance system for safely introducing dynamic profile headers on X.
-            </p>
-            
-            <div class="mt-8 text-sm text-slate-500">
-                Mapped to WCAG 2.2 • EU DSA • EU AI Act • NIST Privacy Framework
+    <div class="hero" id="top">
+        <div class="hero__bg" aria-hidden="true"></div>
+        <div class="hero__grid" aria-hidden="true"></div>
+        <div class="hero__canvas" id="hero-canvas" aria-hidden="true"></div>
+        <div class="wrap hero__inner">
+            <div class="hero__content">
+                <div class="eyebrow reveal">Trust &amp; Safety · Product Policy</div>
+                <h1 class="reveal" style="--d: 80ms">Dynamic Media <em>Governance</em> Framework</h1>
+                <p class="hero__lede reveal" style="--d: 160ms">A practical governance system for safely introducing dynamic profile headers on X.</p>
+                <div class="chips reveal" style="--d: 240ms" aria-label="Mapped to">
+                    <span class="chip">WCAG 2.2</span>
+                    <span class="chip">EU DSA</span>
+                    <span class="chip">EU AI Act</span>
+                    <span class="chip">NIST Privacy Framework</span>
+                </div>
+                <div class="hero__actions reveal" style="--d: 320ms">
+                    <a class="btn btn--primary" href="#framework">Read the framework
+                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>
+                    </a>
+                    <a class="btn btn--ghost" href="#controls">See the controls</a>
+                </div>
             </div>
         </div>
+        <button class="motion-toggle" type="button" id="motion-toggle" aria-pressed="false" hidden>
+            <svg viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><rect x="2" y="1.5" width="2.5" height="9" rx="1"/><rect x="7.5" y="1.5" width="2.5" height="9" rx="1"/></svg>
+            <span>Pause motion</span>
+        </button>
     </div>
 
-    <div class="max-w-5xl mx-auto px-6">
-        
+    <main id="main">
+
         <!-- Executive Summary -->
-        <div class="max-w-3xl mb-16">
-            <div class="uppercase text-xs font-semibold tracking-[1.5px] text-teal-400 mb-4">EXECUTIVE SUMMARY</div>
-            
-            <div class="prose text-[15px] text-slate-300">
-                <p>X is preparing to introduce dynamic and interactive profile headers. While this expands creative possibilities on the platform, it also creates meaningful new risks in accessibility, abuse prevention, and regulatory compliance that static images do not carry.</p>
-                
-                <p class="mt-4">This framework establishes a practical governance layer to allow dynamic headers to ship responsibly. It prioritizes three core objectives:</p>
-                
-                <ul class="mt-4 space-y-2">
-                    <li>Protecting users from photosensitive epilepsy risk through mandatory pre-upload analysis</li>
-                    <li>Reducing abuse surface with technical guardrails and identity-linked accountability</li>
-                    <li>Meeting WCAG 2.2 accessibility guidance and obligations under the EU DSA and EU AI Act before enforcement creates liability</li>
-                </ul>
-                
-                <p class="mt-4">This is not about restricting creative features. It is about building the minimum safety and compliance infrastructure the platform will eventually need — before it becomes expensive or harmful to users.</p>
+        <section aria-labelledby="summary-title">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="eyebrow section-num reveal">Executive summary</div>
+                    <h2 id="summary-title" class="reveal" style="--d: 60ms">Ship the creative feature. Build the safety layer first.</h2>
+                </div>
+                <div class="summary">
+                    <div class="reveal">
+                        <p class="summary__lead">X is preparing to introduce dynamic and interactive profile headers. While this expands creative possibilities on the platform, it also creates meaningful new risks in accessibility, abuse prevention, and regulatory compliance that static images do not carry.</p>
+                        <p class="summary__note">This is not about restricting creative features. It is about building the minimum safety and compliance infrastructure the platform will eventually need — before it becomes expensive or harmful to users.</p>
+                    </div>
+                    <div class="reveal" style="--d: 100ms">
+                        <p class="prose" style="margin-bottom: 18px">This framework establishes a practical governance layer to allow dynamic headers to ship responsibly. It prioritizes three core objectives:</p>
+                        <ol class="objectives">
+                            <li>Protecting users from photosensitive epilepsy risk through mandatory pre-upload analysis</li>
+                            <li>Reducing abuse surface with technical guardrails and identity-linked accountability</li>
+                            <li>Meeting WCAG 2.2 accessibility guidance and obligations under the EU DSA and EU AI Act before enforcement creates liability</li>
+                        </ol>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
 
         <!-- The Problem -->
-        <div id="problem" class="section mb-16">
-            <div class="flex items-center gap-x-3 mb-6">
-                <div class="text-xs font-mono px-3 py-1 bg-slate-800 text-teal-400 rounded">01</div>
-                <h2 class="section-header">The Real Problem</h2>
-            </div>
-            
-            <div class="max-w-3xl text-[15px] text-slate-300">
-                <p>Static profile headers carry relatively low operational and regulatory risk. Dynamic and interactive media fundamentally change the risk profile in three material ways:</p>
-                
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <div class="font-medium text-white mb-2">Photosensitive Epilepsy Risk</div>
-                        <div class="text-sm">High-frequency animation and strobing content can trigger seizures in susceptible users. Current upload systems have no preemptive protection mechanism.</div>
-                    </div>
-                    <div>
-                        <div class="font-medium text-white mb-2">Abuse Vector Expansion</div>
-                        <div class="text-sm">High-velocity, unverified media uploads create new attack surfaces for harassment, impersonation, and coordinated abuse campaigns.</div>
-                    </div>
-                    <div>
-                        <div class="font-medium text-white mb-2">Regulatory Exposure</div>
-                        <div class="text-sm">EU DSA obligations already apply to Very Large Online Platforms like X, and the EU AI Act adds transparency rules for AI-generated audio and video (Article 50).</div>
-                    </div>
+        <section id="problem" aria-labelledby="problem-title">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="eyebrow section-num reveal">01 · The real problem</div>
+                    <h2 id="problem-title" class="reveal" style="--d: 60ms">Motion changes the risk profile.</h2>
+                    <p class="reveal" style="--d: 120ms">Static profile headers carry relatively low operational and regulatory risk. Dynamic and interactive media fundamentally change the risk profile in three material ways:</p>
+                </div>
+                <div class="grid grid--3">
+                    <article class="card reveal">
+                        <div class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                        <h3>Photosensitive Epilepsy Risk</h3>
+                        <p>High-frequency animation and strobing content can trigger seizures in susceptible users. Current upload systems have no preemptive protection mechanism.</p>
+                    </article>
+                    <article class="card reveal" style="--d: 80ms">
+                        <div class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 7v5c0 5 3.8 8.5 9 9 5.2-.5 9-4 9-9V7z"/><path d="M12 8v5M12 16h.01"/></svg></div>
+                        <h3>Abuse Vector Expansion</h3>
+                        <p>High-velocity, unverified media uploads create new attack surfaces for harassment, impersonation, and coordinated abuse campaigns.</p>
+                    </article>
+                    <article class="card reveal" style="--d: 160ms">
+                        <div class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0zM8 21h8"/></svg></div>
+                        <h3>Regulatory Exposure</h3>
+                        <p>EU DSA obligations already apply to Very Large Online Platforms like X, and the EU AI Act adds transparency rules for AI-generated audio and video (Article 50).</p>
+                    </article>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Proposed Framework -->
-        <div id="framework" class="section mb-16">
-            <div class="flex items-center gap-x-3 mb-6">
-                <div class="text-xs font-mono px-3 py-1 bg-slate-800 text-teal-400 rounded">02</div>
-                <h2 class="section-header">Proposed Framework</h2>
-            </div>
-            
-            <div class="max-w-3xl text-[15px] text-slate-300">
-                <p>A layered governance approach designed to balance creator velocity with user safety and regulatory compliance.</p>
-                
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                        <div class="text-teal-400 text-sm font-medium mb-2">Layer 1</div>
-                        <div class="font-semibold">Media Safety Screening</div>
-                        <div class="text-sm mt-3 text-slate-400">Mandatory Photosensitive Epilepsy Analysis (PEA) before any dynamic media is published.</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                        <div class="text-teal-400 text-sm font-medium mb-2">Layer 2</div>
-                        <div class="font-semibold">Technical Guardrails</div>
-                        <div class="text-sm mt-3 text-slate-400">Hard constraints on file size, frame rate, duration, and playback behavior.</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                        <div class="text-teal-400 text-sm font-medium mb-2">Layer 3</div>
-                        <div class="font-semibold">Identity &amp; Accountability</div>
-                        <div class="text-sm mt-3 text-slate-400">Strictly opt-in biometric anchoring with a clear, proportionate enforcement model.</div>
-                    </div>
+        <section id="framework" aria-labelledby="framework-title">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="eyebrow section-num reveal">02 · Proposed framework</div>
+                    <h2 id="framework-title" class="reveal" style="--d: 60ms">Three layers, each one load-bearing.</h2>
+                    <p class="reveal" style="--d: 120ms">A layered governance approach designed to balance creator velocity with user safety and regulatory compliance.</p>
+                </div>
+                <div class="grid grid--3 layers">
+                    <article class="card reveal">
+                        <span class="card__index" aria-hidden="true">1</span>
+                        <div class="card__label">Layer 1</div>
+                        <h3>Media Safety Screening</h3>
+                        <p>Mandatory Photosensitive Epilepsy Analysis (PEA) before any dynamic media is published.</p>
+                    </article>
+                    <article class="card reveal" style="--d: 80ms">
+                        <span class="card__index" aria-hidden="true">2</span>
+                        <div class="card__label">Layer 2</div>
+                        <h3>Technical Guardrails</h3>
+                        <p>Hard constraints on file size, frame rate, duration, and playback behavior.</p>
+                    </article>
+                    <article class="card reveal" style="--d: 160ms">
+                        <span class="card__index" aria-hidden="true">3</span>
+                        <div class="card__label">Layer 3</div>
+                        <h3>Identity &amp; Accountability</h3>
+                        <p>Strictly opt-in biometric anchoring with a clear, proportionate enforcement model.</p>
+                    </article>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Core Controls -->
-        <div id="controls" class="section mb-16">
-            <div class="flex items-center gap-x-3 mb-8">
-                <div class="text-xs font-mono px-3 py-1 bg-slate-800 text-teal-400 rounded">03</div>
-                <h2 class="section-header">Core Controls</h2>
-            </div>
-
-            <!-- Media Vetting -->
-            <div class="mb-12">
-                <div class="flex items-baseline gap-x-3 mb-4">
-                    <div class="font-mono text-xs px-2.5 py-1 bg-teal-900/30 text-teal-400 rounded">03.1</div>
-                    <h3 class="font-semibold text-xl">Media Vetting &amp; Safety Screening</h3>
+        <section id="controls" aria-labelledby="controls-title">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="eyebrow section-num reveal">03 · Core controls</div>
+                    <h2 id="controls-title" class="reveal" style="--d: 60ms">What actually runs at upload time.</h2>
                 </div>
-                
-                <div class="max-w-3xl text-[15px] text-slate-300">
-                    <p>All dynamic media must pass a Photosensitive Epilepsy Analysis (PEA) before publication. This is a hard blocking control.</p>
-                    
-                    <!-- PEA Flow Diagram -->
-                    <div class="my-8 diagram-container">
-                        <div class="text-xs text-slate-500 mb-4 font-medium tracking-wider">PEA + PROVISIONAL PUBLISH FLOW</div>
-                        <svg width="100%" height="110" viewBox="0 0 920 110" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Step 1: PEA Scan -->
-                            <rect x="20" y="20" width="150" height="70" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5"></rect>
-                            <text x="95" y="42" fill="#64748b" font-size="10" text-anchor="middle">STEP 01</text>
-                            <text x="95" y="60" fill="#e2e8f0" font-size="13" font-weight="600" text-anchor="middle">PEA Scan</text>
-                            <text x="95" y="76" fill="#64748b" font-size="10" text-anchor="middle">10–20 seconds</text>
 
-                            <!-- Arrow -->
-                            <path d="M175 55 L195 55" stroke="#64748b" stroke-width="2"></path>
-                            <polygon points="195,50 205,55 195,60" fill="#64748b"></polygon>
-
-                            <!-- Step 2: Result -->
-                            <rect x="210" y="20" width="150" height="70" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5"></rect>
-                            <text x="285" y="42" fill="#64748b" font-size="10" text-anchor="middle">STEP 02</text>
-                            <text x="285" y="60" fill="#e2e8f0" font-size="13" font-weight="600" text-anchor="middle">Result</text>
-                            <text x="285" y="76" fill="#64748b" font-size="10" text-anchor="middle">PASS / FAIL</text>
-
-                            <!-- Arrow -->
-                            <path d="M365 55 L385 55" stroke="#64748b" stroke-width="2"></path>
-                            <polygon points="385,50 395,55 385,60" fill="#64748b"></polygon>
-
-                            <!-- Step 3: Provisional -->
-                            <rect x="400" y="20" width="170" height="70" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5"></rect>
-                            <text x="485" y="42" fill="#64748b" font-size="10" text-anchor="middle">STEP 03</text>
-                            <text x="485" y="60" fill="#e2e8f0" font-size="13" font-weight="600" text-anchor="middle">Provisional Publish</text>
-                            <text x="485" y="76" fill="#64748b" font-size="10" text-anchor="middle">+ Warning Label</text>
-
-                            <!-- Arrow -->
-                            <path d="M575 55 L595 55" stroke="#64748b" stroke-width="2"></path>
-                            <polygon points="595,50 605,55 595,60" fill="#64748b"></polygon>
-
-                            <!-- Step 4: Review -->
-                            <rect x="610" y="20" width="150" height="70" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1.5"></rect>
-                            <text x="685" y="42" fill="#64748b" font-size="10" text-anchor="middle">STEP 04</text>
-                            <text x="685" y="60" fill="#e2e8f0" font-size="13" font-weight="600" text-anchor="middle">Manual Review</text>
-                            <text x="685" y="76" fill="#64748b" font-size="10" text-anchor="middle">24hr SLA</text>
-
-                            <!-- Hard Block -->
-                            <rect x="780" y="30" width="110" height="50" rx="6" fill="#450a0a" stroke="#7f1d1d" stroke-width="1.5"></rect>
-                            <text x="835" y="52" fill="#fca5a5" font-size="11" font-weight="600" text-anchor="middle">Hard Block</text>
-                            <text x="835" y="66" fill="#fca5a5" font-size="9" text-anchor="middle">Severe cases only</text>
-                        </svg>
+                <!-- Media Vetting -->
+                <div class="sub">
+                    <div class="sub__head reveal">
+                        <span class="sub__num">03.1</span>
+                        <h3>Media Vetting &amp; Safety Screening</h3>
                     </div>
+                    <p class="sub__intro reveal">All dynamic media must pass a Photosensitive Epilepsy Analysis (PEA) before publication. This is a hard blocking control.</p>
 
-                    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-                            <div class="text-xs text-slate-500">Scan Time</div>
-                            <div class="font-semibold text-2xl mt-1 metric">10–20s</div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-                            <div class="text-xs text-slate-500">Publish Gate</div>
-                            <div class="font-semibold text-2xl mt-1">PASS required</div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-                            <div class="text-xs text-slate-500">Flash Threshold</div>
-                            <div class="font-semibold text-2xl mt-1">≤ 3 per second</div>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-                            <div class="text-xs text-slate-500">Red Flash Rule</div>
-                            <div class="font-semibold text-2xl mt-1">R/(R+G+B) ≥ 0.8</div>
-                        </div>
+                    <figure class="flow reveal" style="margin: 0" aria-labelledby="flow-title">
+                        <figcaption class="eyebrow flow__title" id="flow-title">PEA + provisional publish flow</figcaption>
+                        <ol class="flow__track">
+                            <li class="flow__step"><small>STEP 01</small><strong>PEA Scan</strong><span>10–20 seconds</span></li>
+                            <li class="flow__step"><small>STEP 02</small><strong>Result</strong><span>PASS / FAIL</span></li>
+                            <li class="flow__step"><small>STEP 03</small><strong>Provisional Publish</strong><span>+ Warning Label</span></li>
+                            <li class="flow__step"><small>STEP 04</small><strong>Manual Review</strong><span>24hr SLA</span></li>
+                            <li class="flow__step flow__step--block"><strong>Hard Block</strong><span>Severe cases only</span></li>
+                        </ol>
+                    </figure>
+
+                    <div class="grid grid--4 metrics">
+                        <div class="card metric reveal"><div class="metric__label">Scan Time</div><div class="metric__value">10–20s</div></div>
+                        <div class="card metric reveal" style="--d: 60ms"><div class="metric__label">Publish Gate</div><div class="metric__value">PASS required</div></div>
+                        <div class="card metric reveal" style="--d: 120ms"><div class="metric__label">Flash Threshold</div><div class="metric__value">≤ 3 per second</div></div>
+                        <div class="card metric reveal" style="--d: 180ms"><div class="metric__label">Red Flash Rule</div><div class="metric__value metric__value--sm">R/(R+G+B) ≥ 0.8</div></div>
                     </div>
+                </div>
+
+                <!-- Technical Guardrails -->
+                <div class="sub">
+                    <div class="sub__head reveal">
+                        <span class="sub__num">03.2</span>
+                        <h3>Technical Guardrails</h3>
+                    </div>
+                    <div class="grid grid--4">
+                        <div class="card metric reveal"><div class="metric__label">Maximum File Size</div><div class="metric__value">8 MB</div></div>
+                        <div class="card metric reveal" style="--d: 60ms"><div class="metric__label">Maximum Frame Rate</div><div class="metric__value">15 fps</div></div>
+                        <div class="card metric reveal" style="--d: 120ms"><div class="metric__label">Maximum Loop Duration</div><div class="metric__value">10 seconds</div></div>
+                        <div class="card metric reveal" style="--d: 180ms"><div class="metric__label">Playback Behavior</div><div class="metric__value metric__value--sm">Auto-pause on scroll + low power mode</div></div>
+                    </div>
+                    <p class="note reveal">All uploads are transcoded server-side from GIF to WebM/VP9. This reduces average file size by 60–80% and significantly improves playback performance on lower-end Android devices.</p>
+                </div>
+
+                <!-- Identity Layer -->
+                <div class="sub">
+                    <div class="sub__head reveal">
+                        <span class="sub__num">03.3</span>
+                        <h3>Identity &amp; Abuse Prevention</h3>
+                    </div>
+                    <p class="sub__intro reveal">Dynamic media carries meaningfully higher abuse risk than static images. This framework uses a <strong>strictly opt-in</strong> biometric anchor through X’s existing AU10TIX infrastructure. Users who decline verification retain full access to static headers and all non-dynamic profile features.</p>
+
+                    <div class="eyebrow reveal" style="color: var(--text-muted)">Three-strike enforcement model</div>
+                    <ol class="strikes">
+                        <li class="strike reveal" data-level="1">
+                            <span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span>
+                            <div><h4>Strike 1</h4><p>Warning + temporary restriction on dynamic uploads</p></div>
+                        </li>
+                        <li class="strike reveal" data-level="2" style="--d: 80ms">
+                            <span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span>
+                            <div><h4>Strike 2</h4><p>12-hour suspension of dynamic media upload capability</p></div>
+                        </li>
+                        <li class="strike reveal" data-level="3" style="--d: 160ms">
+                            <span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span>
+                            <div><h4>Strike 3</h4><p>Permanent suspension reserved exclusively for verified malicious patterns (automated probing, coordinated attacks). Standard users receive a 7-day suspension + mandatory compliance review.</p></div>
+                        </li>
+                    </ol>
                 </div>
             </div>
-
-            <!-- Technical Guardrails -->
-            <div class="mb-12">
-                <div class="flex items-baseline gap-x-3 mb-4">
-                    <div class="font-mono text-xs px-2.5 py-1 bg-teal-900/30 text-teal-400 rounded">03.2</div>
-                    <h3 class="font-semibold text-xl">Technical Guardrails</h3>
-                </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                        <div class="text-xs text-slate-500">Maximum File Size</div>
-                        <div class="text-3xl font-semibold mt-3 metric">8 MB</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                        <div class="text-xs text-slate-500">Maximum Frame Rate</div>
-                        <div class="text-3xl font-semibold mt-3 metric">15 fps</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                        <div class="text-xs text-slate-500">Maximum Loop Duration</div>
-                        <div class="text-3xl font-semibold mt-3 metric">10 seconds</div>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                        <div class="text-xs text-slate-500">Playback Behavior</div>
-                        <div class="text-xl font-semibold mt-3 leading-tight">Auto-pause on scroll + low power mode</div>
-                    </div>
-                </div>
-                
-                <div class="mt-6 text-sm text-slate-400">
-                    All uploads are transcoded server-side from GIF to WebM/VP9. This reduces average file size by 60–80% and significantly improves playback performance on lower-end Android devices.
-                </div>
-            </div>
-
-            <!-- Identity Layer -->
-            <div>
-                <div class="flex items-baseline gap-x-3 mb-4">
-                    <div class="font-mono text-xs px-2.5 py-1 bg-teal-900/30 text-teal-400 rounded">03.3</div>
-                    <h3 class="font-semibold text-xl">Identity &amp; Abuse Prevention</h3>
-                </div>
-                
-                <div class="max-w-3xl text-[15px] text-slate-300">
-                    <p>Dynamic media carries meaningfully higher abuse risk than static images. This framework uses a <strong>strictly opt-in</strong> biometric anchor through X’s existing AU10TIX infrastructure. Users who decline verification retain full access to static headers and all non-dynamic profile features.</p>
-                    
-                    <div class="mt-6">
-                        <div class="font-medium mb-3">Three-Strike Enforcement Model</div>
-                        <div class="text-sm space-y-3">
-                            <div><strong>Strike 1:</strong> Warning + temporary restriction on dynamic uploads</div>
-                            <div><strong>Strike 2:</strong> 12-hour suspension of dynamic media upload capability</div>
-                            <div><strong>Strike 3:</strong> Permanent suspension reserved exclusively for verified malicious patterns (automated probing, coordinated attacks). Standard users receive a 7-day suspension + mandatory compliance review.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </section>
 
         <!-- Staged Rollout -->
-        <div class="mb-16">
-            <div class="flex items-baseline gap-x-3 mb-6">
-                <div class="font-mono text-xs px-2.5 py-1 bg-teal-900/30 text-teal-400 rounded">04</div>
-                <h2 class="section-header">Staged Rollout</h2>
-            </div>
-            
-            <!-- Rollout Timeline -->
-            <div class="my-6 diagram-container">
-                <div class="text-xs text-slate-500 mb-4 font-medium tracking-wider">PHASED ROLLOUT TIMELINE</div>
-                <svg width="100%" height="95" viewBox="0 0 900 95" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <line x1="80" y1="48" x2="820" y2="48" stroke="#475569" stroke-width="3"></line>
-                    
-                    <!-- Phase 1 -->
-                    <circle cx="150" cy="48" r="16" fill="#0f172a" stroke="#14b8a6" stroke-width="3"></circle>
-                    <text x="150" y="53" fill="#14b8a6" font-size="13" font-weight="700" text-anchor="middle">1</text>
-                    <text x="150" y="75" fill="#e2e8f0" font-size="12" text-anchor="middle" font-weight="500">Premium+</text>
-                    <text x="150" y="88" fill="#64748b" font-size="10" text-anchor="middle">30-day gate</text>
-
-                    <!-- Phase 2 -->
-                    <circle cx="450" cy="48" r="16" fill="#0f172a" stroke="#14b8a6" stroke-width="3"></circle>
-                    <text x="450" y="53" fill="#14b8a6" font-size="13" font-weight="700" text-anchor="middle">2</text>
-                    <text x="450" y="75" fill="#e2e8f0" font-size="12" text-anchor="middle" font-weight="500">Verified</text>
-                    <text x="450" y="88" fill="#64748b" font-size="10" text-anchor="middle">&lt;0.5% complaints</text>
-
-                    <!-- Phase 3 -->
-                    <circle cx="750" cy="48" r="16" fill="#0f172a" stroke="#14b8a6" stroke-width="3"></circle>
-                    <text x="750" y="53" fill="#14b8a6" font-size="13" font-weight="700" text-anchor="middle">3</text>
-                    <text x="750" y="75" fill="#e2e8f0" font-size="12" text-anchor="middle" font-weight="500">General</text>
-                    <text x="750" y="88" fill="#64748b" font-size="10" text-anchor="middle">Full availability</text>
-                </svg>
-            </div>
-            
-            <div class="space-y-4 max-w-3xl">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex gap-x-6">
-                    <div class="font-mono text-xs w-8 text-teal-400 font-medium">01</div>
-                    <div>
-                        <div class="font-semibold">Premium+ Subscribers</div>
-                        <div class="text-sm text-slate-400 mt-1">Limited 30-day rollout. Monitor CPU/GPU load, false positive rate, and user complaints.</div>
-                    </div>
+        <section id="rollout" aria-labelledby="rollout-title">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="eyebrow section-num reveal">04 · Staged rollout</div>
+                    <h2 id="rollout-title" class="reveal" style="--d: 60ms">Expand only when the gate holds.</h2>
                 </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex gap-x-6">
-                    <div class="font-mono text-xs w-8 text-teal-400 font-medium">02</div>
-                    <div>
-                        <div class="font-semibold">All Verified Accounts</div>
-                        <div class="text-sm text-slate-400 mt-1">Expanded rollout with strict A/B testing. Gate: complaint volume below 0.5%.</div>
-                    </div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex gap-x-6">
-                    <div class="font-mono text-xs w-8 text-teal-400 font-medium">03</div>
-                    <div>
-                        <div class="font-semibold">General Availability</div>
-                        <div class="text-sm text-slate-400 mt-1">Full platform rollout with automatic low-power mode and reduced bitrate for limited-data users.</div>
-                    </div>
-                </div>
+                <ol class="timeline">
+                    <li class="phase reveal">
+                        <div class="phase__dot" aria-hidden="true">1</div>
+                        <div class="card">
+                            <h3>Premium+ Subscribers</h3>
+                            <p>Limited 30-day rollout. Monitor CPU/GPU load, false positive rate, and user complaints.</p>
+                            <span class="phase__gate">30-day gate</span>
+                        </div>
+                    </li>
+                    <li class="phase reveal" style="--d: 100ms">
+                        <div class="phase__dot" aria-hidden="true">2</div>
+                        <div class="card">
+                            <h3>All Verified Accounts</h3>
+                            <p>Expanded rollout with strict A/B testing. Gate: complaint volume below 0.5%.</p>
+                            <span class="phase__gate">&lt;0.5% complaints</span>
+                        </div>
+                    </li>
+                    <li class="phase reveal" style="--d: 200ms">
+                        <div class="phase__dot" aria-hidden="true">3</div>
+                        <div class="card">
+                            <h3>General Availability</h3>
+                            <p>Full platform rollout with automatic low-power mode and reduced bitrate for limited-data users.</p>
+                            <span class="phase__gate">Full availability</span>
+                        </div>
+                    </li>
+                </ol>
             </div>
-        </div>
+        </section>
 
         <!-- Risk & Limitations -->
-        <div id="risk" class="mb-16 max-w-3xl">
-            <div class="flex items-baseline gap-x-3 mb-6">
-                <div class="font-mono text-xs px-2.5 py-1 bg-teal-900/30 text-teal-400 rounded">05</div>
-                <h2 class="section-header">Risk &amp; Limitations</h2>
-            </div>
-            
-            <div class="text-sm text-slate-300 space-y-6">
-                <p>This framework is intentionally scoped. The following limitations are acknowledged:</p>
-                
-                <div class="space-y-4">
-                    <div><strong>Client-side rendering attacks</strong> — This framework governs upload-time controls. Malicious client-side injection after scanning requires platform-level sandboxing.</div>
-                    <div><strong>Steganography</strong> — Automated PEA scanning has known technical limitations against hidden triggers. Behavioral signals provide a secondary detection layer.</div>
-                    <div><strong>Biometric data concentration</strong> — Scoped exclusively to dynamic media uploads. Static headers remain unaffected. Existing 30-day retention policies apply.</div>
-                    <div><strong>Artistic false positives</strong> — The provisional publish model was specifically designed to protect legitimate creators from overly aggressive automated blocking.</div>
+        <section id="risk" aria-labelledby="risk-title">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="eyebrow section-num reveal">05 · Risk &amp; limitations</div>
+                    <h2 id="risk-title" class="reveal" style="--d: 60ms">What this framework does not solve.</h2>
+                    <p class="reveal" style="--d: 120ms">This framework is intentionally scoped. The following limitations are acknowledged:</p>
+                </div>
+                <div class="limits">
+                    <div class="limit reveal"><h3>Client-side rendering attacks</h3><p>This framework governs upload-time controls. Malicious client-side injection after scanning requires platform-level sandboxing.</p></div>
+                    <div class="limit reveal"><h3>Steganography</h3><p>Automated PEA scanning has known technical limitations against hidden triggers. Behavioral signals provide a secondary detection layer.</p></div>
+                    <div class="limit reveal"><h3>Biometric data concentration</h3><p>Scoped exclusively to dynamic media uploads. Static headers remain unaffected. Existing 30-day retention policies apply.</p></div>
+                    <div class="limit reveal"><h3>Artistic false positives</h3><p>The provisional publish model was specifically designed to protect legitimate creators from overly aggressive automated blocking.</p></div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Regulatory Alignment -->
-        <div class="mb-16 max-w-3xl">
-            <div class="flex items-baseline gap-x-3 mb-6">
-                <div class="font-mono text-xs px-2.5 py-1 bg-teal-900/30 text-teal-400 rounded">06</div>
-                <h2 class="section-header">Regulatory Alignment</h2>
+        <section id="regulatory" aria-labelledby="reg-title">
+            <div class="wrap">
+                <div class="section-head">
+                    <div class="eyebrow section-num reveal">06 · Regulatory alignment</div>
+                    <h2 id="reg-title" class="reveal" style="--d: 60ms">Mapped precisely, claimed carefully.</h2>
+                </div>
+                <div class="grid grid--2 reg">
+                    <article class="card reveal">
+                        <h3>WCAG 2.2</h3>
+                        <p>Used as the accessibility benchmark, including the general and red flash thresholds. ADA Title II covers state and local governments, so it is not cited as binding on X.</p>
+                        <span class="card__tag">Benchmark</span>
+                    </article>
+                    <article class="card reveal" style="--d: 80ms">
+                        <h3>EU Digital Services Act</h3>
+                        <p>Articles 16, 17 and 20 (notice and action, statements of reasons, internal complaints) mapped to header moderation; Articles 34 and 35 to systemic risk assessment and mitigation.</p>
+                        <span class="card__tag">Art. 16 · 17 · 20 · 34 · 35</span>
+                    </article>
+                    <article class="card reveal">
+                        <h3>EU AI Act</h3>
+                        <p>Article 50 transparency rules applied to AI-generated or AI-altered media. The Article 14 human-oversight rules cover high-risk systems, not content moderation, so human review here is a design choice, not a legal requirement.</p>
+                        <span class="card__tag">Art. 50</span>
+                    </article>
+                    <article class="card reveal" style="--d: 80ms">
+                        <h3>NIST Privacy Framework 1.0</h3>
+                        <p>Govern, Control, and Communicate functions mapped to dynamic media workflows.</p>
+                        <span class="card__tag">Govern · Control · Communicate</span>
+                    </article>
+                </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <div class="font-medium">WCAG 2.2</div>
-                    <div class="mt-2 text-slate-400">Used as the accessibility benchmark, including the general and red flash thresholds. ADA Title II covers state and local governments, so it is not cited as binding on X.</div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <div class="font-medium">EU Digital Services Act</div>
-                    <div class="mt-2 text-slate-400">Articles 16, 17 and 20 (notice and action, statements of reasons, internal complaints) mapped to header moderation; Articles 34 and 35 to systemic risk assessment and mitigation.</div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <div class="font-medium">EU AI Act</div>
-                    <div class="mt-2 text-slate-400">Article 50 transparency rules applied to AI-generated or AI-altered media. The Article 14 human-oversight rules cover high-risk systems, not content moderation, so human review here is a design choice, not a legal requirement.</div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <div class="font-medium">NIST Privacy Framework 1.0</div>
-                    <div class="mt-2 text-slate-400">Govern, Control, and Communicate functions mapped to dynamic media workflows.</div>
-                </div>
-            </div>
-        </div>
+        </section>
+    </main>
 
-        <!-- Footer -->
-        <div class="border-t border-slate-800 pt-8 pb-12 text-xs text-slate-500 flex flex-col md:flex-row md:items-center gap-y-2 md:justify-between">
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="wrap footer__inner">
             <div>Dynamic Media Accessibility &amp; Governance Framework • v2.1 • March 2026</div>
             <div>Independent policy proposal by Brianna Baynard • Not affiliated with or commissioned by X</div>
         </div>
+    </footer>
 
-    </div>
+    <script>
+    (function () {
+        var root = document.documentElement;
+        root.classList.add('js');
 
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        // ---------- Theme ----------
+        function readTheme() { try { return localStorage.getItem('dmg-theme'); } catch (e) { return null; } }
+        function writeTheme(v) { try { localStorage.setItem('dmg-theme', v); } catch (e) {} }
+        var saved = readTheme();
+        if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+
+        function currentTheme() {
+            var t = root.getAttribute('data-theme');
+            if (t) return t;
+            return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        }
+        var themeBtn = document.getElementById('theme-toggle');
+        function syncThemeLabel() {
+            themeBtn.setAttribute('data-mode', currentTheme());
+            themeBtn.setAttribute('aria-label', currentTheme() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+        }
+        syncThemeLabel();
+        themeBtn.addEventListener('click', function () {
+            var next = currentTheme() === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            writeTheme(next);
+            syncThemeLabel();
+            if (window.__dmgScene) window.__dmgScene.retheme();
+        });
+
+        // ---------- Reveal on scroll ----------
+        var reveals = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window && !reduceMotion.matches) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+                });
+            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+            reveals.forEach(function (el) { io.observe(el); });
+        } else {
+            reveals.forEach(function (el) { el.classList.add('is-in'); });
+        }
+
+        // ---------- Reading progress + active nav ----------
+        var bar = document.querySelector('.progress');
+        var ticking = false;
+        function onScroll() {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(function () {
+                var max = document.documentElement.scrollHeight - window.innerHeight;
+                bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, window.scrollY / max) : 0) + ')';
+                ticking = false;
+            });
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        onScroll();
+
+        var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav__links a'));
+        if ('IntersectionObserver' in window) {
+            var sectionIO = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                    if (!e.isIntersecting) return;
+                    navLinks.forEach(function (a) {
+                        if (a.getAttribute('href') === '#' + e.target.id) a.setAttribute('aria-current', 'true');
+                        else a.removeAttribute('aria-current');
+                    });
+                });
+            }, { rootMargin: '-45% 0px -50% 0px' });
+            navLinks.forEach(function (a) {
+                var s = document.querySelector(a.getAttribute('href'));
+                if (s) sectionIO.observe(s);
+            });
+        }
+
+        // ---------- Card spotlight (pointer devices only) ----------
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+            document.querySelectorAll('.card').forEach(function (card) {
+                card.addEventListener('pointermove', function (e) {
+                    var r = card.getBoundingClientRect();
+                    card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+                    card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+                });
+            });
+        }
+    })();
+    </script>
+
+    <!-- Hero scene: three nested shells, one per governance layer. Slow, low-contrast, never flashes. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+    <script>
+    window.addEventListener('DOMContentLoaded', function () {
+        var host = document.getElementById('hero-canvas');
+        var toggle = document.getElementById('motion-toggle');
+        if (!host || typeof THREE === 'undefined') return;
+
+        var renderer;
+        try {
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
+        } catch (e) { return; }
+
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        host.appendChild(renderer.domElement);
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+        camera.position.set(0, 0, 9);
+
+        var group = new THREE.Group();
+        scene.add(group);
+
+        function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+        // Layer 3 (outer): identity, Layer 2: guardrails, Layer 1 (core): screening
+        var specs = [
+            { geo: new THREE.IcosahedronGeometry(2.6, 1), opacity: 0.22, speed: 0.035 },
+            { geo: new THREE.OctahedronGeometry(1.75, 0), opacity: 0.38, speed: -0.055 },
+            { geo: new THREE.DodecahedronGeometry(0.95, 0), opacity: 0.7, speed: 0.08 }
+        ];
+        var shells = specs.map(function (s) {
+            var mat = new THREE.LineBasicMaterial({ transparent: true, opacity: s.opacity });
+            var mesh = new THREE.LineSegments(new THREE.EdgesGeometry(s.geo), mat);
+            mesh.userData.speed = s.speed;
+            group.add(mesh);
+            return mesh;
+        });
+
+        var dotsGeo = new THREE.BufferGeometry().setAttribute('position', specs[0].geo.getAttribute('position'));
+        var dotsMat = new THREE.PointsMaterial({ size: 0.05, transparent: true, opacity: 0.6 });
+        var dots = new THREE.Points(dotsGeo, dotsMat);
+        shells[0].add(dots);
+
+        function retheme() {
+            var accent = new THREE.Color(cssVar('--accent') || '#2dd4bf');
+            var muted = new THREE.Color(cssVar('--text-faint') || '#6b778a');
+            shells[0].material.color.copy(muted);
+            shells[1].material.color.copy(accent).lerp(muted, 0.4);
+            shells[2].material.color.copy(accent);
+            dotsMat.color.copy(accent);
+            render();
+        }
+
+        function resize() {
+            var w = host.clientWidth, h = host.clientHeight;
+            if (!w || !h) return;
+            renderer.setSize(w, h, false);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            render();
+        }
+
+        var pointer = { x: 0, y: 0 }, tilt = { x: 0, y: 0 };
+        window.addEventListener('pointermove', function (e) {
+            pointer.x = (e.clientX / window.innerWidth - 0.5);
+            pointer.y = (e.clientY / window.innerHeight - 0.5);
+        }, { passive: true });
+
+        function render() { renderer.render(scene, camera); }
+
+        var userPaused = false, visible = true, raf = 0, last = 0;
+        group.rotation.set(0.35, 0.6, 0);
+
+        function frame(t) {
+            raf = 0;
+            var dt = last ? Math.min((t - last) / 1000, 0.05) : 0;
+            last = t;
+            shells.forEach(function (m) { m.rotation.y += m.userData.speed * dt; m.rotation.x += m.userData.speed * 0.4 * dt; });
+            tilt.x += (pointer.y * 0.25 - tilt.x) * 0.03;
+            tilt.y += (pointer.x * 0.35 - tilt.y) * 0.03;
+            group.rotation.x = 0.35 + tilt.x;
+            group.rotation.z = tilt.y * 0.3;
+            render();
+            schedule();
+        }
+        function running() { return visible && !userPaused && !reduceMotion.matches && !document.hidden; }
+        function schedule() { if (!raf && running()) raf = requestAnimationFrame(frame); }
+        function stop() { if (raf) cancelAnimationFrame(raf); raf = 0; last = 0; }
+
+        function syncToggle() {
+            if (reduceMotion.matches) { toggle.hidden = true; return; }
+            toggle.hidden = false;
+            toggle.setAttribute('aria-pressed', String(userPaused));
+            toggle.querySelector('span').textContent = userPaused ? 'Play motion' : 'Pause motion';
+        }
+        toggle.addEventListener('click', function () {
+            userPaused = !userPaused;
+            syncToggle();
+            if (userPaused) stop(); else schedule();
+        });
+
+        if ('IntersectionObserver' in window) {
+            new IntersectionObserver(function (entries) {
+                visible = entries[0].isIntersecting;
+                if (visible) schedule(); else stop();
+            }).observe(host);
+        }
+        document.addEventListener('visibilitychange', function () { if (document.hidden) stop(); else schedule(); });
+        if (reduceMotion.addEventListener) {
+            reduceMotion.addEventListener('change', function () { syncToggle(); if (reduceMotion.matches) stop(); else schedule(); });
+        }
+
+        window.addEventListener('resize', resize);
+        window.__dmgScene = { retheme: retheme };
+        retheme();
+        resize();
+        syncToggle();
+        schedule();
+    });
+    </script>
 </body>
 </html>
