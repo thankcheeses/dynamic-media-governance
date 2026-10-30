@@ -1,0 +1,135 @@
+{
+  "applause": {
+    "duration": 3,
+    "sizeKb": 48,
+    "lufs": -15.8,
+    "truePeak": -3.7,
+    "metric": "max-momentary"
+  },
+  "airhorn": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15.1,
+    "truePeak": -6.7,
+    "metric": "max-momentary"
+  },
+  "drumroll": {
+    "duration": 3,
+    "sizeKb": 48,
+    "lufs": -15.5,
+    "truePeak": -7.9,
+    "metric": "max-momentary"
+  },
+  "slow-clap": {
+    "duration": 4,
+    "sizeKb": 64,
+    "lufs": -15.8,
+    "truePeak": -0.7,
+    "metric": "max-momentary"
+  },
+  "gasp": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15.5,
+    "truePeak": -4.4,
+    "metric": "max-momentary"
+  },
+  "side-eye": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15.6,
+    "truePeak": -3.7,
+    "metric": "max-momentary"
+  },
+  "mm-hmm": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15.5,
+    "truePeak": -10.8,
+    "metric": "max-momentary"
+  },
+  "record-scratch": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15,
+    "truePeak": -4,
+    "metric": "max-momentary"
+  },
+  "laughter": {
+    "duration": 3,
+    "sizeKb": 48,
+    "lufs": -15,
+    "truePeak": -3.6,
+    "metric": "max-momentary"
+  },
+  "rimshot": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15.2,
+    "truePeak": -1.4,
+    "metric": "max-momentary"
+  },
+  "dramatic-boom": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15,
+    "truePeak": -2.1,
+    "metric": "max-momentary"
+  },
+  "crickets": {
+    "duration": 4,
+    "sizeKb": 64,
+    "lufs": -15.4,
+    "truePeak": -1.6,
+    "metric": "max-momentary"
+  },
+  "tiny-violin": {
+    "duration": 4,
+    "sizeKb": 64,
+    "lufs": -15.7,
+    "truePeak": -8.7,
+    "metric": "max-momentary"
+  },
+  "sad-trombone": {
+    "duration": 3,
+    "sizeKb": 48,
+    "lufs": -15.7,
+    "truePeak": -7.2,
+    "metric": "max-momentary"
+  },
+  "correct-ding": {
+    "duration": 1.5,
+    "sizeKb": 25,
+    "lufs": -15.6,
+    "truePeak": -3.1,
+    "metric": "max-momentary"
+  },
+  "wrong-buzzer": {
+    "duration": 1.5,
+    "sizeKb": 25,
+    "lufs": -15.4,
+    "truePeak": -1,
+    "metric": "max-momentary"
+  },
+  "cash-register": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15.4,
+    "truePeak": -1.4,
+    "metric": "max-momentary"
+  },
+  "level-up": {
+    "duration": 2,
+    "sizeKb": 33,
+    "lufs": -15.5,
+    "truePeak": -8.4,
+    "metric": "max-momentary"
+  },
+  "voice-demo": {
+    "duration": 13.2,
+    "sizeKb": 207,
+    "lufs": -16.4,
+    "truePeak": -4,
+    "metric": "max-momentary"
+  }
+}
