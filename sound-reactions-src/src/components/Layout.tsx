@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { AudioLines, FileClock, GitCompareArrows, Home, MoreHorizontal, PenLine, Presentation, Search, Settings, ShieldCheck, UserRound, Volume2, VolumeX } from 'lucide-react'
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Toaster } from 'sonner'
@@ -8,6 +8,11 @@ import { HAS_GENERATED_AUDIO } from '../data'
 import { avatarContent, avatarStyle } from '../avatar'
 import { Verified } from './PostCard'
 import { profilePath } from '../accounts'
+import { WelcomeTour } from './WelcomeTour'
+
+const TOUR_KEY = 'sound-reactions-tour-seen'
+const tourSeen = () => { try { return window.localStorage.getItem(TOUR_KEY) === '1' } catch { return false } }
+const markTourSeen = () => { try { window.localStorage.setItem(TOUR_KEY, '1') } catch { /* storage may be unavailable */ } }
 
 const navigation = [
   { to: '/', label: 'Home', icon: Home },
@@ -100,6 +105,8 @@ export function Layout({ children }: { children: ReactNode }) {
   const { state: playback, stop } = useAudio()
   const isFeed = location.pathname === '/'
   const [drawer, setDrawer] = useState(false)
+  const [tour, setTour] = useState(() => !tourSeen())
+  const closeTour = useCallback(() => { markTourSeen(); setTour(false) }, [])
   useEffect(() => { audioController.setVolume(settings.volume, settings.muted) }, [settings.volume, settings.muted])
   useEffect(() => {
     const visibility = () => { if (document.hidden) stop('Paused because the tab was hidden') }
@@ -112,8 +119,13 @@ export function Layout({ children }: { children: ReactNode }) {
   return <div className={`app theme-${settings.theme} ${settings.reducedMotion ? 'reduce-motion' : ''}`}>
     <a className="skip-link" href="#main-content">Skip to main content</a>
     <div className="concept-banner">
-      <span><strong>CONCEPT PROTOTYPE</strong> · NOT AFFILIATED WITH X</span>
+      <span className="concept-label"><strong>CONCEPT PROTOTYPE</strong> · NOT AFFILIATED WITH X</span>
+      <nav className="site-tabs" aria-label="Site">
+        <a href="../"><b>1</b><span>The proposal</span></a>
+        <Link to="/" aria-current="page"><b>2</b><span>Try it: Sound Reactions</span></Link>
+      </nav>
       <div className="header-audio">
+        <button type="button" className="tour-button" onClick={() => setTour(true)} aria-label="Take the tour"><span aria-hidden="true">?</span><span className="tour-button-label">Tour</span></button>
         <button className="banner-icon" onClick={() => setSetting('muted', !settings.muted)} aria-label={settings.muted ? 'Unmute all audio' : 'Mute all audio'}>{settings.muted ? <VolumeX size={16} /> : <Volume2 size={16} />}</button>
         <label htmlFor="header-volume" className="sr-only">Volume</label>
         <input id="header-volume" type="range" min="0" max="1" step="0.05" value={settings.volume} onChange={(event) => setSetting('volume', Number(event.target.value))} />
@@ -126,6 +138,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <Link to="/settings" className="x-icon-link" aria-label="Open settings"><Settings size={20} /></Link>
     </div>
     {drawer && <AccountDrawer onClose={() => setDrawer(false)} />}
+    {tour && <WelcomeTour onClose={closeTour} />}
 
     <div className="x-shell">
       <header className="x-nav">

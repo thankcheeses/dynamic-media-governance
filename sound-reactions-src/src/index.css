@@ -8,7 +8,7 @@
   background: #000;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  --accent: #1D9BF0;
+  --accent: #F0158A; /* magenta, shared with the proposal page */
   --text: #E7E9EA;
   --muted: #8B949C;
   --border: #2F3336;

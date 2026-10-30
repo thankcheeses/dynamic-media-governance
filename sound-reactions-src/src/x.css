@@ -14,7 +14,7 @@
   --x-hover: rgba(231, 233, 234, 0.1);
   --x-row-hover: rgba(255, 255, 255, 0.03);
   --x-input: #202327;
-  --x-banner-h: 30px;
+  --x-banner-h: 46px;
   --x-top-h: 53px;
   --z-sticky: 20;
   --z-banner: 30;
@@ -522,3 +522,42 @@ a.x-follow-name:hover strong { text-decoration: underline; }
 .tour-dots i { width: 6px; height: 6px; border-radius: 50%; background: #536471; }
 .tour-dots i.on { background: var(--accent); }
 @media (max-width: 500px) { .tour-facts div { grid-template-columns: 1fr; gap: 2px; } }
+
+/* Concept banner doubles as the site bar: the same two tabs as the proposal page */
+.concept-banner { height: var(--x-banner-h); }
+.concept-label { flex: 0 1 auto; min-width: 0; }
+.site-tabs { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--border); border-radius: 9999px; background: #000; letter-spacing: 0; }
+.site-tabs a { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 4px; border-radius: 9999px; color: var(--x-gray); font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; }
+.site-tabs a b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #2F3336; color: var(--text); font-size: 11px; }
+.site-tabs a:hover { color: var(--text); }
+.site-tabs a[aria-current="page"] { background: var(--accent); color: var(--x-ink-on-accent); }
+.site-tabs a[aria-current="page"] b { background: rgba(0, 0, 0, 0.18); color: var(--x-ink-on-accent); }
+.tour-button { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 4px; border: 1px solid var(--accent); border-radius: 9999px; background: transparent; color: var(--text); font-size: 13px; font-weight: 700; letter-spacing: 0; cursor: pointer; }
+.tour-button > span:first-child { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--x-ink-on-accent); }
+.tour-button:hover { background: rgba(240, 21, 138, 0.14); }
+.header-audio { gap: 10px; }
+@media (max-width: 1000px) { .concept-label { font-size: 10px; } }
+@media (max-width: 700px) {
+  :root { --x-banner-h: 76px; }
+  .concept-banner { display: grid; grid-template-columns: 1fr auto; grid-template-rows: 26px 42px; align-items: center; row-gap: 2px; padding-top: 4px; padding-bottom: 4px; }
+  .concept-label { grid-column: 1; grid-row: 1; }
+  .header-audio { grid-column: 2; grid-row: 1; }
+  .header-audio input[type=range] { display: none; }
+  .site-tabs { grid-column: 1 / -1; grid-row: 2; }
+  .site-tabs a { flex: 1; justify-content: center; font-size: 12px; padding: 0 6px 0 3px; }
+  .tour-button { height: 26px; }
+  .tour-button-label { display: none; }
+  .tour-button { padding: 0 2px; border: 0; }
+}
+
+/* Welcome tour */
+.welcome-tour { position: fixed; z-index: var(--z-modal); left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: min(440px, calc(100vw - 24px)); padding: 12px 18px 16px; border: 1px solid var(--accent); border-radius: 18px; background: #000; color: var(--text); box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.8), 0 0 0 6px rgba(240, 21, 138, 0.16); }
+.welcome-tour-top { display: flex; justify-content: space-between; align-items: center; color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.welcome-tour h2 { margin: 2px 0 6px; font-size: 20px; font-weight: 800; }
+.welcome-tour p { margin: 0; color: #C4C9CC; font-size: 15px; line-height: 21px; }
+.welcome-tour p b { color: var(--text); }
+.welcome-tour-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+.welcome-tour-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.welcome-tour-action { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border: 0; border-radius: 9999px; background: var(--accent); color: var(--x-ink-on-accent); font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.tour-spot { outline: 3px solid var(--accent); outline-offset: 4px; border-radius: 16px; box-shadow: 0 0 0 10px rgba(240, 21, 138, 0.16); }
+@media (max-width: 700px) { .welcome-tour { bottom: calc(72px + env(safe-area-inset-bottom, 0px)); } }

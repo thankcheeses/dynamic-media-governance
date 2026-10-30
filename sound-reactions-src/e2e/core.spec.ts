@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test'
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
+    try { localStorage.setItem('sound-reactions-tour-seen', '1') } catch { /* ignore */ }
     const Original = window.AudioContext
     const tracked = window as unknown as { __audioContexts: AudioContext[] }
     tracked.__audioContexts = []
@@ -156,4 +157,17 @@ test('the header info tour explains the scan without cluttering the banner', asy
   }
   await page.getByRole('button', { name: 'Done' }).click()
   await expect(page.getByRole('dialog')).toHaveCount(0)
+})
+
+test('the welcome tour opens on a first visit, links back to the proposal, and stays closed after', async ({ page }) => {
+  await page.evaluate(() => localStorage.removeItem('sound-reactions-tour-seen'))
+  await page.addInitScript(() => { if (!sessionStorage.getItem('first')) { sessionStorage.setItem('first', '1'); localStorage.removeItem('sound-reactions-tour-seen') } })
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Site' }).getByRole('link', { name: /The proposal/ })).toHaveAttribute('href', '../')
+  await page.getByRole('button', { name: 'Close tour' }).click()
+  await page.reload()
+  await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Take the tour' }).click()
+  await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toBeVisible()
 })
