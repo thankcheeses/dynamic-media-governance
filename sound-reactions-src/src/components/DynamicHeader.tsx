@@ -167,6 +167,8 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
   const closeInfo = useCallback(() => setInfoOpen(false), [])
 
   const hosted = preset.hosted
+  // A hosted GIF that was scanned in this browser plays its scanned frames, not the host's video.
+  const hostVideo = hosted && !upload ? hosted : undefined
   const provisional = decision === 'PROVISIONAL'
   const stillReason = !ANIMATABLE.includes(preset.style) ? 'Still frame only'
     : settings.reducedMotion || osReduced ? 'Still frame: reduced motion is on'
@@ -207,7 +209,7 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     const frames = upload?.frames ?? []
-    const video = hosted ? videoRef.current : null
+    const video = hostVideo ? videoRef.current : null
     const loopMs = upload ? frames.length * upload.frameMs : preset.loopSeconds * 1000
     const frameMs = upload ? upload.frameMs : 1000 / Math.min(preset.fps, 15)
     // Uploaded headers play their transcoded frames (already ≤15 fps and cropped to 3:1).
@@ -230,7 +232,7 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
     }
     raf = requestAnimationFrame(tick)
     return () => { cancelAnimationFrame(raf); video?.removeEventListener('loadeddata', draw) }
-  }, [preset, hosted, upload, w, h, running])
+  }, [preset, hostVideo, upload, w, h, running])
 
   const status = gated ? 'Waiting behind its warning label'
     : stillReason ? stillReason.replace('Still frame: ', 'Showing a still frame because ')
@@ -243,9 +245,9 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
     {hosted
       ? <>
           <canvas ref={ref} role="img" aria-label={`Profile header: ${preset.description}`} />
-          <video ref={videoRef} className="hosted-source" muted playsInline loop preload="metadata" aria-hidden="true" tabIndex={-1}>
-            <HostedSources hosted={hosted} />
-          </video>
+          {hostVideo && <video ref={videoRef} className="hosted-source" muted playsInline loop preload="metadata" aria-hidden="true" tabIndex={-1}>
+            <HostedSources hosted={hostVideo} />
+          </video>}
         </>
       : preset.media
         ? <video ref={videoRef} muted playsInline loop preload="metadata" poster={asset(preset.media.poster)} aria-label={`Profile header: ${preset.description}`}>

@@ -129,6 +129,19 @@ test('a hosted GIF header plays from its host through the capped canvas, muted a
   await expect(page.getByRole('button', { name: 'Pause header animation' })).toBeVisible()
 })
 
+test('an unmeasured hosted GIF is scanned in the browser before it plays', async ({ page }) => {
+  // GIPHY is not reachable from the test environment; serve the calm local GIF in its place.
+  await page.route(/giphy\.com\/media\/.*\.gif$/, (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, contentType: 'image/gif', path: 'public/headers/clay-orbit.gif' }))
+  await page.getByRole('link', { name: 'Jordan Reyes, view profile' }).click()
+  await expect(page).toHaveURL(/\/u\/jreyescooks$/)
+  const header = page.locator('.dynamic-header')
+  await expect(header.locator('canvas')).toBeVisible({ timeout: 20000 })
+  await expect(header.locator('video')).toHaveCount(0)
+  await expect(header.getByRole('link', { name: 'via GIPHY' })).toHaveAttribute('href', /giphy\.com\/gifs\//)
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await expect(page.getByText(/fetched and scanned in your browser/)).toBeVisible()
+})
+
 test('the header studio hard-blocks a strobe and keeps the current header', async ({ page }) => {
   await page.goto('/profile')
   await page.getByRole('button', { name: 'Edit profile' }).click()

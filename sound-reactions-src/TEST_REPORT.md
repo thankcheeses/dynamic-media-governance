@@ -232,3 +232,15 @@ Three of the owner's four GIF picks now play as profile headers straight from th
 | Playwright | 32/32 passed in Chromium, desktop and mobile (adds a hosted-header test with Tenor mocked by a local WebM; the info tour test now expects the hosted source line). WebKit was not available here. |
 | Screenshots | Both pages at 1280 and 390 px wide with the hosts mocked: no page errors, no horizontal overflow, credit chip and pause button do not overlap. |
 | Live hosts | **Not tested.** This environment cannot reach GIPHY or Tenor. The Tenor MP4/WebM URLs and the GIPHY signed MP4 and still URLs are the ones each host publishes for the GIF; playback from the live site must be confirmed in a browser. |
+
+## 2026-10-30 — Themed GIFs for the fictional accounts, scanned in the browser
+
+Five more GIFs now play on the fictional profiles from GIPHY, one per corner of the timeline: a sage cleanse (@kiaravibes), a grandmother's-kitchen cooking clip (@jreyescooks), a scrolling-code loop (@samoko), a neural-network "Training" animation (@ariexplains) and Kevin Garnett's "Right now!" (@coachnia). None of them had been measured ahead of time, so they are marked `scanInBrowser`: the profile shows the still frame with a "Scanning for flashing before it plays…" note while `src/hostedScan.ts` fetches the GIF and runs the same analyzer as an upload, then plays the scanned frames only if the scan passes. A failed or blocked scan leaves the still frame up. Picking one of them in the header studio runs the real scan instead of the simulated one. The neon cats GIF is still not on the site: its only known copy is a Pinterest pin, and Pinterest is not reachable from this environment.
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 21/21 passed (adds a check that unmeasured hosted picks carry a GIF and a still to scan from) |
+| Playwright | 34/34 passed in Chromium, desktop and mobile (adds a browser-scan test with GIPHY mocked by the local calm GIF: the banner plays through the canvas, has no host video element, is credited, and the ⓘ tour says it was scanned in the browser). WebKit was not available here. |
+| Screenshots | Jordan's profile at 1280 and 390 px with GIPHY mocked: the scan note shows first, then the scanned frames play; the header studio lists the new picks with "Scanned in your browser when picked". No page errors, no horizontal overflow. |
+| Live GIPHY | **Not tested.** This environment cannot reach GIPHY, so the in-browser fetch (which needs GIPHY's CORS headers, as the existing GIPHY picker already assumes) and playback must be confirmed on the live site. |

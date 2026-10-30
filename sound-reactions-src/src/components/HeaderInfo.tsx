@@ -8,6 +8,7 @@ const REPO = 'https://github.com/thankcheeses/dynamic-media-governance/tree/main
 const FRAMEWORK = 'https://thankcheeses.github.io/dynamic-media-governance/'
 
 function sourceOf(preset: HeaderPreset, upload?: UploadedMedia | null): { label: React.ReactNode; measured: boolean } {
+  if (preset.hosted && upload) return { label: <>A GIF playing from <a href={preset.hosted.pageUrl} target="_blank" rel="noreferrer">{preset.hosted.provider}</a>, fetched and scanned in your browser before it was allowed to play</>, measured: true }
   if (upload?.source === 'giphy') return { label: 'A GIF picked from GIPHY', measured: true }
   if (upload) return { label: 'A file uploaded in this browser', measured: true }
   if (preset.hosted) return { label: <>The owner’s own pick, playing from <a href={preset.hosted.pageUrl} target="_blank" rel="noreferrer">{preset.hosted.provider}</a> and measured on the owner’s copy of the clip</>, measured: true }

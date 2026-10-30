@@ -9,6 +9,7 @@ import { OWNER_HANDLE, accountFor, type Account } from '../accounts'
 import { analyzeUpload, type UploadAnalysis } from '../analyze'
 import { GiphyPanel } from '../components/GiphyPanel'
 import { fetchGiphyFile } from '../giphy'
+import { fetchHostedFile, scanHosted } from '../hostedScan'
 import { DEFAULT_HEADER_ID, HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, scanHeader, type HeaderDecision, type HeaderPreset, type HeaderScan } from '../headers'
 import { useAppStore } from '../store'
 
@@ -64,7 +65,12 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
   }, [onDone])
 
   const preset = upload ? uploadPreset(upload) : headerPreset(selected)
-  const choose = (id: string) => { setSelected(id); setUpload(null); setScan(null); setScanning(false); setUploadError(''); window.clearTimeout(timer.current) }
+  const choose = (id: string) => {
+    setSelected(id); setUpload(null); setScan(null); setScanning(false); setUploadError(''); window.clearTimeout(timer.current)
+    // A hosted sample with no measurements is fetched and scanned for real, like a GIPHY pick.
+    const sample = headerPreset(id)
+    if (sample.scanInBrowser) void scanFile(() => fetchHostedFile(sample), `hosted:${sample.id}`, { source: 'giphy', sourceUrl: sample.hosted?.pageUrl })
+  }
   const runScan = () => {
     setScanning(true); setScan(null)
     timer.current = window.setTimeout(() => {
@@ -124,7 +130,7 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
       <div className="studio-grid" role="radiogroup" aria-label="Sample headers">
         {HEADER_PRESETS.map((item) => <button key={item.id} type="button" role="radio" aria-checked={!upload && item.id === selected} className={`studio-card ${!upload && item.id === selected ? 'selected' : ''}`} onClick={() => choose(item.id)}>
           <HeaderThumb preset={item} />
-          <span className="studio-card-body"><strong>{item.name}</strong><small>{item.fps} fps · {item.loopSeconds} s · {item.sizeMB} MB</small><small className={item.measured ? 'measured' : ''}>{item.hosted ? `Real GIF · via ${item.hosted.provider} · measured` : item.measured ? 'Real GIF · measured' : 'Sample · fixture values'}</small></span>
+          <span className="studio-card-body"><strong>{item.name}</strong><small>{item.scanInBrowser ? 'Scanned in your browser when picked' : `${item.fps} fps · ${item.loopSeconds} s · ${item.sizeMB} MB`}</small><small className={item.measured || item.scanInBrowser ? 'measured' : ''}>{item.hosted ? `Real GIF · via ${item.hosted.provider}${item.measured ? ' · measured' : ''}` : item.measured ? 'Real GIF · measured' : 'Sample · fixture values'}</small></span>
         </button>)}
       </div>
       {!upload && <>
@@ -141,6 +147,36 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
         {scan && <ScanResult scan={scan} notes={upload?.notes} onPublish={publish} />}
       </div>
     </section>
+  </div>
+}
+
+/**
+ * A hosted GIF nobody measured ahead of time. It shows its still frame while the
+ * browser fetches and scans it, then plays its scanned frames if it passes. A
+ * failed or blocked scan leaves the still frame up.
+ */
+function ScannedHostedHeader({ preset }: { preset: HeaderPreset }) {
+  const [analysis, setAnalysis] = useState<UploadAnalysis | null>(null)
+  const [error, setError] = useState('')
+  // The parent keys this component by preset, so a new preset starts with fresh state.
+  useEffect(() => {
+    let live = true
+    scanHosted(preset).then((result) => { if (live) setAnalysis(result) }).catch((err: unknown) => { if (live) setError(err instanceof Error ? err.message : 'the scan failed') })
+    return () => { live = false }
+  }, [preset])
+  const hosted = preset.hosted!
+  const scan = analysis ? scanHeader(analysis.measurement) : null
+  if (analysis && scan && isPublishable(scan.decision)) {
+    const scanned: HeaderPreset = { ...preset, ...analysis.measurement, fps: Math.round(1000 / analysis.media.frameMs), measured: true, scanInBrowser: false }
+    return <DynamicHeader preset={scanned} decision={scan.decision} upload={analysis.media} />
+  }
+  const note = scan ? 'Blocked by the scan, so it stays a still frame'
+    : error ? `Couldn’t scan it (${error}), so it stays a still frame`
+    : 'Scanning for flashing before it plays…'
+  return <div className="dynamic-header">
+    <img className="still" src={hosted.still} alt={`Profile header, still frame: ${preset.description}`} />
+    <span className="header-scan-note" role="status">{!scan && !error && <Loader2 size={13} className="spin" aria-hidden="true" />} {note}</span>
+    <div className="header-controls"><a className="header-credit" href={hosted.pageUrl} target="_blank" rel="noreferrer">via {hosted.provider}</a></div>
   </div>
 }
 
@@ -181,7 +217,9 @@ function ProfileView({ handle }: { handle?: string }) {
     <div className="x-profile-banner">
       {ownUpload
         ? <DynamicHeader key={`upload-${profileHeader.decision}`} preset={{ id: 'upload', name: ownUpload.name, description: `Uploaded header: ${ownUpload.name}`, style: 'upload', ...ownUpload.measurement, fps: Math.round(1000 / ownUpload.frameMs), measured: true }} decision={profileHeader.decision} upload={ownUpload} />
-        : header
+        : header?.preset.scanInBrowser
+          ? <ScannedHostedHeader key={`${account.handle}-${header.preset.id}`} preset={header.preset} />
+          : header
           ? <DynamicHeader key={`${account.handle}-${header.preset.id}-${header.decision}`} preset={header.preset} decision={header.decision} />
           : <div className="dynamic-header plain-header" role="img" aria-label="No header image" />}
       <div className="x-banner-actions">
