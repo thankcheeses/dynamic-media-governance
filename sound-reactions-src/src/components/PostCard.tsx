@@ -6,7 +6,8 @@ import { burstRing, popIcon, rollCount } from '../motion'
 import { useAppStore } from '../store'
 import type { Post, QuotedPost } from '../types'
 import { avatarContent, avatarStyle } from '../avatar'
-import { profilePath } from '../accounts'
+import { OWNER_HANDLE, profilePath } from '../accounts'
+import { ownerLook, useIdentity } from '../identity'
 import { SoundReactionChip, VoicePostPlayer } from './AudioClip'
 import { ReactionPicker } from './ReactionPicker'
 
@@ -69,6 +70,14 @@ function PostMenu({ post, onMute }: { post: Post; onMute?: (handle: string) => v
 export function PostCard({ post, embedded = false, onMute }: { post: Post; embedded?: boolean; onMute?: (handle: string) => void }) {
   const [picker, setPicker] = useState(false)
   const { liked, reposted, bookmarked, togglePostAction } = useAppStore()
+  const identity = useIdentity((state) => state.identity)
+  // The owner's posts take the visitor's "Make it yours" name and photo. The handle inside the
+  // post stays the owner's so profile links and searches keep working.
+  const me = post.handle === OWNER_HANDLE && identity ? ownerLook(identity) : null
+  const author = me?.name ?? post.author
+  const shownHandle = me?.handle ?? post.handle
+  const initials = me?.initials ?? post.initials
+  const verified = me ? false : post.verified
   const isLiked = liked.includes(post.id)
   const isReposted = reposted.includes(post.id)
   const isBookmarked = bookmarked.includes(post.id)
@@ -89,24 +98,24 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
     toast(isBookmarked ? 'Removed from Bookmarks' : 'Added to your Bookmarks (saved locally)')
   }
   const share = async () => {
-    try { await navigator.clipboard.writeText(`${post.author}: ${post.body}`); toast('Copied to clipboard') }
+    try { await navigator.clipboard.writeText(`${author}: ${post.body}`); toast('Copied to clipboard') }
     catch { toast('Sharing is unavailable here; nothing was sent') }
   }
 
   return (
-    <article className={`x-post ${embedded ? 'embedded' : ''}`} aria-label={`Post by ${post.author}`}>
-      <Link to={profilePath(post.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(post.initials)}>{avatarContent(post.initials)}</Link>
+    <article className={`x-post ${embedded ? 'embedded' : ''}`} aria-label={`Post by ${author}`}>
+      <Link to={profilePath(post.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(initials)}>{avatarContent(initials, me?.photo)}</Link>
       <div className="x-post-main">
         <header className="x-post-byline">
-          <Link to={profilePath(post.handle)} className="x-name-link" aria-label={`${post.author}, view profile`}><strong>{post.author}</strong></Link>{post.verified && <Verified />}
-          <span className="x-handle">{post.handle}</span>
+          <Link to={profilePath(post.handle)} className="x-name-link" aria-label={`${author}, view profile`}><strong>{author}</strong></Link>{verified && <Verified />}
+          <span className="x-handle">{shownHandle}</span>
           <span aria-hidden="true">·</span>
           <span className="x-time">{post.timestamp}</span>
           {!embedded && <PostMenu post={post} onMute={onMute} />}
         </header>
         <p className="x-post-text">{post.body}</p>
         {post.quote && <QuoteCard quote={post.quote} />}
-        {post.voice && <VoicePostPlayer clip={post.voice} handle={post.handle} initials={post.initials} />}
+        {post.voice && <VoicePostPlayer clip={post.voice} handle={shownHandle} initials={initials} photo={me?.photo} />}
         {post.reaction && <SoundReactionChip reaction={post.reaction} post={post} />}
         <div className="x-actions">
           <Action to="/compose" className="reply" label={`Reply to ${post.handle}, ${post.replyCount} replies`}>

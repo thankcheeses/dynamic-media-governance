@@ -438,7 +438,20 @@ a.x-follow-name:hover strong { text-decoration: underline; }
 .x-banner-actions { display: none; position: absolute; inset: 8px 12px auto; justify-content: space-between; pointer-events: none; }
 .x-banner-actions > span { display: flex; gap: 10px; }
 .x-banner-button { pointer-events: auto; width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: rgba(15, 20, 25, 0.62); color: #fff; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
-.x-profile-buttons { display: flex; gap: 8px; }
+.x-profile-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+
+/* "Make it yours": the visitor's own name, handle, bio and photo, kept in this browser. */
+.identity-form { display: grid; gap: 14px; margin-top: 4px; }
+.identity-form label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: var(--x-gray); }
+.identity-form input, .identity-form textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--x-input); color: var(--text); font: inherit; font-size: 15px; }
+.identity-form textarea { min-height: 72px; resize: vertical; }
+.identity-form input:focus-visible, .identity-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.identity-photo { display: flex; align-items: center; gap: 14px; }
+.identity-photo .avatar { width: 64px; height: 64px; font-size: 22px; }
+.identity-photo .avatar img { width: 64px; height: 64px; }
+.identity-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 4px; }
+.identity-actions .x-pill-button { margin-left: 0; }
+.identity-count { font-size: 12px; font-weight: 500; color: var(--x-gray); text-align: right; }
 .x-follow-cta { height: 36px; padding: 0 18px; border: 0; border-radius: 9999px; background: var(--x-white-pill); color: #0F1419; font-weight: 700; font-size: 15px; }
 .x-follow-cta:hover { background: var(--x-white-pill-hover); }
 .x-follow-cta.on { background: transparent; color: var(--text); border: 1px solid #536471; }

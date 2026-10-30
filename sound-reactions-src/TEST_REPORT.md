@@ -256,3 +256,15 @@ At the owner's request the neon cats GIF (a 1998 Purina commercial) is kept in t
 | Unit/component tests | 21/21 passed |
 | Playwright | 34/34 passed in Chromium, desktop and mobile. WebKit was not available here. |
 | Screenshot | Maya's profile at 1280 px: the GIF plays from the local WebM with the pause and ⓘ controls; no page errors. |
+
+## 2026-10-30 — "Make it yours": a visitor's own name and photo on the owner profile
+
+The owner profile has a new **Make it yours** button. It opens a small form (photo, name, handle, bio) and from then on the owner profile, the composer, the account drawer, the sidebar and every post by the owner show the visitor's name, handle, initials or photo instead of the owner's. The verified badge is hidden for a personalised profile, the profile meta line reads "Your profile, on this device only", and the button becomes **Edit my details**, where "Use the demo owner again" restores the original. Everything is kept in one localStorage key (`sound-reactions-identity`, `src/identity.ts`): the photo is shrunk in the browser to a 256 px JPEG data URL before it is stored, nothing is uploaded, there is no account and no login. The internal handle stays `@baynardmalone` so profile links and searches keep working.
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 21/21 passed |
+| Playwright | 36/36 passed in Chromium, desktop and mobile (adds a test that fills the form with "Sam Tester" and the handle "sam tests!", expects `@samtests`, no verified badge, the device-only meta line, "Post by Sam Tester" articles, persistence across a reload, and the restore path back to B. Baynard-Malone). WebKit was not available here. |
+| Screenshots | The form and the renamed profile at 390 px wide: no page errors, no horizontal overflow. |
+| Photo upload | **Not tested.** The 256 px shrink (`squarePhoto`) has no automated test and was not tried by hand here; confirm it on the live site with a JPEG and a PNG. |

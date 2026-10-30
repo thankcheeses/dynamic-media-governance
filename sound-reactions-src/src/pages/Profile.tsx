@@ -10,6 +10,7 @@ import { analyzeUpload, type UploadAnalysis } from '../analyze'
 import { GiphyPanel } from '../components/GiphyPanel'
 import { fetchGiphyFile } from '../giphy'
 import { fetchHostedFile, scanHosted } from '../hostedScan'
+import { BIO_MAX, HANDLE_MAX, NAME_MAX, initialsOf, normalizeHandle, ownerLook, squarePhoto, useIdentity } from '../identity'
 import { DEFAULT_HEADER_ID, HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, scanHeader, type HeaderDecision, type HeaderPreset, type HeaderScan } from '../headers'
 import { useAppStore } from '../store'
 
@@ -180,6 +181,75 @@ function ScannedHostedHeader({ preset }: { preset: HeaderPreset }) {
   </div>
 }
 
+/**
+ * "Make it yours": the visitor puts their own name, handle, bio and photo on
+ * the owner account so the demo reads as their profile. It is saved only in
+ * this browser; the photo is shrunk to a small square first and never uploaded.
+ */
+function MakeItYours({ onDone }: { onDone: () => void }) {
+  const { identity, setIdentity } = useIdentity()
+  const [name, setName] = useState(identity?.name ?? '')
+  const [handle, setHandle] = useState(identity?.handle.replace(/^@/, '') ?? '')
+  const [bio, setBio] = useState(identity?.bio ?? '')
+  const [photo, setPhoto] = useState(identity?.photo)
+  const [photoError, setPhotoError] = useState('')
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const fileRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    closeRef.current?.focus()
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onDone() }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onDone])
+
+  const cleanName = name.trim().slice(0, NAME_MAX)
+  const cleanHandle = normalizeHandle(handle)
+  const canSave = cleanName.length > 0 && cleanHandle.length > 1
+  const initials = initialsOf(cleanName || 'Me')
+  const onPhoto = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+    setPhotoError('')
+    try { setPhoto(await squarePhoto(file)) } catch { setPhotoError('That photo couldn’t be read. Try a JPG or PNG.') }
+  }
+  const save = () => {
+    if (!canSave) return
+    setIdentity({ name: cleanName, handle: cleanHandle, bio: bio.trim().slice(0, BIO_MAX), photo })
+    toast.success('This profile is yours now. It stays on this device.')
+    onDone()
+  }
+  const reset = () => { setIdentity(null); toast.success('Back to the demo owner’s profile'); onDone() }
+
+  return <div className="x-modal-backdrop" onClick={(event) => { if (event.target === event.currentTarget) onDone() }}>
+    <section className="header-studio" role="dialog" aria-modal="true" aria-labelledby="yours-title">
+      <div className="studio-head">
+        <button ref={closeRef} type="button" className="icon-button" onClick={onDone} aria-label="Close"><XIcon size={19} /></button>
+        <h2 id="yours-title">Make it yours</h2>
+      </div>
+      <p className="studio-intro">Put your own name and photo on this profile so the demo looks like you. Everything stays on this device: nothing is uploaded, and there is no account.</p>
+      <form className="identity-form" onSubmit={(event) => { event.preventDefault(); save() }}>
+        <div className="identity-photo">
+          <span className="avatar" aria-hidden="true" style={avatarStyle(initials)}>{avatarContent(initials, photo)}</span>
+          <span>
+            <input ref={fileRef} type="file" accept="image/*" onChange={(event) => void onPhoto(event)} hidden data-testid="identity-photo" />
+            <button type="button" className="x-outline-pill" onClick={() => fileRef.current?.click()}><Upload size={16} aria-hidden="true" /> {photo ? 'Change photo' : 'Add a photo'}</button>
+            {photo && <> <button type="button" className="text-button" onClick={() => setPhoto(undefined)}>Remove</button></>}
+          </span>
+        </div>
+        {photoError && <p className="scan-blocked" role="alert">{photoError}</p>}
+        <label>Name<input value={name} maxLength={NAME_MAX} autoComplete="name" onChange={(event) => setName(event.target.value)} required /></label>
+        <label>Handle<input value={handle} maxLength={HANDLE_MAX} autoComplete="off" spellCheck={false} placeholder="yourname" onChange={(event) => setHandle(event.target.value)} required /><span className="fine-print">Shown as {cleanHandle || '@yourname'}. Letters, numbers and underscores.</span></label>
+        <label>Bio<textarea value={bio} maxLength={BIO_MAX} onChange={(event) => setBio(event.target.value)} /><span className="identity-count">{bio.length}/{BIO_MAX}</span></label>
+        <div className="identity-actions">
+          <button type="submit" className="x-pill-button" disabled={!canSave}>Save</button>
+          {identity && <button type="button" className="x-outline-pill" onClick={reset}>Use the demo owner again</button>}
+        </div>
+      </form>
+    </section>
+  </div>
+}
+
 function headerFor(account: Account, own: { presetId: string; decision: HeaderDecision }): { preset: HeaderPreset; decision: HeaderDecision } | null {
   if (account.handle === OWNER_HANDLE) return { preset: headerPreset(own.presetId === 'upload' ? DEFAULT_HEADER_ID : own.presetId), decision: own.presetId === 'upload' ? 'PASS' : own.decision }
   return account.headerId ? { preset: headerPreset(account.headerId), decision: account.headerDecision ?? 'PASS' } : null
@@ -192,14 +262,21 @@ function ProfileView({ handle }: { handle?: string }) {
   const navigate = useNavigate()
   const { posts, profileHeader, uploadedHeader } = useAppStore()
   const [editing, setEditing] = useState(false)
+  const [personalizing, setPersonalizing] = useState(false)
   const [following, setFollowing] = useState(false)
   const [tab, setTab] = useState<(typeof TABS)[number]>('Posts')
   const close = useCallback(() => setEditing(false), [])
-  const account = accountFor(handle ?? OWNER_HANDLE)
+  const closePersonalize = useCallback(() => setPersonalizing(false), [])
+  const identity = useIdentity((state) => state.identity)
+  const found = accountFor(handle ?? OWNER_HANDLE)
   useEffect(() => { window.scrollTo(0, 0) }, [])
-  if (!account) return <Navigate to="/" replace />
+  if (!found) return <Navigate to="/" replace />
 
-  const isOwner = account.handle === OWNER_HANDLE
+  const isOwner = found.handle === OWNER_HANDLE
+  // The owner account is shown with the visitor's own identity when they have set one.
+  const me = isOwner ? ownerLook(identity) : null
+  const account: Account & { photo?: string } = me ? { ...found, name: me.name, bio: me.bio, initials: me.initials, verified: !me.custom, photo: me.photo } : found
+  const shownHandle = me?.handle ?? account.handle
   const own = posts.filter((post) => post.handle === account.handle)
   const header = headerFor(account, profileHeader)
   const ownUpload = isOwner && profileHeader.presetId === 'upload' ? uploadedHeader : null
@@ -231,21 +308,22 @@ function ProfileView({ handle }: { handle?: string }) {
       </div>
     </div>
     <div className="x-profile-head">
-      <span className="avatar x-profile-avatar" aria-hidden="true" style={avatarStyle(account.initials)}>{avatarContent(account.initials)}</span>
+      <span className="avatar x-profile-avatar" aria-hidden="true" style={avatarStyle(account.initials)}>{avatarContent(account.initials, account.photo)}</span>
       {isOwner
         ? <div className="x-profile-buttons">
             <button type="button" className="x-edit-profile x-share" onClick={share}>Share</button>
+            <button type="button" className="x-edit-profile" onClick={() => setPersonalizing(true)} aria-haspopup="dialog">{me?.custom ? 'Edit my details' : 'Make it yours'}</button>
             <button type="button" className="x-edit-profile" onClick={() => setEditing(true)} aria-haspopup="dialog">Edit profile</button>
           </div>
         : <button type="button" className={`x-follow-cta ${following ? 'on' : ''}`} aria-pressed={following} onClick={() => setFollowing(!following)} aria-label={`${following ? 'Unfollow' : 'Follow'} ${account.handle} (fictional, local only)`}>{following ? 'Following' : 'Follow'}</button>}
     </div>
     <div className="x-profile-info">
       <h1>{account.name} {account.verified && <Verified />}</h1>
-      <span className="x-handle">{account.handle}</span>
+      <span className="x-handle">{shownHandle}</span>
       <p className="x-profile-bio">{account.bio}</p>
       <div className="x-profile-meta">
         {isOwner && <a href="https://thankcheeses.github.io/dynamic-media-governance/"><Link2 size={16} aria-hidden="true" />thankcheeses.github.io/dynamic-media-governance</a>}
-        <span><CalendarDays size={16} aria-hidden="true" />{account.fictional ? 'Fictional account' : 'Prototype profile · October 2026'}</span>
+        <span><CalendarDays size={16} aria-hidden="true" />{account.fictional ? 'Fictional account' : me?.custom ? 'Your profile, on this device only' : 'Prototype profile · October 2026'}</span>
       </div>
       <div className="x-profile-follows">
         <span><strong>{compact(account.following)}</strong> Following</span>
@@ -262,6 +340,7 @@ function ProfileView({ handle }: { handle?: string }) {
         : <div className="profile-empty"><h3>Nothing here yet</h3><p className="muted">This prototype only fills in Posts.</p></div>}
     </div>
     {editing && <HeaderStudio onDone={close} />}
+    {personalizing && <MakeItYours onDone={closePersonalize} />}
   </div>
 }
 

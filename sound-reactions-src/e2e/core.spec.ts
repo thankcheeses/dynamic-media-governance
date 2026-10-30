@@ -142,6 +142,27 @@ test('an unmeasured hosted GIF is scanned in the browser before it plays', async
   await expect(page.getByText(/fetched and scanned in your browser/)).toBeVisible()
 })
 
+test('"Make it yours" puts the visitor’s name on the owner profile, locally, without a verified badge', async ({ page }) => {
+  await page.goto('/profile')
+  await page.getByRole('button', { name: 'Make it yours' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Make it yours' })
+  await dialog.getByLabel('Name', { exact: true }).fill('Sam Tester')
+  await dialog.getByLabel('Handle').fill('sam tests!')
+  await dialog.getByLabel('Bio').fill('Just here to try the GIF banners.')
+  await dialog.getByRole('button', { name: 'Save' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Sam Tester' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1 }).getByText('Verified account')).toHaveCount(0)
+  await expect(page.locator('.x-profile-info .x-handle')).toHaveText('@samtests')
+  await expect(page.getByText('Your profile, on this device only')).toBeVisible()
+  // The owner's posts and the account menu follow the new identity, and it survives a reload.
+  await expect(page.getByRole('article', { name: 'Post by Sam Tester' }).first()).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('heading', { level: 1, name: 'Sam Tester' })).toBeVisible()
+  await page.getByRole('button', { name: 'Edit my details' }).click()
+  await page.getByRole('button', { name: 'Use the demo owner again' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: /B\. Baynard-Malone/ })).toBeVisible()
+})
+
 test('the header studio hard-blocks a strobe and keeps the current header', async ({ page }) => {
   await page.goto('/profile')
   await page.getByRole('button', { name: 'Edit profile' }).click()

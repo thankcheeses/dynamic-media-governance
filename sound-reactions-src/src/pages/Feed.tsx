@@ -8,6 +8,7 @@ import { staggerIn } from '../motion'
 import { useAppStore } from '../store'
 import type { Post } from '../types'
 import { avatarContent, avatarStyle } from '../avatar'
+import { ownerLook, useIdentity } from '../identity'
 
 const TABS = [
   { id: 'for-you', label: 'For you' },
@@ -26,6 +27,7 @@ function matches(post: Post, q: string) {
 
 export default function Feed() {
   const posts = useAppStore((state) => state.posts)
+  const me = ownerLook(useIdentity((state) => state.identity))
   const [params, setParams] = useSearchParams()
   const query = params.get('q')?.trim() ?? ''
   const [tab, setTab] = useState<TabId>('for-you')
@@ -65,7 +67,7 @@ export default function Feed() {
     </div>}
 
     <Link to="/compose" className="x-composer-row">
-      <span className="avatar" aria-hidden="true" style={avatarStyle('BB')}>{avatarContent('BB')}</span>
+      <span className="avatar" aria-hidden="true" style={avatarStyle(me.initials)}>{avatarContent(me.initials, me.photo)}</span>
       <span className="x-composer-body">
         <span className="x-composer-placeholder">What’s happening?</span>
         <span className="x-composer-tools" aria-hidden="true">

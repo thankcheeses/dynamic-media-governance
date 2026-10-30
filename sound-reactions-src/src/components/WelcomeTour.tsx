@@ -30,7 +30,7 @@ const STEPS: Step[] = [
   },
   {
     title: 'Try your own GIF',
-    body: <>On your profile, tap <b>Edit profile</b>. Upload a GIF or search GIPHY. It gets checked for dangerous flashing first: <b>pass</b>, <b>warning</b> or <b>blocked</b>.</>,
+    body: <>On your profile, tap <b>Edit profile</b>. Upload a GIF or search GIPHY. It gets checked for dangerous flashing first: <b>pass</b>, <b>warning</b> or <b>blocked</b>. Tap <b>Make it yours</b> to put your own name and photo on the profile. It all stays on your phone.</>,
     action: { label: 'Open my profile', to: '/profile' },
   },
   {
