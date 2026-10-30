@@ -140,6 +140,20 @@ test('GIPHY search shows still frames and scans a picked GIF before it can play'
   await page.getByRole('button', { name: 'Scan Calm orbit' }).click()
   await expect(page.getByText('PASS', { exact: true })).toBeVisible({ timeout: 30_000 })
   await page.getByRole('button', { name: 'Use this header' }).click()
-  // The detail chip is hidden on narrow screens by design, so check it exists.
-  await expect(page.locator('.header-chip', { hasText: /Via GIPHY · 15 fps/ })).toHaveCount(1)
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await expect(page.getByText('A GIF picked from GIPHY')).toBeVisible()
+})
+
+test('the header info tour explains the scan without cluttering the banner', async ({ page }) => {
+  await page.goto('/profile')
+  await expect(page.locator('.header-chip')).toHaveCount(0)
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await expect(page.getByRole('heading', { name: 'Scanned before it went live' })).toBeVisible()
+  await expect(page.getByText('A GIF rendered with three.js for this prototype')).toBeVisible()
+  for (const title of ['Within the limits', 'How it plays', 'Under the hood']) {
+    await page.getByRole('button', { name: /Next/ }).click()
+    await expect(page.getByRole('heading', { name: title })).toBeVisible()
+  }
+  await page.getByRole('button', { name: 'Done' }).click()
+  await expect(page.getByRole('dialog')).toHaveCount(0)
 })

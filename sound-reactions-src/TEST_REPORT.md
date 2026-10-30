@@ -209,3 +209,13 @@ Added GIPHY search to the header studio (`src/giphy.ts`, `src/components/GiphyPa
 | Playwright | 26/26 passed in Chromium, desktop and mobile, including a new GIPHY test with mocked API and media responses. WebKit was not available here. |
 | Live GIPHY API | **Not tested.** This environment cannot reach api.giphy.com or media.giphy.com, and no real key was used. The request format follows GIPHY's documented search and trending endpoints and must be confirmed with a real key. |
 | Mocked checks | Rejected key shows an error; key is saved only in its own storage slot, not the demo state; requests send rating=pg; the grid shows still frames only; a strobe GIF is hard-blocked and a calm GIF passes and plays |
+
+## 2026-10-30 — Header info tour replaces banner chips
+
+Removed the measurement chips from the profile banner. A new ⓘ "About this header" button beside the pause button opens a four-step tour (`src/components/HeaderInfo.tsx`): scanned before it went live, within the limits, how it plays (with the current playback state), and under the hood (thresholds and links to the analyzers and decision rules). The photosensitivity warning on provisional headers stays on the banner.
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 19/19 passed |
+| Playwright | 28/28 passed in Chromium, desktop and mobile (adds a tour test and checks that the banner has no chips). WebKit was not available here. |

@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
-import { AlertTriangle, Pause, Play } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AlertTriangle, Info, Pause, Play } from 'lucide-react'
+import { HeaderInfo } from './HeaderInfo'
 import { useAppStore } from '../store'
 import type { UploadedMedia } from '../analyze'
 import type { HeaderDecision, HeaderPreset, HeaderStyle } from '../headers'
@@ -141,6 +142,8 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
   const [hidden, setHidden] = useState(() => typeof document !== 'undefined' && document.hidden)
   const elapsed = useRef(0)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [infoOpen, setInfoOpen] = useState(false)
+  const closeInfo = useCallback(() => setInfoOpen(false), [])
 
   const provisional = decision === 'PROVISIONAL'
   const stillReason = !ANIMATABLE.includes(preset.style) ? 'Still frame only'
@@ -201,10 +204,13 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
     return () => cancelAnimationFrame(raf)
   }, [preset, upload, w, h, running])
 
-  const flashes = `${preset.flashesPerSecond} ${preset.flashesPerSecond === 1 ? 'flash' : 'flashes'}/s measured`
-  const meta = upload
-    ? `${upload.source === 'giphy' ? 'Via GIPHY' : 'Your upload'} · ${Math.min(preset.fps, 15)} fps · ${flashes}`
-    : `GIF header · ${preset.fps} fps · ${preset.loopSeconds} s loop${preset.measured ? ` · ${flashes}` : ''}`
+  const status = gated ? 'Waiting behind its warning label'
+    : stillReason ? stillReason.replace('Still frame: ', 'Showing a still frame because ')
+    : userPaused ? 'Paused by you'
+    : hidden ? 'Paused because the tab is hidden'
+    : !inView ? 'Paused because it is off-screen'
+    : scrolling ? 'Paused while you scroll'
+    : `Playing at up to ${Math.min(preset.fps, 15)} fps`
   return <div className={`dynamic-header ${gated ? 'is-gated' : ''}`}>
     {preset.media
       ? <video ref={videoRef} muted playsInline loop preload="metadata" poster={asset(preset.media.poster)} aria-label={`Profile header: ${preset.description}`}>
@@ -216,12 +222,14 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
       <span><strong>Photosensitivity warning</strong><small>This header has quick flashes and is under review.</small></span>
       <button type="button" onClick={() => setWarningAccepted(true)}>Play header</button>
     </div>}
-    <div className="header-meta">
-      <span className={`header-chip ${provisional ? 'warn' : ''}`}>{provisional ? 'Warning label · under review' : 'PEA passed'}</span>
-      <span className="header-chip">{stillReason ?? meta}</span>
-    </div>
-    {!stillReason && !gated && <button type="button" className="header-pause" aria-pressed={userPaused} aria-label={userPaused ? 'Play header animation' : 'Pause header animation'} onClick={() => setUserPaused(!userPaused)}>
+    <div className="header-controls">
+      <button type="button" className="header-pause" aria-label="About this header" aria-haspopup="dialog" onClick={() => setInfoOpen(true)}>
+        <Info size={17} aria-hidden="true" />
+      </button>
+      {!stillReason && !gated && <button type="button" className="header-pause" aria-pressed={userPaused} aria-label={userPaused ? 'Play header animation' : 'Pause header animation'} onClick={() => setUserPaused(!userPaused)}>
       {userPaused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
     </button>}
+    </div>
+    {infoOpen && <HeaderInfo preset={preset} decision={decision} upload={upload} status={status} onClose={closeInfo} />}
   </div>
 }
