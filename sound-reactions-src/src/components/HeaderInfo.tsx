@@ -12,6 +12,7 @@ function sourceOf(preset: HeaderPreset, upload?: UploadedMedia | null): { label:
   if (upload?.source === 'giphy') return { label: 'A GIF picked from GIPHY', measured: true }
   if (upload) return { label: 'A file uploaded in this browser', measured: true }
   if (preset.hosted) return { label: <>The owner’s own pick, playing from <a href={preset.hosted.pageUrl} target="_blank" rel="noreferrer">{preset.hosted.provider}</a> and measured on the owner’s copy of the clip</>, measured: true }
+  if (preset.ownerFile) return { label: 'The owner’s own GIF, kept in the repository at the owner’s request', measured: true }
   if (preset.media) return { label: 'A GIF rendered with three.js for this prototype', measured: true }
   return { label: 'A sample header with fixture values', measured: false }
 }

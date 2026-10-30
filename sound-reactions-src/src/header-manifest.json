@@ -48,6 +48,22 @@
     "flashArea": 0.0
   },
   {
+    "id": "neon-cats",
+    "gif": "neon-cats.gif",
+    "width": 400,
+    "height": 300,
+    "frames": 74,
+    "fps": 13.26,
+    "loopSeconds": 5.58,
+    "sizeMB": 1.61,
+    "flashesPerSecond": 3,
+    "redFlashesPerSecond": 0,
+    "flashArea": 0.25,
+    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen; not a certified PEA tool)",
+    "measuredAt": "2026-10-30",
+    "redFlash": false
+  },
+  {
     "id": "sea-glass",
     "gif": "sea-glass.gif",
     "width": 1200,

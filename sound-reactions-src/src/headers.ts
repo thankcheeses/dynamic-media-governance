@@ -51,6 +51,8 @@ export interface HeaderPreset {
   hosted?: HostedHeader
   /** True when the numbers were measured from the file rather than set as fixtures. */
   measured?: boolean
+  /** A GIF the owner supplied and chose to keep in the repository, rather than a rendered one. */
+  ownerFile?: boolean
   /**
    * True for a hosted GIF with no measurements yet: the viewer's browser fetches
    * and scans it before it is allowed to play (src/hostedScan.ts).
@@ -83,12 +85,13 @@ export const HEADER_LIMITS = {
   severeFlashArea: 0.25,
 }
 
-const MEASURED_COPY: Record<string, { name: string; description: string }> = {
+const MEASURED_COPY: Record<string, { name: string; description: string; ownerFile?: boolean }> = {
   'clay-orbit': { name: 'Clay orbit', description: 'A clay-colored faceted sphere turning slowly inside a wireframe shell, with two thin orbits and small drifting shapes, on a dark warm background.' },
   'sea-glass': { name: 'Sea glass', description: 'A sea-green knot turning slowly inside a wireframe shell, with two thin orbits, on a deep teal background.' },
   'violet-hour': { name: 'Violet hour', description: 'A lavender crystal turning slowly inside a wireframe shell, with two thin orbits, on a dark violet background.' },
   moss: { name: 'Moss', description: 'A moss-green faceted stone turning slowly inside a wireframe shell, with two thin orbits, on a dark green background.' },
   citrus: { name: 'Citrus', description: 'An amber faceted sphere turning slowly inside a wireframe shell, with two thin orbits, on a dark gold background.' },
+  'neon-cats': { name: 'Neon cats', description: 'Cats in glowing neon colours leaping across a black background, from a 1998 Purina commercial.', ownerFile: true },
 }
 
 const MEASURED: HeaderPreset[] = manifest.map((m) => ({

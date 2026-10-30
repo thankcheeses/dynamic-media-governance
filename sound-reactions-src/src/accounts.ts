@@ -25,7 +25,7 @@ export const OWNER_HANDLE = '@baynardmalone'
 
 export const ACCOUNTS: Account[] = [
   { handle: OWNER_HANDLE, name: 'B. Baynard-Malone', initials: 'BB', verified: true, bio: 'Trust & safety and product policy. Writing the Dynamic Media Governance framework: animated headers and sound reactions that are safe by default.', headerId: null, following: 9, followers: 9, fictional: false },
-  { handle: '@mayamakes', name: 'Maya Chen', initials: 'MC', verified: true, bio: 'Product designer. Thinks out loud in voice posts. Pauses are part of the idea.', headerId: 'sea-glass', following: 412, followers: 8930, fictional: true },
+  { handle: '@mayamakes', name: 'Maya Chen', initials: 'MC', verified: true, bio: 'Product designer. Thinks out loud in voice posts. Pauses are part of the idea.', headerId: 'neon-cats', following: 412, followers: 8930, fictional: true },
   { handle: '@theotypes', name: 'Theo Martins', initials: 'TM', bio: 'Front-end and accessibility. Keyboard first, mouse optional.', headerId: 'spongebob-computer', following: 233, followers: 1204, fictional: true },
   { handle: '@ariexplains', name: 'Ari Okafor', initials: 'AO', bio: 'Explains online safety without the jargon. Disagree with me kindly.', headerId: 'ml-training', following: 640, followers: 5310, fictional: true },
   { handle: '@deesaysso', name: 'Dee Carter', initials: 'DC', verified: true, bio: 'Group chat historian. Always on time, never believed.', headerId: 'paid-in-full', following: 980, followers: 40210, fictional: true },
