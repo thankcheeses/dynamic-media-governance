@@ -115,6 +115,33 @@ test('tapping a name in the feed opens that profile with its dynamic header, sil
   expect(await page.evaluate(() => (window as unknown as { __audioContexts?: AudioContext[] }).__audioContexts?.length ?? 0)).toBe(0)
 })
 
+test('a hosted GIF header plays from its host through the capped canvas, muted and credited', async ({ page }) => {
+  // Tenor is not reachable from the test environment; serve a local WebM in its place.
+  await page.route('https://media.tenor.com/**', (route) => route.fulfill({ contentType: 'video/webm', path: 'public/headers/clay-orbit.webm' }))
+  await page.getByRole('link', { name: 'Dee Carter, view profile' }).click()
+  await expect(page).toHaveURL(/\/u\/deesaysso$/)
+  const header = page.locator('.dynamic-header')
+  await expect(header.locator('canvas')).toBeVisible()
+  const video = header.locator('video')
+  await expect(video).toHaveJSProperty('muted', true)
+  expect(await video.getAttribute('autoplay')).toBeNull()
+  await expect(header.getByRole('link', { name: 'via Tenor' })).toHaveAttribute('href', /tenor\.com/)
+  await expect(page.getByRole('button', { name: 'Pause header animation' })).toBeVisible()
+})
+
+test('an unmeasured hosted GIF is scanned in the browser before it plays', async ({ page }) => {
+  // GIPHY is not reachable from the test environment; serve the calm local GIF in its place.
+  await page.route(/giphy\.com\/media\/.*\.gif$/, (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, contentType: 'image/gif', path: 'public/headers/clay-orbit.gif' }))
+  await page.getByRole('link', { name: 'Jordan Reyes, view profile' }).click()
+  await expect(page).toHaveURL(/\/u\/jreyescooks$/)
+  const header = page.locator('.dynamic-header')
+  await expect(header.locator('canvas')).toBeVisible({ timeout: 20000 })
+  await expect(header.locator('video')).toHaveCount(0)
+  await expect(header.getByRole('link', { name: 'via GIPHY' })).toHaveAttribute('href', /giphy\.com\/gifs\//)
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await expect(page.getByText(/fetched and scanned in your browser/)).toBeVisible()
+})
+
 test('the header studio hard-blocks a strobe and keeps the current header', async ({ page }) => {
   await page.goto('/profile')
   await page.getByRole('button', { name: 'Edit profile' }).click()
@@ -150,7 +177,8 @@ test('the header info tour explains the scan without cluttering the banner', asy
   await expect(page.locator('.header-chip')).toHaveCount(0)
   await page.getByRole('button', { name: 'About this header' }).click()
   await expect(page.getByRole('heading', { name: 'Scanned before it went live' })).toBeVisible()
-  await expect(page.getByText('A GIF rendered with three.js for this prototype')).toBeVisible()
+  await expect(page.getByText(/The owner’s own pick, playing from/)).toBeVisible()
+  await expect(page.getByRole('dialog').getByRole('link', { name: 'GIPHY' })).toHaveAttribute('href', /giphy\.com\/gifs\//)
   for (const title of ['Within the limits', 'How it plays', 'Under the hood']) {
     await page.getByRole('button', { name: /Next/ }).click()
     await expect(page.getByRole('heading', { name: title })).toBeVisible()

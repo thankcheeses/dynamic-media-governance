@@ -3,7 +3,7 @@ import { AlertTriangle, Info, Pause, Play } from 'lucide-react'
 import { HeaderInfo } from './HeaderInfo'
 import { useAppStore } from '../store'
 import type { UploadedMedia } from '../analyze'
-import type { HeaderDecision, HeaderPreset, HeaderStyle } from '../headers'
+import type { HeaderDecision, HeaderPreset, HeaderStyle, HostedHeader } from '../headers'
 
 /**
  * Only calm styles are ever animated. Styles that flash are drawn as a single
@@ -104,8 +104,27 @@ function useCanvasSize(ref: React.RefObject<HTMLCanvasElement | null>) {
   return size
 }
 
+/** Draws the video's current frame cropped to fill the canvas, like object-fit: cover. */
+function drawCover(ctx: CanvasRenderingContext2D, video: HTMLVideoElement, w: number, h: number) {
+  const vw = video.videoWidth; const vh = video.videoHeight
+  if (!vw || !vh) return
+  const scale = Math.max(w / vw, h / vh)
+  const sw = w / scale; const sh = h / scale
+  ctx.drawImage(video, (vw - sw) / 2, (vh - sh) / 2, sw, sh, 0, 0, w, h)
+}
+
+function HostedSources({ hosted }: { hosted: HostedHeader }) {
+  return <>
+    {hosted.webm && <source src={hosted.webm} type="video/webm" />}
+    <source src={hosted.mp4} type="video/mp4" />
+  </>
+}
+
 /** A still frame of a header, used for thumbnails. Never animates. */
 export function HeaderThumb({ preset }: { preset: HeaderPreset }) {
+  if (preset.hosted?.still) return <img className="header-thumb" src={preset.hosted.still} alt="" decoding="async" />
+  // A video that is never played shows only its first frame.
+  if (preset.hosted) return <video className="header-thumb" muted playsInline preload="metadata" aria-hidden="true" tabIndex={-1}><HostedSources hosted={preset.hosted} /></video>
   if (preset.media) return <img className="header-thumb" src={asset(preset.media.poster)} alt="" decoding="async" />
   return <CanvasThumb preset={preset} />
 }
@@ -129,6 +148,8 @@ function CanvasThumb({ preset }: { preset: HeaderPreset }) {
  * pauses while the page scrolls, when it leaves the viewport and when the tab is
  * hidden, and shows a still frame under reduced motion, low-power or data saver.
  * A provisional header waits behind its warning label until the viewer plays it.
+ * A hosted GIF plays in a hidden video and is drawn to the canvas at most 15
+ * times a second, so a 20 fps file still shows at the framework's cap.
  */
 export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPreset; decision: HeaderDecision; upload?: UploadedMedia | null }) {
   const ref = useRef<HTMLCanvasElement>(null)
@@ -145,6 +166,9 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
   const [infoOpen, setInfoOpen] = useState(false)
   const closeInfo = useCallback(() => setInfoOpen(false), [])
 
+  const hosted = preset.hosted
+  // A hosted GIF that was scanned in this browser plays its scanned frames, not the host's video.
+  const hostVideo = hosted && !upload ? hosted : undefined
   const provisional = decision === 'PROVISIONAL'
   const stillReason = !ANIMATABLE.includes(preset.style) ? 'Still frame only'
     : settings.reducedMotion || osReduced ? 'Still frame: reduced motion is on'
@@ -185,14 +209,20 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
     canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     const frames = upload?.frames ?? []
+    const video = hostVideo ? videoRef.current : null
     const loopMs = upload ? frames.length * upload.frameMs : preset.loopSeconds * 1000
-    const frameMs = upload ? upload.frameMs : 1000 / preset.fps
+    const frameMs = upload ? upload.frameMs : 1000 / Math.min(preset.fps, 15)
     // Uploaded headers play their transcoded frames (already ≤15 fps and cropped to 3:1).
+    // Hosted headers are sampled from their video at the capped rate.
     const draw = upload
       ? () => { const f = frames[Math.floor(elapsed.current / frameMs) % frames.length]; if (f) ctx.drawImage(f, 0, 0, w, h) }
-      : () => drawHeader(ctx, preset.style, w, h, (elapsed.current % loopMs) / loopMs)
+      : video
+        ? () => { if (video.readyState >= 2) drawCover(ctx, video, w, h) }
+        : () => drawHeader(ctx, preset.style, w, h, (elapsed.current % loopMs) / loopMs)
     draw()
-    if (!running) return
+    // A hosted file shows its first frame as soon as it is decoded, whether or not it is running.
+    video?.addEventListener('loadeddata', draw)
+    if (!running) return () => video?.removeEventListener('loadeddata', draw)
     let raf = 0; let last = performance.now(); let sinceDraw = 0
     const tick = (now: number) => {
       const dt = Math.min(now - last, 100); last = now
@@ -201,8 +231,8 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [preset, upload, w, h, running])
+    return () => { cancelAnimationFrame(raf); video?.removeEventListener('loadeddata', draw) }
+  }, [preset, hostVideo, upload, w, h, running])
 
   const status = gated ? 'Waiting behind its warning label'
     : stillReason ? stillReason.replace('Still frame: ', 'Showing a still frame because ')
@@ -212,17 +242,25 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
     : scrolling ? 'Paused while you scroll'
     : `Playing at up to ${Math.min(preset.fps, 15)} fps`
   return <div className={`dynamic-header ${gated ? 'is-gated' : ''}`}>
-    {preset.media
-      ? <video ref={videoRef} muted playsInline loop preload="metadata" poster={asset(preset.media.poster)} aria-label={`Profile header: ${preset.description}`}>
-          <source src={asset(preset.media.webm)} type="video/webm" />
-        </video>
-      : <canvas ref={ref} role="img" aria-label={`Profile header: ${preset.description}`} />}
+    {hosted
+      ? <>
+          <canvas ref={ref} role="img" aria-label={`Profile header: ${preset.description}`} />
+          {hostVideo && <video ref={videoRef} className="hosted-source" muted playsInline loop preload="metadata" aria-hidden="true" tabIndex={-1}>
+            <HostedSources hosted={hostVideo} />
+          </video>}
+        </>
+      : preset.media
+        ? <video ref={videoRef} muted playsInline loop preload="metadata" poster={asset(preset.media.poster)} aria-label={`Profile header: ${preset.description}`}>
+            <source src={asset(preset.media.webm)} type="video/webm" />
+          </video>
+        : <canvas ref={ref} role="img" aria-label={`Profile header: ${preset.description}`} />}
     {gated && <div className="header-warning">
       <AlertTriangle size={18} aria-hidden="true" />
       <span><strong>Photosensitivity warning</strong><small>This header has quick flashes and is under review.</small></span>
       <button type="button" onClick={() => setWarningAccepted(true)}>Play header</button>
     </div>}
     <div className="header-controls">
+      {hosted && <a className="header-credit" href={hosted.pageUrl} target="_blank" rel="noreferrer">via {hosted.provider}</a>}
       <button type="button" className="header-pause" aria-label="About this header" aria-haspopup="dialog" onClick={() => setInfoOpen(true)}>
         <Info size={17} aria-hidden="true" />
       </button>

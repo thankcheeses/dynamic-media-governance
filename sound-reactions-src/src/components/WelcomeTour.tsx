@@ -25,8 +25,8 @@ const STEPS: Step[] = [
   },
   {
     title: 'Moving banners',
-    body: <>Tap <b>anyone’s name</b> to open their profile. Their banner moves slowly, never flashes, and stops while you scroll. The <b>⏸</b> button stops it any time.</>,
-    action: { label: 'Open Maya’s profile', to: '/u/mayamakes' },
+    body: <>Tap <b>anyone’s name</b> to open their profile. Their banner is a real GIF that was checked for flashing first, and it stops while you scroll. The <b>⏸</b> button stops it any time.</>,
+    action: { label: 'Open Dee’s profile', to: '/u/deesaysso' },
   },
   {
     title: 'Try your own GIF',

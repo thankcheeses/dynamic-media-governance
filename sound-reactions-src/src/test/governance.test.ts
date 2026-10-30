@@ -40,11 +40,34 @@ describe('deterministic governance preflight', () => {
 describe('dynamic header screening', () => {
   it('passes the measured three.js GIF', async () => {
     const { HEADER_PRESETS, scanHeader } = await import('../headers')
-    const real = HEADER_PRESETS.find((p) => p.measured)!
+    const real = HEADER_PRESETS.find((p) => p.measured && p.media)!
     expect(real.fps).toBeLessThanOrEqual(15)
     expect(real.loopSeconds).toBeLessThanOrEqual(10)
     expect(real.sizeMB).toBeLessThanOrEqual(8)
     expect(scanHeader(real).decision).toBe('PASS')
+  })
+  it('passes every hosted GIF the owner picked, transcoding the fast ones to 15 fps', async () => {
+    const { HEADER_LIMITS, HEADER_PRESETS, scanHeader } = await import('../headers')
+    const hosted = HEADER_PRESETS.filter((p) => p.hosted && p.measured)
+    expect(hosted).toHaveLength(3)
+    for (const preset of hosted) {
+      expect(preset.measured).toBe(true)
+      expect(preset.hosted!.pageUrl).toMatch(/^https:\/\/(giphy|tenor)\.com\//)
+      const scan = scanHeader(preset)
+      expect(scan.decision).toBe('PASS')
+      const fps = scan.checks.find((check) => check.key === 'fps')!.detail
+      expect(fps).toMatch(preset.fps > HEADER_LIMITS.fps ? /transcoded down to 15 fps/ : /limit 15 fps/)
+    }
+  })
+  it('leaves unmeasured hosted picks to the browser scan, with a GIF and a still to scan from', async () => {
+    const { HEADER_PRESETS } = await import('../headers')
+    const picked = HEADER_PRESETS.filter((p) => p.scanInBrowser)
+    expect(picked.length).toBeGreaterThanOrEqual(4)
+    for (const preset of picked) {
+      expect(preset.measured).toBeFalsy()
+      expect(preset.hosted?.gif).toMatch(/^https:\/\/media\d?\.giphy\.com\//)
+      expect(preset.hosted?.still).toMatch(/giphy_s\.gif$/)
+    }
   })
   it('rejects an upload over the guardrails before scanning', async () => {
     const { headerPreset, scanHeader } = await import('../headers')
