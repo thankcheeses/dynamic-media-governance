@@ -34,8 +34,11 @@ export function avatarSrc(initials: string): string | undefined {
   return file ? `${import.meta.env.BASE_URL}avatars/${file}` : undefined
 }
 
-/** Portrait when one exists, otherwise the initials. Decorative: callers label the person. */
-export function avatarContent(initials: string): ReactNode {
-  const src = avatarSrc(initials)
+/**
+ * Portrait when one exists, otherwise the initials. Decorative: callers label
+ * the person. A visitor's own photo (see src/identity.ts) takes precedence.
+ */
+export function avatarContent(initials: string, photo?: string): ReactNode {
+  const src = photo ?? avatarSrc(initials)
   return src ? <img src={src} alt="" width={40} height={40} decoding="async" /> : initials
 }

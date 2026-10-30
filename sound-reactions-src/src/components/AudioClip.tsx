@@ -152,7 +152,7 @@ export function SoundReactionChip({ reaction, post }: { reaction: Reaction; post
   )
 }
 
-export function VoicePostPlayer({ clip, handle, initials = 'MC' }: { clip: NonNullable<Post['voice']>; handle: string; initials?: string }) {
+export function VoicePostPlayer({ clip, handle, initials = 'MC', photo }: { clip: NonNullable<Post['voice']>; handle: string; initials?: string; photo?: string }) {
   const { state, play, stop } = useAudio()
   const captions = useAppStore((state) => state.settings.captions)
   const active = state.clipId === clip.id
@@ -166,7 +166,7 @@ export function VoicePostPlayer({ clip, handle, initials = 'MC' }: { clip: NonNu
     <div className={`x-voice ${playing ? 'is-playing' : ''}`} ref={ref}>
       <div className="x-voice-stage">
         <span className="x-voice-badge">Voice post</span>
-        <span className="x-voice-avatar-wrap" aria-hidden="true"><span className="x-voice-halo" ref={haloRef} /><span className="x-voice-avatar" ref={avatarRef} style={avatarStyle(initials)}>{avatarContent(initials)}</span></span>
+        <span className="x-voice-avatar-wrap" aria-hidden="true"><span className="x-voice-halo" ref={haloRef} /><span className="x-voice-avatar" ref={avatarRef} style={avatarStyle(initials)}>{avatarContent(initials, photo)}</span></span>
         <Waveform ref={waveRef} playing={playing} count={20} className="x-voice-wave" />
       </div>
       <div className="x-voice-controls">

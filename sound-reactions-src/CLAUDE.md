@@ -101,7 +101,7 @@ Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/pre
 
 ## Persistence and deployment
 
-Two localStorage keys are used, both with guarded access. `sound-reactions-giphy-key` holds only the viewer's own GIPHY API key, typed into the header studio (never committed; a build can alternatively embed one with `VITE_GIPHY_API_KEY`, which makes it visible to anyone viewing the page). `sound-reactions-demo-v3` holds the rest. It stores settings, governance configuration, fictional feed changes, submissions and audit events. Recorded-audio Blob URL posts/submissions are excluded from persistence and are session-only. There is no backend or cross-device sync.
+Three localStorage keys are used, all with guarded access. `sound-reactions-giphy-key` holds only the viewer's own GIPHY API key, typed into the header studio (never committed; a build can alternatively embed one with `VITE_GIPHY_API_KEY`, which makes it visible to anyone viewing the page). `sound-reactions-identity` holds the viewer's "Make it yours" name, handle, bio and a 256 px JPEG of their photo (`src/identity.ts`); it relabels the owner account for display only, never shows the verification badge, survives a demo reset, and nothing in it leaves the browser. `sound-reactions-demo-v3` holds the rest. It stores settings, governance configuration, fictional feed changes, submissions and audit events. Recorded-audio Blob URL posts/submissions are excluded from persistence and are session-only. There is no backend or cross-device sync.
 
 `dist/` is the production static build. Static hosting needs an SPA fallback to `index.html` for direct deep links. Tests navigate from `/`.
 

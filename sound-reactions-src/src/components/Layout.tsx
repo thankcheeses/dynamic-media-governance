@@ -6,6 +6,7 @@ import { audioController, useAudio } from '../audio'
 import { useAppStore } from '../store'
 import { HAS_GENERATED_AUDIO } from '../data'
 import { avatarContent, avatarStyle } from '../avatar'
+import { ownerLook, useIdentity } from '../identity'
 import { Verified } from './PostCard'
 import { profilePath } from '../accounts'
 import { WelcomeTour } from './WelcomeTour'
@@ -85,10 +86,11 @@ function AccountDrawer({ onClose }: { onClose: () => void }) {
     { to: '/compare', label: 'Compare', icon: GitCompareArrows },
     { to: '/presentation', label: 'Presentation', icon: Presentation },
   ]
+  const me = ownerLook(useIdentity((state) => state.identity))
   return <div className="x-drawer-backdrop" onClick={(event) => { if (event.target === event.currentTarget) onClose() }}>
     <nav className="x-drawer" aria-label="Account menu">
-      <Link to="/profile" onClick={onClose} className="avatar x-drawer-avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle('BB')}>{avatarContent('BB')}</Link>
-      <Link to="/profile" onClick={onClose} className="x-drawer-name"><strong>B. Baynard-Malone <Verified /></strong><span>@baynardmalone</span></Link>
+      <Link to="/profile" onClick={onClose} className="avatar x-drawer-avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(me.initials)}>{avatarContent(me.initials, me.photo)}</Link>
+      <Link to="/profile" onClick={onClose} className="x-drawer-name"><strong>{me.name} {!me.custom && <Verified />}</strong><span>{me.handle}</span></Link>
       <div className="x-drawer-follows"><span><strong>9</strong> Following</span><span><strong>9</strong> Followers</span></div>
       <ul>
         {items.map(({ to, label, icon: Icon }) => <li key={to}><Link to={to} onClick={onClose}><Icon size={24} aria-hidden="true" />{label}</Link></li>)}
@@ -107,6 +109,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const [drawer, setDrawer] = useState(false)
   const [tour, setTour] = useState(() => !tourSeen())
   const closeTour = useCallback(() => { markTourSeen(); setTour(false) }, [])
+  const me = ownerLook(useIdentity((state) => state.identity))
   useEffect(() => { audioController.setVolume(settings.volume, settings.muted) }, [settings.volume, settings.muted])
   useEffect(() => {
     const visibility = () => { if (document.hidden) stop('Paused because the tab was hidden') }
@@ -133,7 +136,7 @@ export function Layout({ children }: { children: ReactNode }) {
     </div>
 
     <div className="x-mobile-top">
-      <button type="button" className="avatar small" style={avatarStyle('BB')} aria-label="Open account menu" aria-haspopup="dialog" onClick={() => setDrawer(true)}>{avatarContent('BB')}</button>
+      <button type="button" className="avatar small" style={avatarStyle(me.initials)} aria-label="Open account menu" aria-haspopup="dialog" onClick={() => setDrawer(true)}>{avatarContent(me.initials, me.photo)}</button>
       <Link to="/" className="x-brand" aria-label="Sound Reactions home"><AudioLines size={24} /></Link>
       <Link to="/settings" className="x-icon-link" aria-label="Open settings"><Settings size={20} /></Link>
     </div>
@@ -150,9 +153,9 @@ export function Layout({ children }: { children: ReactNode }) {
             </NavLink>)}
           </nav>
           <Link to="/compose" className="x-post-button"><PenLine size={22} aria-hidden="true" /><span>Post</span></Link>
-          <Link to="/profile" className="x-account" aria-label="B. Baynard-Malone, @baynardmalone. Open profile">
-            <span className="avatar" aria-hidden="true" style={avatarStyle('BB')}>{avatarContent('BB')}</span>
-            <span className="x-account-name"><strong>B. Baynard-Malone</strong><span>@baynardmalone</span></span>
+          <Link to="/profile" className="x-account" aria-label={`${me.name}, ${me.handle}. Open profile`}>
+            <span className="avatar" aria-hidden="true" style={avatarStyle(me.initials)}>{avatarContent(me.initials, me.photo)}</span>
+            <span className="x-account-name"><strong>{me.name}</strong><span>{me.handle}</span></span>
             <MoreHorizontal size={18} aria-hidden="true" />
           </Link>
         </div>
