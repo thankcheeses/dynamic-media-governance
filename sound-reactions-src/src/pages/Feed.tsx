@@ -7,7 +7,7 @@ import { SEED_POSTS } from '../data'
 import { staggerIn } from '../motion'
 import { useAppStore } from '../store'
 import type { Post } from '../types'
-import { avatarStyle } from '../avatar'
+import { avatarContent, avatarStyle } from '../avatar'
 
 const TABS = [
   { id: 'for-you', label: 'For you' },
@@ -65,7 +65,7 @@ export default function Feed() {
     </div>}
 
     <Link to="/compose" className="x-composer-row">
-      <span className="avatar" aria-hidden="true" style={avatarStyle('BB')}>BB</span>
+      <span className="avatar" aria-hidden="true" style={avatarStyle('BB')}>{avatarContent('BB')}</span>
       <span className="x-composer-body">
         <span className="x-composer-placeholder">What’s happening?</span>
         <span className="x-composer-tools" aria-hidden="true">

@@ -6,7 +6,7 @@ import { emojiBurst, landPill, motionAllowed, takeLanding } from '../motion'
 import { useAppStore } from '../store'
 import type { Post, Reaction } from '../types'
 import { Modal } from './Modal'
-import { avatarStyle } from '../avatar'
+import { avatarContent, avatarStyle } from '../avatar'
 
 // Fixed bar heights so the resting waveform is a stable, recognizable shape.
 const bars = [6, 11, 8, 15, 10, 17, 7, 13, 9, 16, 6, 12, 17, 8, 13, 5, 10, 14, 7, 11]
@@ -166,7 +166,7 @@ export function VoicePostPlayer({ clip, handle, initials = 'MC' }: { clip: NonNu
     <div className={`x-voice ${playing ? 'is-playing' : ''}`} ref={ref}>
       <div className="x-voice-stage">
         <span className="x-voice-badge">Voice post</span>
-        <span className="x-voice-avatar-wrap" aria-hidden="true"><span className="x-voice-halo" ref={haloRef} /><span className="x-voice-avatar" ref={avatarRef} style={avatarStyle(initials)}>{initials}</span></span>
+        <span className="x-voice-avatar-wrap" aria-hidden="true"><span className="x-voice-halo" ref={haloRef} /><span className="x-voice-avatar" ref={avatarRef} style={avatarStyle(initials)}>{avatarContent(initials)}</span></span>
         <Waveform ref={waveRef} playing={playing} count={20} className="x-voice-wave" />
       </div>
       <div className="x-voice-controls">

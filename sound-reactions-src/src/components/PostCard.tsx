@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import { burstRing, popIcon, rollCount } from '../motion'
 import { useAppStore } from '../store'
 import type { Post, QuotedPost } from '../types'
-import { avatarStyle } from '../avatar'
+import { avatarContent, avatarStyle } from '../avatar'
 import { SoundReactionChip, VoicePostPlayer } from './AudioClip'
 import { ReactionPicker } from './ReactionPicker'
 
@@ -35,7 +35,7 @@ export function Verified() {
 function QuoteCard({ quote }: { quote: QuotedPost }) {
   return <div className="x-quote">
     <header className="x-post-byline">
-      <span className="avatar tiny" aria-hidden="true" style={avatarStyle(quote.initials)}>{quote.initials}</span>
+      <span className="avatar tiny" aria-hidden="true" style={avatarStyle(quote.initials)}>{avatarContent(quote.initials)}</span>
       <strong>{quote.author}</strong>{quote.verified && <Verified />}
       <span className="x-handle">{quote.handle}</span><span aria-hidden="true">·</span><span>{quote.timestamp}</span>
     </header>
@@ -94,7 +94,7 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
 
   return (
     <article className={`x-post ${embedded ? 'embedded' : ''}`} aria-label={`Post by ${post.author}`}>
-      <div className="avatar" aria-hidden="true" style={avatarStyle(post.initials)}>{post.initials}</div>
+      <div className="avatar" aria-hidden="true" style={avatarStyle(post.initials)}>{avatarContent(post.initials)}</div>
       <div className="x-post-main">
         <header className="x-post-byline">
           <strong>{post.author}</strong>{post.verified && <Verified />}

@@ -5,7 +5,7 @@ import { Toaster } from 'sonner'
 import { audioController, useAudio } from '../audio'
 import { useAppStore } from '../store'
 import { HAS_GENERATED_AUDIO } from '../data'
-import { avatarStyle } from '../avatar'
+import { avatarContent, avatarStyle } from '../avatar'
 import { Verified } from './PostCard'
 
 const navigation = [
@@ -56,7 +56,7 @@ function WhoToFollow() {
     {suggestions.map((person) => {
       const on = following.includes(person.handle)
       return <div key={person.handle} className="x-follow-row">
-        <div className="avatar" aria-hidden="true" style={avatarStyle(person.initials)}>{person.initials}</div>
+        <div className="avatar" aria-hidden="true" style={avatarStyle(person.initials)}>{avatarContent(person.initials)}</div>
         <div className="x-follow-name"><span className="x-follow-top"><strong>{person.name}</strong>{person.verified && <Verified />}</span><span>{person.handle}</span></div>
         <button className={`x-follow-button ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => setFollowing(on ? following.filter((h) => h !== person.handle) : [...following, person.handle])} aria-label={`${on ? 'Unfollow' : 'Follow'} ${person.handle} (fictional, local only)`}>{on ? 'Following' : 'Follow'}</button>
       </div>
@@ -91,7 +91,7 @@ export function Layout({ children }: { children: ReactNode }) {
     </div>
 
     <div className="x-mobile-top">
-      <Link to="/settings" className="avatar small" style={avatarStyle('BB')} aria-label="Open settings (illustrative persona)">BB</Link>
+      <Link to="/settings" className="avatar small" style={avatarStyle('BB')} aria-label="Open settings (illustrative persona)">{avatarContent('BB')}</Link>
       <Link to="/" className="x-brand" aria-label="Sound Reactions home"><AudioLines size={24} /></Link>
       <Link to="/settings" className="x-icon-link" aria-label="Open settings"><Settings size={20} /></Link>
     </div>
@@ -107,7 +107,7 @@ export function Layout({ children }: { children: ReactNode }) {
           </nav>
           <Link to="/compose" className="x-post-button"><PenLine size={22} aria-hidden="true" /><span>Post</span></Link>
           <Link to="/settings" className="x-account" aria-label="B. Baynard-Malone, @baynardmalone, illustrative persona. Open settings">
-            <span className="avatar" aria-hidden="true" style={avatarStyle('BB')}>BB</span>
+            <span className="avatar" aria-hidden="true" style={avatarStyle('BB')}>{avatarContent('BB')}</span>
             <span className="x-account-name"><strong>B. Baynard-Malone</strong><span>@baynardmalone</span></span>
             <MoreHorizontal size={18} aria-hidden="true" />
           </Link>
