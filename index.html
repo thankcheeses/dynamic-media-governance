@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-id="th-modified">X · Dynamic Media Governance Framework</title>
-    <meta property="og:title" content="X · Dynamic Media Governance Framework" data-id="th-modified"><meta name="description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:description" content="X_Dynamic_Media_Governance_Framework_v2.1" data-id="th-modified"><meta property="og:image" content="https://xdynamicprofileproposal.tiiny.site/og-image.jpg" data-id="th-modified"><meta property="og:image:width" content="1080" data-id="th-modified"><meta property="og:image:height" content="433" data-id="th-modified"><meta property="og:image:type" content="image/jpeg" data-id="th-modified"><meta property="og:url" content="https://xdynamicprofileproposal.tiiny.site/" data-id="th-modified"><meta property="og:type" content="website" data-id="th-modified"><script defer data-domain="xdynamicprofileproposal.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script>
+    <title>Dynamic Media Governance · Moving profile banners and sound reactions, made safe</title>
+    <meta name="description" content="A proposal for letting people use GIF profile banners and short sound reactions safely: every GIF is screened for seizure-risk flashing, kept small and calm, and no sound ever plays unless you tap. Includes a working prototype.">
+    <meta property="og:title" content="Dynamic Media Governance · Moving profile banners and sound reactions, made safe">
+    <meta property="og:description" content="Every GIF is screened for seizure-risk flashing, kept small and calm, and no sound ever plays unless you tap. Read the plan and try the prototype.">
+    <meta property="og:url" content="https://thankcheeses.github.io/dynamic-media-governance/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
     <meta name="color-scheme" content="dark light">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -510,6 +515,8 @@
         .mock__pause svg { width: 14px; height: 14px; }
         .mock__pause[aria-pressed="true"] svg { display: none; }
         .mock__pause[aria-pressed="true"]::before { content: ""; width: 0; height: 0; border-left: 11px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
+        .mock__credit { position: absolute; right: 52px; bottom: 17px; padding: 3px 9px; border-radius: 999px; background: rgba(0, 0, 0, 0.62); color: #fff; font-size: 0.72rem; font-weight: 600; text-decoration: none; }
+        .mock__credit:hover, .mock__credit:focus-visible { background: rgba(0, 0, 0, 0.8); text-decoration: underline; }
         .mock__head { display: flex; justify-content: space-between; align-items: flex-start; padding: 0 16px; }
         .mock__avatar { width: 88px; height: 88px; margin-top: -44px; border-radius: 50%; border: 4px solid var(--bg); object-fit: cover; position: relative; background: var(--surface); }
         .mock__edit { margin-top: 12px; height: 34px; display: inline-flex; align-items: center; padding: 0 16px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); font-weight: 700; font-size: 0.88rem; text-decoration: none; }
@@ -606,12 +613,13 @@
 
             <figure class="mock reveal" style="--d: 200ms" id="preview" aria-label="Preview of the proposal: a profile with a GIF banner and a sound reaction">
                 <div class="mock__banner">
-                    <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/clay-orbit.jpg" aria-label="Animated GIF banner: a clay-colored sphere turning slowly inside a wireframe shell.">
-                        <source src="sound-reactions/headers/clay-orbit.webm" type="video/webm">
+                    <video data-header-video muted playsinline loop preload="metadata" poster="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy_s.gif" aria-label="Animated GIF banner: SpongeBob strutting across a green room while a jellyfish floats beside him.">
+                        <source src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy.mp4" type="video/mp4">
                     </video>
                     <button class="mock__pause" type="button" data-header-pause aria-label="Pause banner animation" aria-pressed="false">
                         <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg>
                     </button>
+                    <a class="mock__credit" href="https://giphy.com/gifs/dancing-spongebob-squarepants-jellyfish-jam-rdXF0gnAyUAfK" target="_blank" rel="noreferrer">via GIPHY</a>
                     <span class="mock__note mock__note--banner"><b>1</b> GIF banner, checked for seizure-risk flashing</span>
                 </div>
                 <div class="mock__head">
@@ -892,17 +900,17 @@
                 <a class="proto reveal" href="sound-reactions/#/profile">
                     <div class="proto__body">
                         <div class="card__label">Sound Reactions · concept prototype</div>
-                        <h3>See a dynamic header pass the scan</h3>
-                        <p>The header on the right is a real 10-second GIF rendered with three.js: 15 fps, 3.7 MB, 0 flashes per second as measured by the prototype’s analyzer. Open the profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s header, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
+                        <h3>See a real GIF banner pass the scan</h3>
+                        <p>The banner on the right is a real GIF playing straight from GIPHY, the way X serves GIFs. The prototype’s analyzer measured it at 14 fps on a 1.3-second loop, 0.5 MB and 1 flash per second, under the limit of 3. Two more real GIFs play from Tenor on other profiles; one runs at 20 fps and is drawn at the 15 fps cap. Open a profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s banner, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
                         <span class="proto__cta">Open Sound Reactions
                             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                         </span>
                     </div>
                     <div class="proto__media">
-                        <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/clay-orbit.jpg" aria-label="Sample dynamic header: a clay-colored faceted sphere turning slowly inside a wireframe shell.">
-                            <source src="sound-reactions/headers/clay-orbit.webm" type="video/webm">
+                        <video data-header-video muted playsinline loop preload="metadata" poster="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy_s.gif" aria-label="Real GIF banner, via GIPHY: SpongeBob strutting across a green room while a jellyfish floats beside him.">
+                            <source src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy.mp4" type="video/mp4">
                         </video>
-                        <span class="proto__chip">GIF header · PEA passed</span>
+                        <span class="proto__chip">Real GIF · via GIPHY · PEA passed</span>
                     </div>
                 </a>
                 <p class="note reveal">Not affiliated with X. Source code is in the <a href="https://github.com/thankcheeses/dynamic-media-governance/tree/main/sound-reactions-src">sound-reactions-src</a> folder of this repository.</p>

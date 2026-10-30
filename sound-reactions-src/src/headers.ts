@@ -3,17 +3,30 @@
  * framework: technical guardrails at upload, then a Photosensitive Epilepsy
  * Analysis (PEA) against the WCAG 2.2 general and red flash thresholds.
  *
- * The measured headers are real GIFs rendered with three.js
- * (scripts/render-header.mjs) and measured by scripts/analyze-header.py; their
- * numbers come from src/header-manifest.json. The other presets stand in for
- * uploads that fail in different ways, and their flash counts are fixture
- * values. Files a viewer uploads are measured in the browser (src/analyze.ts).
- * The UI labels which is which.
+ * Three kinds of header are measured. The owner's own picks are real GIFs that
+ * play straight from their host (GIPHY or Tenor) and were measured by
+ * scripts/analyze-header.py on the owner's copy of each clip. The rendered
+ * headers are GIFs made with three.js (scripts/render-header.mjs) and measured
+ * the same way; their numbers come from src/header-manifest.json. The other
+ * presets stand in for uploads that fail in different ways, and their flash
+ * counts are fixture values. Files a viewer uploads are measured in the browser
+ * (src/analyze.ts). The UI labels which is which.
  */
 import manifest from './header-manifest.json'
 
 export type HeaderStyle = 'video' | 'upload' | 'aurora' | 'waves' | 'confetti' | 'strobe' | 'redpulse' | 'timelapse'
 export type HeaderDecision = 'PASS' | 'PROVISIONAL' | 'BLOCK' | 'REJECTED'
+
+/** A GIF that plays from its host and is never copied into the repository. */
+export interface HostedHeader {
+  provider: 'GIPHY' | 'Tenor'
+  /** The GIF's page on the host, for attribution. */
+  pageUrl: string
+  mp4: string
+  webm?: string
+  /** A still frame, when the host serves one. */
+  still?: string
+}
 
 export interface HeaderPreset {
   id: string
@@ -32,6 +45,8 @@ export interface HeaderPreset {
   flashArea?: number
   /** Real media files under public/headers, for presets backed by an actual GIF. */
   media?: { gif: string; webm: string; poster: string }
+  /** A GIF served by GIPHY or Tenor, for the owner's own picks. */
+  hosted?: HostedHeader
   /** True when the numbers were measured from the file rather than set as fixtures. */
   measured?: boolean
 }
@@ -77,7 +92,35 @@ const MEASURED: HeaderPreset[] = manifest.map((m) => ({
   measured: true,
 })).sort((a, b) => (a.id === 'clay-orbit' ? -1 : b.id === 'clay-orbit' ? 1 : 0))
 
+// GIPHY serves media only at the signed paths it publishes for a GIF; the plain
+// media.giphy.com/media/<id>/ form redirects to the GIF's web page.
+const GIPHY_JELLYFISH = 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/'
+
+/**
+ * The owner's own GIF picks. Each plays from its host and is credited there;
+ * nothing is copied into the repository. The measurements were taken by
+ * scripts/analyze-header.py on the owner's copy of the same clip.
+ */
+const HOSTED: HeaderPreset[] = [
+  {
+    id: 'jellyfish-strut', name: 'Jellyfish strut', description: 'SpongeBob strutting across a green room while a jellyfish floats beside him, from the Jellyfish Jam scene.',
+    style: 'video', fps: 14.29, loopSeconds: 1.33, sizeMB: 0.48, flashesPerSecond: 1, redFlash: false, flashArea: 0.87, measured: true,
+    hosted: { provider: 'GIPHY', pageUrl: 'https://giphy.com/gifs/dancing-spongebob-squarepants-jellyfish-jam-rdXF0gnAyUAfK', mp4: `${GIPHY_JELLYFISH}giphy.mp4`, still: `${GIPHY_JELLYFISH}giphy_s.gif` },
+  },
+  {
+    id: 'spongebob-computer', name: 'SpongeBob at the computer', description: 'A worried SpongeBob typing at an old beige computer in a red room.',
+    style: 'video', fps: 16.67, loopSeconds: 1.92, sizeMB: 0.71, flashesPerSecond: 0, redFlash: false, flashArea: 0.4, measured: true,
+    hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/spongebob-computer-fire-gif-21352118', mp4: 'https://media.tenor.com/tWD3GjJcoHgAAAPo/spongebob-computer.mp4', webm: 'https://media.tenor.com/tWD3GjJcoHgAAAPs/spongebob-computer.webm' },
+  },
+  {
+    id: 'paid-in-full', name: 'Making it rain', description: 'Rico from Paid in Full tossing cash into the air in a packed club.',
+    style: 'video', fps: 20, loopSeconds: 1.5, sizeMB: 1.73, flashesPerSecond: 1, redFlash: false, flashArea: 0.18, measured: true,
+    hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/money-rico-paid-raining-money-gif-5009446', mp4: 'https://media.tenor.com/YTe7HLNWvAQAAAPo/money-rico.mp4', webm: 'https://media.tenor.com/YTe7HLNWvAQAAAPs/money-rico.webm' },
+  },
+]
+
 export const HEADER_PRESETS: HeaderPreset[] = [
+  ...HOSTED,
   ...MEASURED,
   { id: 'slow-waves', name: 'Slow waves', description: 'Thin lines rolling gently like a calm sea.', style: 'waves', fps: 12, loopSeconds: 10, sizeMB: 1.4, flashesPerSecond: 0, redFlash: false },
   { id: 'confetti', name: 'Confetti pop', description: 'Confetti bursts with quick bright pops.', style: 'confetti', fps: 15, loopSeconds: 6, sizeMB: 3.2, flashesPerSecond: 4, redFlash: false, flashArea: 0.08 },
@@ -86,7 +129,7 @@ export const HEADER_PRESETS: HeaderPreset[] = [
   { id: 'timelapse', name: 'City timelapse', description: 'A long, high-frame-rate city timelapse.', style: 'timelapse', fps: 30, loopSeconds: 18, sizeMB: 11.4, flashesPerSecond: 1, redFlash: false },
 ]
 
-export const DEFAULT_HEADER_ID = 'clay-orbit'
+export const DEFAULT_HEADER_ID = 'jellyfish-strut'
 
 export function headerPreset(id: string): HeaderPreset {
   return HEADER_PRESETS.find((preset) => preset.id === id) ?? HEADER_PRESETS[0]

@@ -9,7 +9,7 @@ import { OWNER_HANDLE, accountFor, type Account } from '../accounts'
 import { analyzeUpload, type UploadAnalysis } from '../analyze'
 import { GiphyPanel } from '../components/GiphyPanel'
 import { fetchGiphyFile } from '../giphy'
-import { HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, scanHeader, type HeaderDecision, type HeaderPreset, type HeaderScan } from '../headers'
+import { DEFAULT_HEADER_ID, HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, scanHeader, type HeaderDecision, type HeaderPreset, type HeaderScan } from '../headers'
 import { useAppStore } from '../store'
 
 const decisionLabel: Record<HeaderScan['decision'], string> = {
@@ -124,7 +124,7 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
       <div className="studio-grid" role="radiogroup" aria-label="Sample headers">
         {HEADER_PRESETS.map((item) => <button key={item.id} type="button" role="radio" aria-checked={!upload && item.id === selected} className={`studio-card ${!upload && item.id === selected ? 'selected' : ''}`} onClick={() => choose(item.id)}>
           <HeaderThumb preset={item} />
-          <span className="studio-card-body"><strong>{item.name}</strong><small>{item.fps} fps · {item.loopSeconds} s · {item.sizeMB} MB</small><small className={item.measured ? 'measured' : ''}>{item.measured ? 'Real GIF · measured' : 'Sample · fixture values'}</small></span>
+          <span className="studio-card-body"><strong>{item.name}</strong><small>{item.fps} fps · {item.loopSeconds} s · {item.sizeMB} MB</small><small className={item.measured ? 'measured' : ''}>{item.hosted ? `Real GIF · via ${item.hosted.provider} · measured` : item.measured ? 'Real GIF · measured' : 'Sample · fixture values'}</small></span>
         </button>)}
       </div>
       {!upload && <>
@@ -145,7 +145,7 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
 }
 
 function headerFor(account: Account, own: { presetId: string; decision: HeaderDecision }): { preset: HeaderPreset; decision: HeaderDecision } | null {
-  if (account.handle === OWNER_HANDLE) return { preset: headerPreset(own.presetId === 'upload' ? 'clay-orbit' : own.presetId), decision: own.presetId === 'upload' ? 'PASS' : own.decision }
+  if (account.handle === OWNER_HANDLE) return { preset: headerPreset(own.presetId === 'upload' ? DEFAULT_HEADER_ID : own.presetId), decision: own.presetId === 'upload' ? 'PASS' : own.decision }
   return account.headerId ? { preset: headerPreset(account.headerId), decision: account.headerDecision ?? 'PASS' } : null
 }
 
