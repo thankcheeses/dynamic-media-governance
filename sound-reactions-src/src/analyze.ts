@@ -25,6 +25,9 @@ const MAX_DECODE_SECONDS = HEADER_LIMITS.loopSeconds + 2
 
 export interface UploadedMedia {
   name: string
+  /** Where the file came from: picked from the device, or from GIPHY. */
+  source?: 'device' | 'giphy'
+  sourceUrl?: string
   measurement: HeaderMeasurement
   kind: 'gif' | 'video'
   frames: ImageBitmap[]
@@ -161,7 +164,7 @@ async function decodeVideo(file: File): Promise<Decoded> {
   }
 }
 
-export async function analyzeUpload(file: File): Promise<UploadAnalysis> {
+export async function analyzeUpload(file: File, origin?: { source: 'device' | 'giphy'; sourceUrl?: string }): Promise<UploadAnalysis> {
   const isGif = file.type === 'image/gif' || /\.gif$/i.test(file.name)
   const isVideo = file.type.startsWith('video/')
   if (!isGif && !isVideo) throw new Error('Choose a GIF or a video file (MP4, WebM or MOV)')
@@ -212,5 +215,5 @@ export async function analyzeUpload(file: File): Promise<UploadAnalysis> {
   else if (nativeFps > HEADER_LIMITS.fps) notes.push(`Your GIF runs at ${nativeFps} fps; the header plays it at ${HEADER_LIMITS.fps} fps.`)
   if (decoded.totalMs > MAX_DECODE_SECONDS * 1000) notes.push(`Only the first ${MAX_DECODE_SECONDS} seconds were analyzed.`)
 
-  return { measurement, media: { name: file.name, measurement, kind: isGif ? 'gif' : 'video', frames, frameMs, poster }, notes }
+  return { measurement, media: { name: file.name, ...origin, measurement, kind: isGif ? 'gif' : 'video', frames, frameMs, poster }, notes }
 }

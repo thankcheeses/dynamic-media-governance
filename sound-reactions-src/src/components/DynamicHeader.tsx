@@ -203,7 +203,7 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
 
   const flashes = `${preset.flashesPerSecond} ${preset.flashesPerSecond === 1 ? 'flash' : 'flashes'}/s measured`
   const meta = upload
-    ? `Your upload · ${Math.min(preset.fps, 15)} fps · ${flashes}`
+    ? `${upload.source === 'giphy' ? 'Via GIPHY' : 'Your upload'} · ${Math.min(preset.fps, 15)} fps · ${flashes}`
     : `GIF header · ${preset.fps} fps · ${preset.loopSeconds} s loop${preset.measured ? ` · ${flashes}` : ''}`
   return <div className={`dynamic-header ${gated ? 'is-gated' : ''}`}>
     {preset.media

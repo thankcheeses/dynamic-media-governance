@@ -7,6 +7,8 @@ import { PostCard, Verified } from '../components/PostCard'
 import { avatarContent, avatarStyle } from '../avatar'
 import { OWNER_HANDLE, accountFor, type Account } from '../accounts'
 import { analyzeUpload, type UploadAnalysis } from '../analyze'
+import { GiphyPanel } from '../components/GiphyPanel'
+import { fetchGiphyFile } from '../giphy'
 import { HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, scanHeader, type HeaderDecision, type HeaderPreset, type HeaderScan } from '../headers'
 import { useAppStore } from '../store'
 
@@ -71,23 +73,26 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
       addAudit('header_scanned', preset.id, `${preset.name}: ${result.decision}. ${result.checks.filter((c) => !c.pass).map((c) => c.label).join(', ') || 'All checks passed'}`)
     }, SCAN_MS)
   }
-  const onFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    event.target.value = ''
-    if (!file) return
+  const scanFile = async (load: () => Promise<File>, source: string, origin?: { source: 'device' | 'giphy'; sourceUrl?: string }) => {
     window.clearTimeout(timer.current)
     setUploadError(''); setScan(null); setUpload(null); setScanning(true)
     try {
-      const analysis = await analyzeUpload(file)
+      const file = await load()
+      const analysis = await analyzeUpload(file, origin)
       const result = scanHeader(uploadPreset(analysis))
       setUpload(analysis); setScan(result)
       const m = analysis.measurement
-      addAudit('header_scanned', 'upload', `${file.name}: ${result.decision}. ${m.flashesPerSecond} flashes/s, ${m.fps} fps, ${m.loopSeconds} s, ${m.sizeMB} MB`)
+      addAudit('header_scanned', source, `${file.name}: ${result.decision}. ${m.flashesPerSecond} flashes/s, ${m.fps} fps, ${m.loopSeconds} s, ${m.sizeMB} MB`)
     } catch (error) {
       setUploadError(error instanceof Error ? error.message : 'That file couldn’t be read')
     } finally {
       setScanning(false)
     }
+  }
+  const onFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (file) void scanFile(async () => file, 'upload', { source: 'device' })
   }
   const publish = () => {
     if (!scan || !isPublishable(scan.decision)) return
@@ -111,8 +116,9 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
         <button type="button" className="x-outline-pill" onClick={() => fileRef.current?.click()} disabled={scanning}><Upload size={16} aria-hidden="true" /> Upload a GIF or video</button>
         <span className="fine-print">Checked in your browser. Nothing is uploaded anywhere, and it is gone when you close the tab.</span>
       </div>
+      <GiphyPanel disabled={scanning} onPick={(gif) => void scanFile(() => fetchGiphyFile(gif), `giphy:${gif.id}`, { source: 'giphy', sourceUrl: gif.url })} />
       {uploadError && <p className="scan-blocked" role="alert">{uploadError}</p>}
-      {upload && <div className="studio-upload-preview"><img src={upload.media.poster} alt="" /><span><strong>{upload.media.name}</strong><small>Still frame. Nothing plays until it passes.</small></span></div>}
+      {upload && <div className="studio-upload-preview"><img src={upload.media.poster} alt="" /><span><strong>{upload.media.name}</strong><small>Still frame. Nothing plays until it passes.{upload.media.source === 'giphy' && <> · <a href={upload.media.sourceUrl} target="_blank" rel="noreferrer">Via GIPHY</a></>}</small></span></div>}
 
       <h3 className="studio-subhead">Or try a sample</h3>
       <div className="studio-grid" role="radiogroup" aria-label="Sample headers">

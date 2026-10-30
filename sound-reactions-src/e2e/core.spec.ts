@@ -122,3 +122,24 @@ test('the header studio hard-blocks a strobe and keeps the current header', asyn
   await expect(page.getByText('HARD BLOCK', { exact: true })).toBeVisible()
   await expect(page.getByText('This header can’t be published')).toBeVisible()
 })
+
+test('GIPHY search shows still frames and scans a picked GIF before it can play', async ({ page }) => {
+  const gif = 'public/headers/clay-orbit.gif'
+  const cors = { 'access-control-allow-origin': '*' }
+  await page.route('https://api.giphy.com/**', (route) => route.fulfill({
+    headers: cors, contentType: 'application/json',
+    body: JSON.stringify({ data: [{ id: 'calm1', title: 'Calm orbit', url: 'https://giphy.com/gifs/calm1', images: { downsized: { url: 'https://media.giphy.com/media/calm1/giphy-downsized.gif', width: '1200', height: '400' }, fixed_width_still: { url: 'https://media.giphy.com/media/calm1/200w_s.gif' } } }] }),
+  }))
+  await page.route('https://media.giphy.com/**', (route) => route.fulfill({ headers: cors, contentType: 'image/gif', path: gif }))
+  await page.goto('/profile')
+  await page.getByRole('button', { name: 'Edit profile' }).click()
+  await page.getByLabel('GIPHY API key').fill('test-key')
+  await page.getByRole('button', { name: 'Save key' }).click()
+  await expect(page.getByRole('button', { name: 'Scan Calm orbit' })).toBeVisible()
+  expect(await page.evaluate(() => localStorage.getItem('sound-reactions-giphy-key'))).toBe('test-key')
+  await page.getByRole('button', { name: 'Scan Calm orbit' }).click()
+  await expect(page.getByText('PASS', { exact: true })).toBeVisible({ timeout: 30_000 })
+  await page.getByRole('button', { name: 'Use this header' }).click()
+  // The detail chip is hidden on narrow screens by design, so check it exists.
+  await expect(page.locator('.header-chip', { hasText: /Via GIPHY · 15 fps/ })).toHaveCount(1)
+})

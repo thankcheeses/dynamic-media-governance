@@ -197,3 +197,15 @@ Added X-style profiles for every account (`/profile`, `/u/:handle`), reachable b
 | Playwright | 24/24 passed in Chromium, desktop and mobile (adds feed → profile header and strobe hard-block tests). WebKit was not available in this environment and was not run. |
 | Analyzer sanity check | A synthetic full-frame black/white strobe at 10 fps measured 5 flashes/s across 100% of the frame (hard block); a synthetic red pulse was flagged as red flash (hard block). The browser and Python analyzers agreed on four real-world GIFs supplied by the owner (flash counts 3, 1, 0 and 1 per second). Those GIFs were used for local testing only and are not in the repository. |
 | Manual check | Feed → profile navigation, header playback (muted, no autoplay attribute), pause while scrolling, still frame under reduced motion, provisional warning gate, upload of GIF and MP4, mobile drawer, no horizontal overflow at 390×844 |
+
+## 2026-10-30 — GIPHY search for headers
+
+Added GIPHY search to the header studio (`src/giphy.ts`, `src/components/GiphyPanel.tsx`). The viewer enters their own API key, which is stored only in their browser under `sound-reactions-giphy-key`. Results are rated PG and shown as still frames with "Powered by GIPHY" attribution. A picked GIF is downloaded and goes through the same scan and transcode as an upload before it can play, and its header chip reads "Via GIPHY".
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 19/19 passed |
+| Playwright | 26/26 passed in Chromium, desktop and mobile, including a new GIPHY test with mocked API and media responses. WebKit was not available here. |
+| Live GIPHY API | **Not tested.** This environment cannot reach api.giphy.com or media.giphy.com, and no real key was used. The request format follows GIPHY's documented search and trending endpoints and must be confirmed with a real key. |
+| Mocked checks | Rejected key shows an error; key is saved only in its own storage slot, not the demo state; requests send rating=pg; the grid shows still frames only; a strobe GIF is hard-blocked and a calm GIF passes and plays |
