@@ -244,3 +244,15 @@ Five more GIFs now play on the fictional profiles from GIPHY, one per corner of 
 | Playwright | 34/34 passed in Chromium, desktop and mobile (adds a browser-scan test with GIPHY mocked by the local calm GIF: the banner plays through the canvas, has no host video element, is credited, and the ⓘ tour says it was scanned in the browser). WebKit was not available here. |
 | Screenshots | Jordan's profile at 1280 and 390 px with GIPHY mocked: the scan note shows first, then the scanned frames play; the header studio lists the new picks with "Scanned in your browser when picked". No page errors, no horizontal overflow. |
 | Live GIPHY | **Not tested.** This environment cannot reach GIPHY, so the in-browser fetch (which needs GIPHY's CORS headers, as the existing GIPHY picker already assumes) and playback must be confirmed on the live site. |
+
+## 2026-10-30 — The owner's neon cats GIF on @mayamakes
+
+At the owner's request the neon cats GIF (a 1998 Purina commercial) is kept in the repository as `public/headers/neon-cats.gif`, with a WebM and a still frame made from it by ffmpeg, and plays on @mayamakes. The ⓘ tour's Source line says it is the owner's own file. A three.js banner rendered earlier in the session for this slot was discarded; the owner wanted the real GIF.
+
+| Check | Actual result |
+|---|---|
+| Measurement | `scripts/analyze-header.py` on the file: 13.26 fps, 5.58 s loop, 1.61 MB, 3 flashes per second across 25% of the frame, no red flash. Passes, exactly at the limit of 3. |
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 21/21 passed |
+| Playwright | 34/34 passed in Chromium, desktop and mobile. WebKit was not available here. |
+| Screenshot | Maya's profile at 1280 px: the GIF plays from the local WebM with the pause and ⓘ controls; no page errors. |

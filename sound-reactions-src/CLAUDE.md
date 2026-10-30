@@ -85,7 +85,7 @@ Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/pre
 ## Non-negotiable product invariants
 
 1. Keep the banner: `CONCEPT PROTOTYPE · NOT AFFILIATED WITH X`.
-2. No X login, API, scraping, posting, logo, Chirp font or copied X assets. All seed data stays fictional, except the owner account (@baynardmalone), whose photo the owner supplied and whose GIF picks are linked from their hosts, never copied. Fictional accounts use illustrated avatars, never realistic photos.
+2. No X login, API, scraping, posting, logo, Chirp font or copied X assets. All seed data stays fictional, except the owner account (@baynardmalone), whose photo the owner supplied and whose GIF picks are linked from their hosts, except `public/headers/neon-cats.gif`, which the owner supplied and asked to keep in the repository (`ownerFile` in `src/headers.ts`). Fictional accounts use illustrated avatars, never realistic photos.
 3. Never create/resume `AudioContext` or play audio on load, scroll, hover, focus or viewport entry. Start only from click/key handlers. Dynamic profile headers are the one kind of media that animates without a tap: they are silent (muted, no audio track), have no `autoplay` attribute, and follow rule 14.
 4. Starting any clip must stop the previous clip, including repeated instances of the same library sound.
 5. Reactions remain compact and default to an 8-second cap. Voice posts are full-width, author-owned and capped separately at 140 seconds.
