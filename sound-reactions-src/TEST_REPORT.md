@@ -299,3 +299,16 @@ The profile page now fills every tab honestly for every account: Posts (top-leve
 | Screenshots | `/me` landing, the import dialog, and the imported profile at 390 px: no page errors, no horizontal overflow. |
 | Real archives | **Not tested with a real X export** here (none available in this environment). The parser follows X's documented archive layout and tolerates both `tweet` and `tweets` wrappers and split `tweets-partN.js` files; please try it with your own archive on the live site and report anything that does not import. |
 | CSP | Set via `<meta http-equiv>`; the e2e suite ran against it without console errors. Headers cannot be set on GitHub Pages, so `frame-ancestors` is not enforced. |
+
+## 2026-11-02 — Upload your own sound (local-only)
+
+Section 4 of `SPEC.md`. The reaction picker has **Upload your own** and the composer has **Upload a sound**. A picked audio file is decoded with an `OfflineAudioContext` (renders nothing, so the "AudioContext only inside a click handler" rule is untouched), measured in the browser (duration, size, peak, and an approximate loudness: unweighted RMS with the BS.1770 −0.691 dB offset, flagged `approxLoudness`), and becomes a session-only blob: clip like a microphone recording. It must be described before it can be added; the eight-check preflight runs unchanged, labels the loudness as approximate and not EBU R128, and the copyright check stays SIMULATED, which the UI says next to the upload. No trim is offered: a clip over the cap is blocked by the duration check and the person picks a shorter file.
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 35/35 passed (3 new in `src/test/soundUpload.test.ts`: a 0.2-peak sine measures about −17.7 LUFS and −14 dBFS peak, two identical channels add 3 dB, silence reports −70; audio-file acceptance by type or extension; the built clip starts undescribed and flagged approximate) |
+| Playwright | 42/42 passed in Chromium, desktop and mobile (two new: a generated 1 s WAV uploaded in the picker is auto-selected, shows "about −17.x LUFS", the not-EBU-R128 and SIMULATED-copyright notes, cannot be added until described, then attaches as a reaction and leaves nothing about itself in localStorage; a generated 10 s WAV in the composer shows "10s submitted" and the publish button reads Blocked). WebKit was not available here. |
+| Screenshot | Picker at 390 px with the uploaded tile selected and the description filled: no page errors, no overflow. |
+| Formats | Only WAV was exercised in tests (generated). MP3/M4A/OGG decoding depends on the browser's codecs and was **not tested** here; try one of each on the live site. |
+| Loudness accuracy | The estimate is not K-weighted or gated. **Not compared against ffmpeg** on the same files here; treat the number as a rough guide, as the UI says. |

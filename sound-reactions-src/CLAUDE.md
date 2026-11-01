@@ -77,6 +77,7 @@ If Chromium is not discovered automatically, set `CHROME_PATH` to a local Chromi
 - `src/giphy.ts` + `src/components/GiphyPanel.tsx`: GIPHY search (rating PG, still-frame results, attribution) feeding the same scan as uploads.
 - `scripts/render-header.mjs` + `scripts/analyze-header.py`: render the three.js headers and measure them into `src/header-manifest.json`.
 - `scripts/generate-avatars.mjs`: illustrated avatars for the fictional accounts.
+- `src/soundUpload.ts`: decodes and measures a sound file the viewer picks (reaction picker and composer), building a session-only Clip; pure measurement helpers are unit-tested.
 - `src/archive.ts`: reads a person's own X data archive (zip or its `data/*.js` files) in the browser with fflate: account, profile, posts, likes and the images inside the zip; never contacts X; DOM-free apart from object URLs, unit-tested.
 - `src/importStore.ts`: the imported account, likes and Highlights pins, in memory only; imported posts go into the main store flagged `ephemeral`.
 - `src/components/ImportArchive.tsx`: the import dialog (steps, consent text, file picker). `src/pages/Privacy.tsx`: the privacy notice.
@@ -97,7 +98,7 @@ Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/pre
 7. Preserve play/pause/stop, elapsed/total time, progress, persistent mute/volume, reduced motion, data saver, hidden-tab and scroll-away behavior.
 8. Low-power mode is an explicit user setting; do not claim the browser provides a reliable low-power signal.
 9. Abuse and copyright checks must remain labeled `SIMULATED` unless replaced by real, documented services.
-10. Loudness: generated library files are leveled and measured at build time with ffmpeg EBU R128 (max momentary loudness, true peak ≤ −0.7 dBTP). Synthesized fallback sounds and live recordings are not measured. Never call any of it certified.
+10. Loudness: generated library files are leveled and measured at build time with ffmpeg EBU R128 (max momentary loudness, true peak ≤ −0.7 dBTP). Synthesized fallback sounds and live recordings are not measured. Sounds a viewer uploads (`src/soundUpload.ts`) are decoded with an OfflineAudioContext and given an approximate loudness (unweighted RMS with the BS.1770 offset, flagged `approxLoudness`), which the preflight labels as approximate and not EBU R128; uploads stay in the tab as blob: URLs like recordings, must be described before they can be added, and the copyright check on them is still SIMULATED. Never call any of it certified.
 11. Recording requires the permission explainer and browser permission. Denial/unavailability uses a clearly labeled simulated fallback.
 12. Do not add biometric identity requirements or video-only limits to audio.
 13. WCAG 2.2 AA is a design target, not a certification. No ADA Title II applicability or X affiliation claim.

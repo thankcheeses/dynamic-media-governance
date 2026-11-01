@@ -299,3 +299,44 @@ test('an X archive zip is read in the browser, fills the tabs, makes no outside 
   await page.goto('/me')
   await expect(page.getByRole('heading', { name: 'See this with your own posts' })).toBeVisible()
 })
+
+/** A 16-bit mono PCM WAV of a 440 Hz sine at the given peak, generated in the test. */
+function wav(seconds: number, amplitude = 0.2, rate = 8000): Buffer {
+  const n = Math.round(seconds * rate)
+  const data = Buffer.alloc(n * 2)
+  for (let i = 0; i < n; i++) data.writeInt16LE(Math.round(amplitude * 32767 * Math.sin((2 * Math.PI * 440 * i) / rate)), i * 2)
+  const header = Buffer.alloc(44)
+  header.write('RIFF', 0); header.writeUInt32LE(36 + data.length, 4); header.write('WAVE', 8)
+  header.write('fmt ', 12); header.writeUInt32LE(16, 16); header.writeUInt16LE(1, 20); header.writeUInt16LE(1, 22)
+  header.writeUInt32LE(rate, 24); header.writeUInt32LE(rate * 2, 28); header.writeUInt16LE(2, 32); header.writeUInt16LE(16, 34)
+  header.write('data', 36); header.writeUInt32LE(data.length, 40)
+  return Buffer.concat([header, data])
+}
+
+test('a sound uploaded from the device is measured here, must be described, and becomes a reaction', async ({ page }) => {
+  await page.getByRole('button', { name: 'Add sound reaction' }).first().click()
+  const dialog = page.getByRole('dialog', { name: 'Add a sound reaction' })
+  await page.getByTestId('sound-upload').setInputFiles({ name: 'air-horn.wav', mimeType: 'audio/wav', buffer: wav(1) })
+  await expect(dialog.getByRole('radio', { name: /air horn/ })).toHaveAttribute('aria-checked', 'true')
+  await expect(dialog.getByText(/about -17\.\d LUFS|about -18 LUFS/)).toBeVisible()
+  await expect(dialog.getByText(/not EBU R128/)).toBeVisible()
+  await expect(dialog.getByText(/copyright check is SIMULATED/)).toBeVisible()
+  const add = dialog.getByRole('button', { name: 'Add air horn reaction' })
+  await expect(add).toBeDisabled()
+  await dialog.getByLabel(/Describe the sound/).fill('A short air horn blast')
+  await add.click()
+  await expect(page.getByText('air horn reaction added')).toBeVisible()
+  await expect(page.locator('.x-reaction').filter({ hasText: 'air horn' }).first()).toBeVisible()
+  // The reaction's audio is a blob in this tab; nothing about it is persisted.
+  const stored = await page.evaluate(() => localStorage.getItem('sound-reactions-demo-v3') ?? '')
+  expect(stored).not.toContain('air horn')
+})
+
+test('an uploaded clip over the reaction cap is blocked by the duration check in the composer', async ({ page }) => {
+  await page.goto('/compose')
+  await page.getByTestId('composer-sound-upload').setInputFiles({ name: 'long-clip.wav', mimeType: 'audio/wav', buffer: wav(10) })
+  await expect(page.getByText(/long clip loaded from your device/)).toBeVisible()
+  await expect(page.getByText(/measured in your browser, not EBU R128/).first()).toBeVisible()
+  await expect(page.getByText('10s submitted')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Blocked' })).toBeDisabled()
+})

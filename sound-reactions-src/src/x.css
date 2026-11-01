@@ -612,3 +612,11 @@ a.x-follow-name:hover strong { text-decoration: underline; }
 .privacy-notice code { font-size: 13px; background: var(--x-input); padding: 1px 5px; border-radius: 4px; }
 .import-archive .fine-print, .import-landing-body .fine-print { display: block; }
 .import-steps { list-style: decimal; }
+
+/* Upload your own sound */
+.x-sound-upload .x-sound-select { border-style: dashed; }
+.x-upload-describe { display: grid; gap: 8px; margin: 12px 0; }
+.x-upload-describe label { display: grid; gap: 6px; font-weight: 700; font-size: 14px; }
+.x-upload-describe label .fine-print { display: inline; font-weight: 400; margin-left: 6px; }
+.x-upload-describe textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--x-input); color: var(--text); font: inherit; font-size: 15px; resize: vertical; }
+.x-upload-notes { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--x-gray); font-size: 13px; }
