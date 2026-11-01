@@ -10,10 +10,10 @@
     "sizeMB": 3.83,
     "flashesPerSecond": 0,
     "redFlashesPerSecond": 0,
-    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen; not a certified PEA tool)",
-    "measuredAt": "2026-10-30",
-    "redFlash": false,
-    "flashArea": 0.0
+    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen with the CIE 1976 UCS red flash rule; not a certified PEA tool)",
+    "measuredAt": "2026-11-01",
+    "flashArea": 0.0,
+    "redSource": "citrus.webm"
   },
   {
     "id": "clay-orbit",
@@ -27,9 +27,8 @@
     "flashesPerSecond": 0,
     "redFlashesPerSecond": 0,
     "flashArea": 0.0,
-    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen; not a certified PEA tool)",
-    "measuredAt": "2026-10-30",
-    "redFlash": false
+    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen with the CIE 1976 UCS red flash rule; not a certified PEA tool)",
+    "measuredAt": "2026-11-01"
   },
   {
     "id": "moss",
@@ -42,10 +41,10 @@
     "sizeMB": 3.76,
     "flashesPerSecond": 0,
     "redFlashesPerSecond": 0,
-    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen; not a certified PEA tool)",
-    "measuredAt": "2026-10-30",
-    "redFlash": false,
-    "flashArea": 0.0
+    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen with the CIE 1976 UCS red flash rule; not a certified PEA tool)",
+    "measuredAt": "2026-11-01",
+    "flashArea": 0.0,
+    "redSource": "moss.webm"
   },
   {
     "id": "neon-cats",
@@ -57,11 +56,10 @@
     "loopSeconds": 5.58,
     "sizeMB": 1.61,
     "flashesPerSecond": 3,
-    "redFlashesPerSecond": 0,
+    "redFlashesPerSecond": 2,
     "flashArea": 0.25,
-    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen; not a certified PEA tool)",
-    "measuredAt": "2026-10-30",
-    "redFlash": false
+    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen with the CIE 1976 UCS red flash rule; not a certified PEA tool)",
+    "measuredAt": "2026-11-01"
   },
   {
     "id": "sea-glass",
@@ -74,10 +72,10 @@
     "sizeMB": 4.49,
     "flashesPerSecond": 0,
     "redFlashesPerSecond": 0,
-    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen; not a certified PEA tool)",
-    "measuredAt": "2026-10-30",
-    "redFlash": false,
-    "flashArea": 0.0
+    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen with the CIE 1976 UCS red flash rule; not a certified PEA tool)",
+    "measuredAt": "2026-11-01",
+    "flashArea": 0.0,
+    "redSource": "sea-glass.webm"
   },
   {
     "id": "violet-hour",
@@ -90,9 +88,9 @@
     "sizeMB": 3.6,
     "flashesPerSecond": 0,
     "redFlashesPerSecond": 0,
-    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen; not a certified PEA tool)",
-    "measuredAt": "2026-10-30",
-    "redFlash": false,
-    "flashArea": 0.0
+    "analyzer": "scripts/analyze-header.py (simplified WCAG 2.3.1 screen with the CIE 1976 UCS red flash rule; not a certified PEA tool)",
+    "measuredAt": "2026-11-01",
+    "flashArea": 0.0,
+    "redSource": "violet-hour.webm"
   }
 ]

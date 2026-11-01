@@ -1,8 +1,9 @@
 /**
  * In-browser screening for a header a viewer uploads (GIF or short video).
- * Mirrors scripts/analyze-header.py: the same simplified WCAG 2.3.1 general
- * flash and red flash test, the same area rule and the same loop wrap.
- * It is a screening aid for the prototype, not a certified PEA tool.
+ * The flash arithmetic lives in src/flash.ts (WCAG 2.2 general flash and the
+ * CIE 1976 UCS red flash rule, the 25%-of-field area rule and the loop wrap),
+ * mirrored by scripts/analyze-header.py. It is a screening aid for the
+ * prototype, not a certified PEA tool.
  *
  * It also does the platform's transcode step: the file becomes a sequence of
  * frames at no more than 15 fps, cropped to the 3:1 header, with no audio.
@@ -10,13 +11,8 @@
  */
 import { decompressFrames, parseGIF } from 'gifuct-js'
 import { HEADER_LIMITS, type HeaderMeasurement } from './headers'
+import { maxFlashesPerSecond, REF_W, sampleOf, transitions } from './flash'
 
-const LUM_DELTA = 0.1
-const DARK_MAX = 0.8
-const RED_RATIO = 0.8
-const RED_DELTA = 20
-const REF_W = 1024
-const AREA_PX = 21824
 const ANALYSIS_W = 480
 const PLAYER_W = 600
 const PLAYER_H = 200
@@ -39,60 +35,6 @@ export interface UploadAnalysis {
   measurement: HeaderMeasurement
   media: UploadedMedia
   notes: string[]
-}
-
-const lin = (c: number) => { const v = c / 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
-const LIN = Float32Array.from({ length: 256 }, (_, i) => lin(i))
-
-interface Sample { lum: Float32Array; red: Float32Array }
-
-function sampleOf(data: Uint8ClampedArray): Sample {
-  const n = data.length / 4
-  const lum = new Float32Array(n), red = new Float32Array(n)
-  for (let i = 0; i < n; i++) {
-    const r = data[i * 4], g = data[i * 4 + 1], b = data[i * 4 + 2]
-    const R = LIN[r], G = LIN[g], B = LIN[b]
-    lum[i] = 0.2126 * R + 0.7152 * G + 0.0722 * B
-    red[i] = r / Math.max(r + g + b, 1e-6) >= RED_RATIO ? (R - G - B) * 320 : 0
-  }
-  return { lum, red }
-}
-
-/** Transition direction per step (+1, -1, 0), counting only large-area changes. */
-function transitions(samples: Sample[], scale: number) {
-  const general: number[] = [], red: number[] = []
-  let maxArea = 0
-  for (let i = 0; i < samples.length; i++) {
-    const a = samples[i], b = samples[(i + 1) % samples.length]
-    let up = 0, down = 0, rUp = 0, rDown = 0
-    for (let p = 0; p < a.lum.length; p++) {
-      const darker = Math.min(a.lum[p], b.lum[p])
-      const d = b.lum[p] - a.lum[p]
-      if (darker < DARK_MAX) { if (d >= LUM_DELTA) up++; else if (-d >= LUM_DELTA) down++ }
-      const dr = b.red[p] - a.red[p]
-      if (dr > RED_DELTA) rUp++; else if (dr < -RED_DELTA) rDown++
-    }
-    const step = up * scale > AREA_PX ? 1 : down * scale > AREA_PX ? -1 : 0
-    general.push(step)
-    if (step !== 0) maxArea = Math.max(maxArea, Math.max(up, down) / a.lum.length)
-    red.push(rUp * scale > AREA_PX ? 1 : rDown * scale > AREA_PX ? -1 : 0)
-  }
-  return { general, red, maxArea }
-}
-
-/** Most flashes (pairs of opposing transitions) in any one-second window. */
-function maxFlashesPerSecond(steps: number[], durationsMs: number[]) {
-  const events: Array<[number, number]> = []
-  let t = 0
-  steps.forEach((s, i) => { if (s !== 0) events.push([t / 1000, s]); t += durationsMs[i] })
-  let best = 0
-  for (const [start] of events) {
-    const window = events.filter(([at]) => at >= start && at < start + 1).map(([, s]) => s)
-    let opposing = 0
-    for (let i = 1; i < window.length; i++) if (window[i] !== window[i - 1]) opposing++
-    best = Math.max(best, window.length ? Math.floor((opposing + 1) / 2) : 0)
-  }
-  return best
 }
 
 function canvas(w: number, h: number) {
@@ -188,7 +130,7 @@ export async function analyzeUpload(file: File, origin?: { source: 'device' | 'g
     loopSeconds,
     sizeMB: Math.round((file.size / 1048576) * 100) / 100,
     flashesPerSecond,
-    redFlash: redFlashes > 0,
+    redFlashesPerSecond: redFlashes,
     flashArea: Math.round(maxArea * 100) / 100,
   }
 
