@@ -40,6 +40,11 @@ export interface QuotedPost {
   verified?: boolean
 }
 
+export type PostMedia =
+  | { kind: 'image'; url: string; alt?: string }
+  /** Media the post had on X that was not in what the person imported. */
+  | { kind: 'missing'; note: string }
+
 export interface Post {
   id: string
   author: string
@@ -48,6 +53,15 @@ export interface Post {
   timestamp: string
   body: string
   verified?: boolean
+  /** Avatar image (object or data URL) when the author has one; otherwise initials are drawn. */
+  photo?: string
+  /** Set on a reply: the handle it answers. */
+  replyTo?: string
+  /** Set on a repost: the handle of the original author. */
+  repostOf?: string
+  media?: PostMedia[]
+  /** Imported from the viewer's own archive: lives in memory only and is never persisted. */
+  ephemeral?: boolean
   quote?: QuotedPost
   topics?: string[]
   voice?: Clip

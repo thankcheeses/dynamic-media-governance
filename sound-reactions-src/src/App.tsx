@@ -7,8 +7,9 @@ import Feed from './pages/Feed'
 import Governance from './pages/Governance'
 import Presentation from './pages/Presentation'
 import Profile from './pages/Profile'
+import Privacy from './pages/Privacy'
 import SettingsPage from './pages/Settings'
 
 export default function App() {
-  return <Layout><Routes><Route path="/" element={<Feed />} /><Route path="/compose" element={<Composer />} /><Route path="/compare" element={<Compare />} /><Route path="/governance" element={<Governance />} /><Route path="/audit" element={<Audit />} /><Route path="/profile" element={<Profile />} /><Route path="/u/:handle" element={<Profile />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/presentation" element={<Presentation />} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Layout>
+  return <Layout><Routes><Route path="/" element={<Feed />} /><Route path="/compose" element={<Composer />} /><Route path="/compare" element={<Compare />} /><Route path="/governance" element={<Governance />} /><Route path="/audit" element={<Audit />} /><Route path="/profile" element={<Profile />} /><Route path="/u/:handle" element={<Profile />} /><Route path="/me" element={<Profile me />} /><Route path="/privacy" element={<Privacy />} /><Route path="/settings" element={<SettingsPage />} /><Route path="/presentation" element={<Presentation />} /><Route path="*" element={<Navigate to="/" replace />} /></Routes></Layout>
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { AudioLines, FileClock, GitCompareArrows, Home, MoreHorizontal, PenLine, Presentation, Search, Settings, ShieldCheck, UserRound, Volume2, VolumeX } from 'lucide-react'
+import { AudioLines, FileClock, FolderArchive, GitCompareArrows, Home, MoreHorizontal, PenLine, Presentation, Search, Settings, ShieldCheck, UserRound, Volume2, VolumeX } from 'lucide-react'
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { audioController, useAudio } from '../audio'
@@ -95,7 +95,7 @@ function AccountDrawer({ onClose }: { onClose: () => void }) {
       <ul>
         {items.map(({ to, label, icon: Icon }) => <li key={to}><Link to={to} onClick={onClose}><Icon size={24} aria-hidden="true" />{label}</Link></li>)}
       </ul>
-      <div className="x-drawer-foot"><Link to="/settings" onClick={onClose}><Settings size={20} aria-hidden="true" />Settings and privacy</Link></div>
+      <div className="x-drawer-foot"><Link to="/me" onClick={onClose}><FolderArchive size={20} aria-hidden="true" />Preview with your X archive</Link><Link to="/settings" onClick={onClose}><Settings size={20} aria-hidden="true" />Settings and privacy</Link></div>
     </nav>
   </div>
 }
@@ -183,6 +183,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <Link to="/governance">Safety</Link><span aria-hidden="true">·</span>
             <Link to="/settings">Accessibility</Link><span aria-hidden="true">·</span>
             <Link to="/audit">Audit log</Link><span aria-hidden="true">·</span>
+            <Link to="/privacy">Privacy</Link><span aria-hidden="true">·</span>
             {HAS_GENERATED_AUDIO && <><span>Sounds and voice made with <a href="https://elevenlabs.io" target="_blank" rel="noreferrer">elevenlabs.io</a></span><span aria-hidden="true">·</span></>}
             <span>© 2026 Independent concept · Not affiliated with X · All accounts fictional</span>
           </nav>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { AudioLines, BadgeCheck, BarChart2, Bookmark, Copy, EyeOff, Heart, MessageCircle, MoreHorizontal, Plus, Repeat2, Share } from 'lucide-react'
+import { AudioLines, BadgeCheck, BarChart2, Bookmark, Copy, EyeOff, Heart, MessageCircle, MoreHorizontal, Pin, PinOff, Plus, Repeat2, Share } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { burstRing, popIcon, rollCount } from '../motion'
@@ -8,6 +8,7 @@ import type { Post, QuotedPost } from '../types'
 import { avatarContent, avatarStyle } from '../avatar'
 import { OWNER_HANDLE, profilePath } from '../accounts'
 import { ownerLook, useIdentity } from '../identity'
+import { useImport } from '../importStore'
 import { SoundReactionChip, VoicePostPlayer } from './AudioClip'
 import { ReactionPicker } from './ReactionPicker'
 
@@ -47,6 +48,10 @@ function QuoteCard({ quote }: { quote: QuotedPost }) {
 
 function PostMenu({ post, onMute }: { post: Post; onMute?: (handle: string) => void }) {
   const [open, setOpen] = useState(false)
+  // Highlights are a local pin, for the viewer's own posts: the imported archive or the owner demo.
+  const pinnable = post.ephemeral || post.handle === OWNER_HANDLE
+  const pinned = useImport((state) => state.highlights.includes(post.id))
+  const toggleHighlight = useImport((state) => state.toggleHighlight)
   useEffect(() => {
     if (!open) return
     const close = () => setOpen(false)
@@ -62,6 +67,7 @@ function PostMenu({ post, onMute }: { post: Post; onMute?: (handle: string) => v
     <button className="x-mini-button" onClick={(event) => { event.stopPropagation(); setOpen(!open) }} aria-label={`More options for ${post.handle} post`} aria-expanded={open}><MoreHorizontal size={18} /></button>
     {open && <div className="x-menu" onClick={(event) => event.stopPropagation()}>
       <button onClick={() => void copy()}><Copy size={17} /> Copy post text</button>
+      {pinnable && <button onClick={() => { setOpen(false); toggleHighlight(post.id); toast(pinned ? 'Removed from Highlights' : 'Added to Highlights (on this device)') }}>{pinned ? <><PinOff size={17} /> Remove from Highlights</> : <><Pin size={17} /> Add to Highlights</>}</button>}
       {onMute && <button onClick={() => { setOpen(false); onMute(post.handle) }}><EyeOff size={17} /> Mute {post.handle}</button>}
     </div>}
   </div>
@@ -104,8 +110,9 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
 
   return (
     <article className={`x-post ${embedded ? 'embedded' : ''}`} aria-label={`Post by ${author}`}>
-      <Link to={profilePath(post.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(initials)}>{avatarContent(initials, me?.photo)}</Link>
+      <Link to={profilePath(post.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(initials)}>{avatarContent(initials, me?.photo ?? post.photo)}</Link>
       <div className="x-post-main">
+        {post.repostOf && <div className="x-post-context"><Repeat2 size={14} aria-hidden="true" /> {author} reposted {post.repostOf}</div>}
         <header className="x-post-byline">
           <Link to={profilePath(post.handle)} className="x-name-link" aria-label={`${author}, view profile`}><strong>{author}</strong></Link>{verified && <Verified />}
           <span className="x-handle">{shownHandle}</span>
@@ -113,7 +120,13 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
           <span className="x-time">{post.timestamp}</span>
           {!embedded && <PostMenu post={post} onMute={onMute} />}
         </header>
-        <p className="x-post-text">{post.body}</p>
+        {post.replyTo && <p className="x-reply-to">Replying to <span>{post.replyTo}</span></p>}
+        {post.body && <p className="x-post-text">{post.body}</p>}
+        {post.media && <div className={`x-media-grid count-${Math.min(post.media.length, 4)}`}>
+          {post.media.slice(0, 4).map((item, index) => item.kind === 'image'
+            ? <img key={index} src={item.url} alt={item.alt ?? 'Image from your post'} loading="lazy" />
+            : <div key={index} className="x-media-missing" role="img" aria-label={item.note}>{item.note}</div>)}
+        </div>}
         {post.quote && <QuoteCard quote={post.quote} />}
         {post.voice && <VoicePostPlayer clip={post.voice} handle={shownHandle} initials={initials} photo={me?.photo} />}
         {post.reaction && <SoundReactionChip reaction={post.reaction} post={post} />}
