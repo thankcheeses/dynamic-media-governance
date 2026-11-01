@@ -222,3 +222,80 @@ test('the welcome tour opens on a first visit, links back to the proposal, and s
   await page.getByRole('button', { name: 'Take the tour' }).click()
   await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toBeVisible()
 })
+
+test('an X archive zip is read in the browser, fills the tabs, makes no outside requests, and clears cleanly', async ({ page, baseURL }) => {
+  const { zipSync, strToU8 } = await import('fflate')
+  const ytd = (name: string, rows: unknown[]) => strToU8(`window.YTD.${name}.part0 = ${JSON.stringify(rows)}`)
+  // 1×1 PNG, so the Media tab has a real image from the archive.
+  const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64')
+  const zip = zipSync({
+    'data/account.js': ytd('account', [{ account: { email: 'hidden@example.com', username: 'archivetester', accountId: '42', createdAt: 'Mon Mar 02 10:00:00 +0000 2015', accountDisplayName: 'Archive Tester' } }]),
+    'data/profile.js': ytd('profile', [{ profile: { description: { bio: 'Imported from a zip, on this device.', website: '', location: 'Houston' }, avatarMediaUrl: 'https://pbs.twimg.com/profile_images/1/me.png', headerMediaUrl: '' } }]),
+    'data/tweets.js': ytd('tweets', [
+      { tweet: { id_str: '100', full_text: 'My first archived post', created_at: 'Wed Oct 10 20:19:24 +0000 2018', favorite_count: '5', retweet_count: '1', entities: { urls: [] } } },
+      { tweet: { id_str: '101', full_text: '@friend agreed', created_at: 'Thu Oct 11 09:00:00 +0000 2018', in_reply_to_screen_name: 'friend', entities: { urls: [] } } },
+      { tweet: { id_str: '102', full_text: 'a picture https://t.co/p', created_at: 'Fri Oct 12 09:00:00 +0000 2018', entities: { urls: [], media: [{ url: 'https://t.co/p' }] }, extended_entities: { media: [{ type: 'photo', media_url_https: 'https://pbs.twimg.com/media/pic.png', ext_alt_text: 'A tiny square' }] } } },
+    ]),
+    'data/like.js': ytd('like', [{ like: { tweetId: '7', fullText: 'Something I liked', expandedUrl: 'https://x.com/i/web/status/7' } }]),
+    'data/profile_media/42-me.png': new Uint8Array(png),
+    'data/tweets_media/102-pic.png': new Uint8Array(png),
+    'data/direct-messages.js': ytd('direct_messages', [{ dmConversation: { messages: [{ text: 'never shown' }] } }]),
+  })
+
+  // The only hosts the page may talk to are the ones the privacy notice names (GIF hosts for banners). Never X.
+  const allowed = /^(blob:|data:)|^https:\/\/([a-z0-9-]+\.)?(giphy|tenor)\.com\//
+  const outside: string[] = []
+  page.on('request', (request) => { const url = request.url(); if (!url.startsWith(baseURL!) && !allowed.test(url)) outside.push(url) })
+
+  await page.goto('/me')
+  await expect(page.getByRole('heading', { name: 'See this with your own posts' })).toBeVisible()
+  await page.getByRole('button', { name: 'Preview with my X archive' }).click()
+  await expect(page.getByRole('dialog', { name: 'Preview with your X archive' })).toBeVisible()
+  await page.getByTestId('archive-files').setInputFiles({ name: 'twitter-archive.zip', mimeType: 'application/zip', buffer: Buffer.from(zip) })
+
+  await expect(page).toHaveURL(/\/me$/)
+  await expect(page.getByRole('heading', { level: 1, name: /Archive Tester/ })).toBeVisible()
+  await expect(page.getByText('@archivetester').first()).toBeVisible()
+  await expect(page.getByText('From your X archive · on this device only')).toBeVisible()
+  await expect(page.getByText('Imported from a zip, on this device.')).toBeVisible()
+  await expect(page.locator('.x-profile-avatar img')).toBeVisible()
+  // Posts tab: top-level posts only, newest first; the reply is not here.
+  await expect(page.getByRole('article', { name: 'Post by Archive Tester' })).toHaveCount(2)
+  await expect(page.getByText('My first archived post')).toBeVisible()
+  await expect(page.getByText('@friend agreed')).toHaveCount(0)
+  await page.getByRole('tab', { name: 'Replies' }).click()
+  await expect(page.getByText('@friend agreed')).toBeVisible()
+  await expect(page.getByText('Replying to @friend')).toBeVisible()
+  await page.getByRole('tab', { name: 'Media' }).click()
+  await expect(page.getByRole('img', { name: 'A tiny square' })).toBeVisible()
+  await page.getByRole('tab', { name: 'Likes' }).click()
+  await expect(page.getByText('Something I liked')).toBeVisible()
+  await page.getByRole('tab', { name: 'Highlights' }).click()
+  await expect(page.getByText('X does not include Highlights in the archive.')).toBeVisible()
+  // Pin a post to Highlights from its menu.
+  await page.getByRole('tab', { name: 'Posts' }).click()
+  await page.getByRole('button', { name: 'More options for @archivetester post' }).first().click()
+  await page.getByRole('button', { name: 'Add to Highlights' }).click()
+  await page.getByRole('tab', { name: 'Highlights' }).click()
+  await expect(page.getByRole('article', { name: 'Post by Archive Tester' })).toHaveCount(1)
+  // The imported posts also sit in the home timeline (navigating in-app: a reload drops the import by design).
+  await page.getByRole('link', { name: 'Sound Reactions home' }).first().click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(page.getByText('My first archived post')).toBeVisible()
+  // Nothing from the archive is written to storage, and nothing left the device.
+  const stored = await page.evaluate(() => Object.keys(localStorage).map((key) => localStorage.getItem(key) ?? '').join(''))
+  expect(stored).not.toContain('archivetester')
+  expect(stored).not.toContain('hidden@example.com')
+  expect(outside, `requests to other hosts: ${outside.join(', ')}`).toEqual([])
+  // Clear my import returns to the demo profile and empties the timeline of archive posts.
+  await page.goBack()
+  await expect(page).toHaveURL(/\/me$/)
+  await page.getByRole('button', { name: 'Clear my import' }).click()
+  await expect(page).toHaveURL(/\/profile$/)
+  await expect(page.getByRole('heading', { level: 1, name: /B\. Baynard-Malone/ })).toBeVisible()
+  await page.getByRole('link', { name: 'Sound Reactions home' }).first().click()
+  await expect(page.getByText('My first archived post')).toHaveCount(0)
+  // And a reload after an import starts from nothing: /me shows the landing again.
+  await page.goto('/me')
+  await expect(page.getByRole('heading', { name: 'See this with your own posts' })).toBeVisible()
+})

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { ArrowLeft, CalendarDays, Check, Link2, Loader2, MoreHorizontal, Search, ShieldCheck, Upload, X as XIcon } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Check, FolderArchive, Link2, Loader2, MapPin, MoreHorizontal, Search, ShieldCheck, Upload, X as XIcon } from 'lucide-react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { DynamicHeader, HeaderThumb } from '../components/DynamicHeader'
@@ -13,6 +13,9 @@ import { fetchHostedFile, scanHosted } from '../hostedScan'
 import { BIO_MAX, HANDLE_MAX, NAME_MAX, initialsOf, normalizeHandle, ownerLook, squarePhoto, useIdentity } from '../identity'
 import { DEFAULT_HEADER_ID, HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, scanHeader, type HeaderDecision, type HeaderPreset, type HeaderScan } from '../headers'
 import { useAppStore } from '../store'
+import { isImportedHandle, useImport } from '../importStore'
+import { ImportArchive } from '../components/ImportArchive'
+import type { ImportedAccount } from '../archive'
 
 const decisionLabel: Record<HeaderScan['decision'], string> = {
   PASS: 'PASS',
@@ -252,36 +255,72 @@ function MakeItYours({ onDone }: { onDone: () => void }) {
   </div>
 }
 
-function headerFor(account: Account, own: { presetId: string; decision: HeaderDecision }): { preset: HeaderPreset; decision: HeaderDecision } | null {
-  if (account.handle === OWNER_HANDLE) return { preset: headerPreset(own.presetId === 'upload' ? DEFAULT_HEADER_ID : own.presetId), decision: own.presetId === 'upload' ? 'PASS' : own.decision }
+function headerFor(account: Account, own: { presetId: string; decision: HeaderDecision }, mine: boolean): { preset: HeaderPreset; decision: HeaderDecision } | null {
+  if (mine) return { preset: headerPreset(own.presetId === 'upload' ? DEFAULT_HEADER_ID : own.presetId), decision: own.presetId === 'upload' ? 'PASS' : own.decision }
   return account.headerId ? { preset: headerPreset(account.headerId), decision: account.headerDecision ?? 'PASS' } : null
 }
 
 const TABS = ['Posts', 'Replies', 'Highlights', 'Media', 'Likes'] as const
 const compact = (n: number) => (n >= 10000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K` : n.toLocaleString())
 
-function ProfileView({ handle }: { handle?: string }) {
+/** The imported archive account in the shape the profile page renders. */
+function importedAsAccount(imp: ImportedAccount): Account & { photo?: string; headerStill?: string; location: string; website: string; joined: string } {
+  return { handle: imp.handle, name: imp.name, initials: imp.initials, verified: imp.verified, bio: imp.bio, headerId: null, following: imp.following ?? 0, followers: imp.followers ?? 0, fictional: false, photo: imp.photo, headerStill: imp.headerStill, location: imp.location, website: imp.website, joined: imp.joined }
+}
+
+/** /me before anything is imported: explains the preview and opens the importer. */
+function ImportLanding() {
+  const [open, setOpen] = useState(false)
+  const close = useCallback(() => setOpen(false), [])
+  return <div className="x-profile import-landing">
+    <div className="x-profile-bar"><div><strong>Preview with your X archive</strong><span>Your profile, on this device only</span></div></div>
+    <section className="import-landing-body">
+      <FolderArchive size={40} aria-hidden="true" />
+      <h1>See this with your own posts</h1>
+      <p>Pick the data archive X gives you and the prototype shows <strong>your</strong> profile and timeline with a moving banner and sound reactions. It is read in your browser: nothing is uploaded, there is no login, and nothing changes on X.</p>
+      <button type="button" className="x-follow-cta" onClick={() => setOpen(true)} aria-haspopup="dialog">Preview with my X archive</button>
+      <p className="fine-print">Not ready? <Link to="/profile">Try the demo profile</Link> instead, or read the <Link to="/privacy">privacy notice</Link>.</p>
+    </section>
+    {open && <ImportArchive onDone={close} />}
+  </div>
+}
+
+function ProfileView({ handle, imported = false }: { handle?: string; imported?: boolean }) {
   const navigate = useNavigate()
   const { posts, profileHeader, uploadedHeader } = useAppStore()
+  const importState = useImport()
   const [editing, setEditing] = useState(false)
   const [personalizing, setPersonalizing] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const closeImport = useCallback(() => setImporting(false), [])
   const [following, setFollowing] = useState(false)
   const [tab, setTab] = useState<(typeof TABS)[number]>('Posts')
   const close = useCallback(() => setEditing(false), [])
   const closePersonalize = useCallback(() => setPersonalizing(false), [])
   const identity = useIdentity((state) => state.identity)
-  const found = accountFor(handle ?? OWNER_HANDLE)
+  const isImported = imported || isImportedHandle(handle, importState.account)
+  const importedAccount = isImported && importState.account ? importedAsAccount(importState.account) : null
+  const found = isImported ? importedAccount : accountFor(handle ?? OWNER_HANDLE)
   useEffect(() => { window.scrollTo(0, 0) }, [])
-  if (!found) return <Navigate to="/" replace />
+  if (!found) return imported ? <ImportLanding /> : <Navigate to="/" replace />
 
   const isOwner = found.handle === OWNER_HANDLE
   // The owner account is shown with the visitor's own identity when they have set one.
   const me = isOwner ? ownerLook(identity) : null
   const account: Account & { photo?: string } = me ? { ...found, name: me.name, bio: me.bio, initials: me.initials, verified: !me.custom, photo: me.photo } : found
   const shownHandle = me?.handle ?? account.handle
+  // The viewer's own profile: the owner demo, or their imported archive. Both use the viewer's header pick.
+  const mine = isOwner || isImported
   const own = posts.filter((post) => post.handle === account.handle)
-  const header = headerFor(account, profileHeader)
-  const ownUpload = isOwner && profileHeader.presetId === 'upload' ? uploadedHeader : null
+  const topLevel = own.filter((post) => !post.replyTo)
+  const replies = own.filter((post) => post.replyTo)
+  const withMedia = own.filter((post) => post.media?.some((item) => item.kind === 'image'))
+  const highlighted = own.filter((post) => importState.highlights.includes(post.id))
+  const header = headerFor(account, profileHeader, mine)
+  const ownUpload = mine && profileHeader.presetId === 'upload' ? uploadedHeader : null
+  // Until the viewer picks a banner, their imported profile shows the still header image from the archive.
+  const archiveStill = isImported && profileHeader.presetId === DEFAULT_HEADER_ID && !ownUpload ? importedAccount?.headerStill : undefined
+  const clearImport = () => { importState.clear(); toast('Your import was cleared from this device'); navigate('/profile') }
   const back = () => (window.history.length > 1 ? navigate(-1) : navigate('/'))
   const share = async () => {
     const url = window.location.href
@@ -291,11 +330,13 @@ function ProfileView({ handle }: { handle?: string }) {
   return <div className="x-profile">
     <div className="x-profile-bar">
       <button type="button" className="icon-button" onClick={back} aria-label="Back"><ArrowLeft size={20} /></button>
-      <div><strong>{account.name} {account.verified && <Verified />}</strong><span>{own.length} {own.length === 1 ? 'post' : 'posts'}</span></div>
+      <div><strong>{account.name} {account.verified && <Verified />}</strong><span>{isImported && importState.stats ? `${importState.stats.posts.toLocaleString()} posts` : `${own.length} ${own.length === 1 ? 'post' : 'posts'}`}</span></div>
     </div>
     <div className="x-profile-banner">
       {ownUpload
         ? <DynamicHeader key={`upload-${profileHeader.decision}`} preset={{ id: 'upload', name: ownUpload.name, description: `Uploaded header: ${ownUpload.name}`, style: 'upload', ...ownUpload.measurement, fps: Math.round(1000 / ownUpload.frameMs), measured: true }} decision={profileHeader.decision} upload={ownUpload} />
+        : archiveStill
+          ? <div className="dynamic-header"><img className="still" src={archiveStill} alt="Your X header image, from your archive" /></div>
         : header?.preset.scanInBrowser
           ? <ScannedHostedHeader key={`${account.handle}-${header.preset.id}`} preset={header.preset} />
           : header
@@ -311,10 +352,16 @@ function ProfileView({ handle }: { handle?: string }) {
     </div>
     <div className="x-profile-head">
       <span className="avatar x-profile-avatar" aria-hidden="true" style={avatarStyle(account.initials)}>{avatarContent(account.initials, account.photo)}</span>
-      {isOwner
+      {isImported
+        ? <div className="x-profile-buttons">
+            <button type="button" className="x-edit-profile x-share" onClick={clearImport}>Clear my import</button>
+            <button type="button" className="x-edit-profile" onClick={() => setEditing(true)} aria-haspopup="dialog">Edit profile</button>
+          </div>
+        : isOwner
         ? <div className="x-profile-buttons">
             <button type="button" className="x-edit-profile x-share" onClick={share}>Share</button>
             <button type="button" className="x-edit-profile" onClick={() => setPersonalizing(true)} aria-haspopup="dialog">{me?.custom ? 'Edit my details' : 'Make it yours'}</button>
+            <button type="button" className="x-edit-profile" onClick={() => setImporting(true)} aria-haspopup="dialog">Use my X archive</button>
             <button type="button" className="x-edit-profile" onClick={() => setEditing(true)} aria-haspopup="dialog">Edit profile</button>
           </div>
         : <button type="button" className={`x-follow-cta ${following ? 'on' : ''}`} aria-pressed={following} onClick={() => setFollowing(!following)} aria-label={`${following ? 'Unfollow' : 'Follow'} ${account.handle} (fictional, local only)`}>{following ? 'Following' : 'Follow'}</button>}
@@ -325,11 +372,14 @@ function ProfileView({ handle }: { handle?: string }) {
       <p className="x-profile-bio">{account.bio}</p>
       <div className="x-profile-meta">
         {isOwner && <a href="https://thankcheeses.github.io/dynamic-media-governance/"><Link2 size={16} aria-hidden="true" />thankcheeses.github.io/dynamic-media-governance</a>}
-        <span><CalendarDays size={16} aria-hidden="true" />{account.fictional ? 'Fictional account' : me?.custom ? 'Your profile, on this device only' : 'Prototype profile · October 2026'}</span>
+        {importedAccount?.location && <span><MapPin size={16} aria-hidden="true" />{importedAccount.location}</span>}
+        {importedAccount?.website && <span><Link2 size={16} aria-hidden="true" />{importedAccount.website.replace(/^https?:\/\//, '')}</span>}
+        {importedAccount?.joined && <span><CalendarDays size={16} aria-hidden="true" />Joined {importedAccount.joined}</span>}
+        <span><FolderArchive size={16} aria-hidden="true" style={isImported ? undefined : { display: 'none' }} />{isImported ? 'From your X archive · on this device only' : null}{!isImported && <><CalendarDays size={16} aria-hidden="true" />{account.fictional ? 'Fictional account' : me?.custom ? 'Your profile, on this device only' : 'Prototype profile · October 2026'}</>}</span>
       </div>
       <div className="x-profile-follows">
-        <span><strong>{compact(account.following)}</strong> Following</span>
-        <span><strong>{compact(account.followers + (following ? 1 : 0))}</strong> Followers</span>
+        {(!isImported || importState.account?.following !== null) && <span><strong>{compact(account.following)}</strong> Following</span>}
+        {(!isImported || importState.account?.followers !== null) && <span><strong>{compact(account.followers + (following ? 1 : 0))}</strong> Followers</span>}
         {isOwner && <small>(the prototype’s fictional accounts)</small>}
       </div>
     </div>
@@ -337,17 +387,35 @@ function ProfileView({ handle }: { handle?: string }) {
       {TABS.map((name) => <button key={name} type="button" role="tab" aria-selected={tab === name} className={tab === name ? 'active' : ''} onClick={() => setTab(name)}><span>{name}</span></button>)}
     </div>
     <div role="tabpanel" aria-label={tab}>
-      {tab === 'Posts'
-        ? (own.length === 0 ? <div className="profile-empty"><h3>No posts yet</h3></div> : own.map((post) => <PostCard key={post.id} post={post} />))
-        : <div className="profile-empty"><h3>Nothing here yet</h3><p className="muted">This prototype only fills in Posts.</p></div>}
+      {tab === 'Posts' && (topLevel.length === 0 ? <div className="profile-empty"><h3>No posts yet</h3></div> : topLevel.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Replies' && (replies.length === 0
+        ? <div className="profile-empty"><h3>No replies</h3><p className="muted">{isImported ? 'Your archive had no replies among the posts shown.' : 'This demo account has no replies.'}</p></div>
+        : replies.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Highlights' && (highlighted.length === 0
+        ? <div className="profile-empty"><h3>No highlights yet</h3><p className="muted">{isImported ? 'X does not include Highlights in the archive. ' : ''}{mine ? 'Open ··· on one of your posts and choose Add to Highlights. Pins stay on this device.' : 'This demo account has no highlights.'}</p></div>
+        : highlighted.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Media' && (withMedia.length === 0
+        ? <div className="profile-empty"><h3>No media</h3><p className="muted">{isImported ? 'No images were found in what you imported. Pick the whole zip to include them.' : 'This demo account has no photos or videos.'}</p></div>
+        : withMedia.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Likes' && (isImported
+        ? (importState.likes.length === 0
+          ? <div className="profile-empty"><h3>No likes</h3><p className="muted">No like.js was in what you imported.</p></div>
+          : <>
+              <p className="x-likes-note muted">{importState.likes.length.toLocaleString()} liked posts from your archive. X exports the text and a link, not who wrote them.</p>
+              {importState.likes.slice(0, 200).map((like) => <article key={like.id} className="x-post x-like" aria-label="Liked post">
+                <div className="x-post-main"><p className="x-post-text">{like.text || '(no text in the archive)'}</p>{like.url && <a className="x-like-link" href={like.url} target="_blank" rel="noreferrer">View on X</a>}</div>
+              </article>)}
+            </>)
+        : <div className="profile-empty"><h3>Likes are private here</h3><p className="muted">{mine ? 'The demo keeps likes on the posts themselves; use your X archive to see your own.' : 'This demo account’s likes are not shown.'}</p></div>)}
     </div>
     {editing && <HeaderStudio onDone={close} />}
     {personalizing && <MakeItYours onDone={closePersonalize} />}
+    {importing && <ImportArchive onDone={closeImport} />}
   </div>
 }
 
 /** Keyed by handle so moving between profiles starts each one fresh. */
-export default function Profile() {
+export default function Profile({ me = false }: { me?: boolean }) {
   const { handle } = useParams()
-  return <ProfileView key={handle ?? 'me'} handle={handle} />
+  return <ProfileView key={me ? 'imported' : handle ?? 'owner'} handle={handle} imported={me} />
 }

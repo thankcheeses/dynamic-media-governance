@@ -43,8 +43,15 @@ interface AppState {
   reportReaction: (postId: string, reason: string) => void
   moderate: (submissionId: string, action: 'approve' | 'remove' | 'escalate') => void
   togglePostAction: (postId: string, action: 'like' | 'repost' | 'bookmark') => void
+  /** Adds posts to the top of the feed (used for an imported archive; such posts are flagged ephemeral). */
+  addPosts: (posts: Post[]) => void
+  /** Drops ephemeral posts and every submission or audit entry about them. */
+  removeEphemeral: () => void
   resetDemo: () => void
 }
+
+/** Id prefix of posts imported from the viewer's own archive. */
+export const EPHEMERAL_PREFIX = 'x-'
 
 const baseState = {
   settings: DEFAULT_SETTINGS,
@@ -168,6 +175,15 @@ export const useAppStore = create<AppState>()(persist((set, get) => ({
     }
   }),
   toggleFavorite: (soundId) => set((state) => ({ favorites: state.favorites.includes(soundId) ? state.favorites.filter((id) => id !== soundId) : [...state.favorites, soundId] })),
+  addPosts: (posts) => set((state) => ({ posts: [...posts, ...state.posts.filter((post) => !posts.some((p) => p.id === post.id))] })),
+  removeEphemeral: () => set((state) => {
+    const gone = new Set(state.submissions.filter((sub) => sub.postId?.startsWith(EPHEMERAL_PREFIX)).map((sub) => sub.id))
+    return {
+      posts: state.posts.filter((post) => !post.ephemeral),
+      submissions: state.submissions.filter((sub) => !gone.has(sub.id)),
+      audits: state.audits.filter((event) => !gone.has(event.subjectId) && !event.detail.includes(EPHEMERAL_PREFIX)),
+    }
+  }),
   resetDemo: () => set({ ...baseState, settings: get().settings, config: DEFAULT_CONFIG }),
 }), {
   name: 'sound-reactions-demo-v3',
@@ -177,8 +193,10 @@ export const useAppStore = create<AppState>()(persist((set, get) => ({
     ...state,
     // Only live microphone recordings (blob: URLs) are session-only. Generated
     // library sounds are static files and persist like any other post.
-    posts: state.posts.filter((post) => !isSessionAudio(post.voice?.audioUrl) && !isSessionAudio(post.reaction?.audioUrl)),
-    submissions: state.submissions.filter((submission) => !isSessionAudio(submission.clip.audioUrl)),
+    posts: state.posts.filter((post) => !post.ephemeral && !isSessionAudio(post.voice?.audioUrl) && !isSessionAudio(post.reaction?.audioUrl)),
+    // Reactions on imported posts (ids starting "x-") and their audit trail stay in memory with the import.
+    submissions: state.submissions.filter((submission) => !isSessionAudio(submission.clip.audioUrl) && !submission.postId?.startsWith(EPHEMERAL_PREFIX)),
+    audits: state.audits.filter((event) => !event.detail.includes(EPHEMERAL_PREFIX) && !state.submissions.some((sub) => sub.id === event.subjectId && sub.postId?.startsWith(EPHEMERAL_PREFIX))),
     // Uploaded headers live only in this tab, like microphone recordings.
     uploadedHeader: null,
     profileHeader: state.profileHeader.presetId === 'upload' ? { presetId: DEFAULT_HEADER_ID, decision: 'PASS' as HeaderDecision } : state.profileHeader,

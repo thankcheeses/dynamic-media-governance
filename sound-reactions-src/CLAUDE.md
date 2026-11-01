@@ -77,16 +77,19 @@ If Chromium is not discovered automatically, set `CHROME_PATH` to a local Chromi
 - `src/giphy.ts` + `src/components/GiphyPanel.tsx`: GIPHY search (rating PG, still-frame results, attribution) feeding the same scan as uploads.
 - `scripts/render-header.mjs` + `scripts/analyze-header.py`: render the three.js headers and measure them into `src/header-manifest.json`.
 - `scripts/generate-avatars.mjs`: illustrated avatars for the fictional accounts.
+- `src/archive.ts`: reads a person's own X data archive (zip or its `data/*.js` files) in the browser with fflate: account, profile, posts, likes and the images inside the zip; never contacts X; DOM-free apart from object URLs, unit-tested.
+- `src/importStore.ts`: the imported account, likes and Highlights pins, in memory only; imported posts go into the main store flagged `ephemeral`.
+- `src/components/ImportArchive.tsx`: the import dialog (steps, consent text, file picker). `src/pages/Privacy.tsx`: the privacy notice.
 - `src/motion.ts`: all anime.js motion (bursts, pad press, landing, staggers), gated by reduced motion in one place.
 - `src/components/SoundOrb.tsx`: lazy three.js title-slide orb; reads analyser levels only.
 - `scripts/generate-audio.mjs` + `scripts/audio-catalog.mjs`: ElevenLabs generation (`NODE_USE_ENV_PROXY=1 node --env-file=.env.local scripts/generate-audio.mjs`). Writes `public/audio/*.mp3` and `src/audio-manifest.json`; the app uses files automatically when listed.
 
-Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/presentation`, `/profile` (owner) and `/u/:handle` (other accounts).
+Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/presentation`, `/privacy`, `/profile` (owner), `/u/:handle` (other accounts) and `/me` (the viewer's imported X archive, or the import landing when nothing is imported).
 
 ## Non-negotiable product invariants
 
 1. Keep the banner: `CONCEPT PROTOTYPE · NOT AFFILIATED WITH X`.
-2. No X login, API, scraping, posting, logo, Chirp font or copied X assets. All seed data stays fictional, except the owner account (@baynardmalone), whose photo the owner supplied and whose GIF picks are linked from their hosts, except `public/headers/neon-cats.gif`, which the owner supplied and asked to keep in the repository (`ownerFile` in `src/headers.ts`). Fictional accounts use illustrated avatars, never realistic photos.
+2. No X login, API, scraping, posting, logo, Chirp font or copied X assets. The one way a real person's X data enters the prototype is their own downloaded archive, read in their browser (`src/archive.ts`): never uploaded, never persisted, never fetched from X's servers; only account, profile, posts, likes, verified status, follower/following counts and bundled images are read, never email, messages or anything else in the archive. All seed data stays fictional, except the owner account (@baynardmalone), whose photo the owner supplied and whose GIF picks are linked from their hosts, except `public/headers/neon-cats.gif`, which the owner supplied and asked to keep in the repository (`ownerFile` in `src/headers.ts`). Fictional accounts use illustrated avatars, never realistic photos.
 3. Never create/resume `AudioContext` or play audio on load, scroll, hover, focus or viewport entry. Start only from click/key handlers. Dynamic profile headers are the one kind of media that animates without a tap: they are silent (muted, no audio track), have no `autoplay` attribute, and follow rule 14.
 4. Starting any clip must stop the previous clip, including repeated instances of the same library sound.
 5. Reactions remain compact and default to an 8-second cap. Voice posts are full-width, author-owned and capped separately at 140 seconds.
@@ -102,7 +105,7 @@ Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/pre
 
 ## Persistence and deployment
 
-Three localStorage keys are used, all with guarded access. `sound-reactions-giphy-key` holds only the viewer's own GIPHY API key, typed into the header studio (never committed; a build can alternatively embed one with `VITE_GIPHY_API_KEY`, which makes it visible to anyone viewing the page). `sound-reactions-identity` holds the viewer's "Make it yours" name, handle, bio and a 256 px JPEG of their photo (`src/identity.ts`); it relabels the owner account for display only, never shows the verification badge, survives a demo reset, and nothing in it leaves the browser. `sound-reactions-demo-v3` holds the rest. It stores settings, governance configuration, fictional feed changes, submissions and audit events. Recorded-audio Blob URL posts/submissions are excluded from persistence and are session-only. There is no backend or cross-device sync.
+Three localStorage keys are used, all with guarded access. `sound-reactions-giphy-key` holds only the viewer's own GIPHY API key, typed into the header studio (never committed; a build can alternatively embed one with `VITE_GIPHY_API_KEY`, which makes it visible to anyone viewing the page). `sound-reactions-identity` holds the viewer's "Make it yours" name, handle, bio and a 256 px JPEG of their photo (`src/identity.ts`); it relabels the owner account for display only, never shows the verification badge, survives a demo reset, and nothing in it leaves the browser. `sound-reactions-demo-v3` holds the rest: settings, governance configuration, fictional feed changes, submissions and audit events. Recorded-audio Blob URL posts/submissions are excluded from persistence and are session-only. An imported X archive is **not** persisted at all: its posts carry `ephemeral: true` and are dropped by `partialize`, as are submissions and audit entries about them (post ids start with `x-`); the account, likes and Highlights pins live in `src/importStore.ts` with no storage. A reload clears it. The page sets a Content Security Policy (`index.html`) that allows connections only to the site itself, GIPHY and Tenor. There is no backend or cross-device sync.
 
 `dist/` is the production static build. Static hosting needs an SPA fallback to `index.html` for direct deep links. Tests navigate from `/`.
 
