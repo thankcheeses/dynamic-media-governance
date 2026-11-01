@@ -31,3 +31,4 @@ dist-ssr
 
 # Playwright output
 test-results
+__pycache__/

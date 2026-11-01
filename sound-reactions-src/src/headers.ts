@@ -42,7 +42,8 @@ export interface HeaderPreset {
   /** Highest count of general flashes in any one-second window (fixture). */
   flashesPerSecond: number
   /** Whether any flash is a saturated-red transition (fixture). */
-  redFlash: boolean
+  /** Red flashes (WCAG 2.2's saturated-red rule) in the worst one-second window. */
+  redFlashesPerSecond: number
   /** Largest share of the frame (0–1) that changes in a single flash transition. */
   flashArea?: number
   /** Real media files under public/headers, for presets backed by an actual GIF. */
@@ -97,7 +98,7 @@ const MEASURED_COPY: Record<string, { name: string; description: string; ownerFi
 const MEASURED: HeaderPreset[] = manifest.map((m) => ({
   id: m.id, ...(MEASURED_COPY[m.id] ?? { name: m.id, description: 'A rendered dynamic header.' }),
   style: 'video' as const, fps: m.fps, loopSeconds: m.loopSeconds, sizeMB: m.sizeMB,
-  flashesPerSecond: m.flashesPerSecond, redFlash: m.redFlash, flashArea: m.flashArea,
+  flashesPerSecond: m.flashesPerSecond, redFlashesPerSecond: m.redFlashesPerSecond, flashArea: m.flashArea,
   media: { gif: `headers/${m.id}.gif`, webm: `headers/${m.id}.webm`, poster: `headers/${m.id}.jpg` },
   measured: true,
 })).sort((a, b) => (a.id === 'clay-orbit' ? -1 : b.id === 'clay-orbit' ? 1 : 0))
@@ -111,7 +112,7 @@ const GIPHY_JELLYFISH = 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlY
 
 /** A hosted GIF nobody has measured yet. Its numbers arrive from the viewer's own scan. */
 function unscanned(preset: Pick<HeaderPreset, 'id' | 'name' | 'description' | 'hosted'>): HeaderPreset {
-  return { ...preset, style: 'video', fps: 0, loopSeconds: 0, sizeMB: 0, flashesPerSecond: 0, redFlash: false, scanInBrowser: true }
+  return { ...preset, style: 'video', fps: 0, loopSeconds: 0, sizeMB: 0, flashesPerSecond: 0, redFlashesPerSecond: 0, scanInBrowser: true }
 }
 
 /**
@@ -133,36 +134,29 @@ const PICKED: HeaderPreset[] = [
 
 /**
  * The owner's own GIF picks. Each plays from its host and is credited there;
- * nothing is copied into the repository. The measurements were taken by
- * scripts/analyze-header.py on the owner's copy of the same clip.
+ * nothing is copied into the repository. Like the picks below, they are
+ * scanned in the viewer's browser before they animate. (Earlier numbers taken
+ * on the owner's copies predate the CIE 1976 UCS red-flash rule, so they are
+ * not carried as measurements; the owner can re-upload a copy to measure it.)
  */
 const HOSTED: HeaderPreset[] = [
-  {
-    id: 'jellyfish-strut', name: 'Jellyfish strut', description: 'SpongeBob strutting across a green room while a jellyfish floats beside him, from the Jellyfish Jam scene.',
-    style: 'video', fps: 14.29, loopSeconds: 1.33, sizeMB: 0.48, flashesPerSecond: 1, redFlash: false, flashArea: 0.87, measured: true,
-    hosted: giphy(GIPHY_JELLYFISH, 'https://giphy.com/gifs/dancing-spongebob-squarepants-jellyfish-jam-rdXF0gnAyUAfK'),
-  },
-  {
-    id: 'spongebob-computer', name: 'SpongeBob at the computer', description: 'A worried SpongeBob typing at an old beige computer in a red room.',
-    style: 'video', fps: 16.67, loopSeconds: 1.92, sizeMB: 0.71, flashesPerSecond: 0, redFlash: false, flashArea: 0.4, measured: true,
-    hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/spongebob-computer-fire-gif-21352118', mp4: 'https://media.tenor.com/tWD3GjJcoHgAAAPo/spongebob-computer.mp4', webm: 'https://media.tenor.com/tWD3GjJcoHgAAAPs/spongebob-computer.webm', gif: 'https://media1.tenor.com/m/tWD3GjJcoHgAAAAC/spongebob-computer.gif' },
-  },
-  {
-    id: 'paid-in-full', name: 'Making it rain', description: 'Rico from Paid in Full tossing cash into the air in a packed club.',
-    style: 'video', fps: 20, loopSeconds: 1.5, sizeMB: 1.73, flashesPerSecond: 1, redFlash: false, flashArea: 0.18, measured: true,
-    hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/money-rico-paid-raining-money-gif-5009446', mp4: 'https://media.tenor.com/YTe7HLNWvAQAAAPo/money-rico.mp4', webm: 'https://media.tenor.com/YTe7HLNWvAQAAAPs/money-rico.webm', gif: 'https://media1.tenor.com/m/YTe7HLNWvAQAAAAC/money-rico.gif' },
-  },
+  unscanned({ id: 'jellyfish-strut', name: 'Jellyfish strut', description: 'SpongeBob strutting across a green room while a jellyfish floats beside him, from the Jellyfish Jam scene.',
+    hosted: giphy(GIPHY_JELLYFISH, 'https://giphy.com/gifs/dancing-spongebob-squarepants-jellyfish-jam-rdXF0gnAyUAfK') }),
+  unscanned({ id: 'spongebob-computer', name: 'SpongeBob at the computer', description: 'A worried SpongeBob typing at an old beige computer in a red room.',
+    hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/spongebob-computer-fire-gif-21352118', mp4: 'https://media.tenor.com/tWD3GjJcoHgAAAPo/spongebob-computer.mp4', webm: 'https://media.tenor.com/tWD3GjJcoHgAAAPs/spongebob-computer.webm', gif: 'https://media1.tenor.com/m/tWD3GjJcoHgAAAAC/spongebob-computer.gif' } }),
+  unscanned({ id: 'paid-in-full', name: 'Making it rain', description: 'Rico from Paid in Full tossing cash into the air in a packed club.',
+    hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/money-rico-paid-raining-money-gif-5009446', mp4: 'https://media.tenor.com/YTe7HLNWvAQAAAPo/money-rico.mp4', webm: 'https://media.tenor.com/YTe7HLNWvAQAAAPs/money-rico.webm', gif: 'https://media1.tenor.com/m/YTe7HLNWvAQAAAAC/money-rico.gif' } }),
   ...PICKED,
 ]
 
 export const HEADER_PRESETS: HeaderPreset[] = [
   ...HOSTED,
   ...MEASURED,
-  { id: 'slow-waves', name: 'Slow waves', description: 'Thin lines rolling gently like a calm sea.', style: 'waves', fps: 12, loopSeconds: 10, sizeMB: 1.4, flashesPerSecond: 0, redFlash: false },
-  { id: 'confetti', name: 'Confetti pop', description: 'Confetti bursts with quick bright pops.', style: 'confetti', fps: 15, loopSeconds: 6, sizeMB: 3.2, flashesPerSecond: 4, redFlash: false, flashArea: 0.08 },
-  { id: 'strobe', name: 'Strobe party', description: 'Black and white strobe at club speed.', style: 'strobe', fps: 15, loopSeconds: 4, sizeMB: 2.6, flashesPerSecond: 12, redFlash: false, flashArea: 1 },
-  { id: 'red-pulse', name: 'Red alert pulse', description: 'A saturated red light pulsing on and off.', style: 'redpulse', fps: 15, loopSeconds: 5, sizeMB: 1.9, flashesPerSecond: 5, redFlash: true, flashArea: 0.6 },
-  { id: 'timelapse', name: 'City timelapse', description: 'A long, high-frame-rate city timelapse.', style: 'timelapse', fps: 30, loopSeconds: 18, sizeMB: 11.4, flashesPerSecond: 1, redFlash: false },
+  { id: 'slow-waves', name: 'Slow waves', description: 'Thin lines rolling gently like a calm sea.', style: 'waves', fps: 12, loopSeconds: 10, sizeMB: 1.4, flashesPerSecond: 0, redFlashesPerSecond: 0 },
+  { id: 'confetti', name: 'Confetti pop', description: 'Confetti bursts with quick bright pops.', style: 'confetti', fps: 15, loopSeconds: 6, sizeMB: 3.2, flashesPerSecond: 4, redFlashesPerSecond: 0, flashArea: 0.08 },
+  { id: 'strobe', name: 'Strobe party', description: 'Black and white strobe at club speed.', style: 'strobe', fps: 15, loopSeconds: 4, sizeMB: 2.6, flashesPerSecond: 12, redFlashesPerSecond: 0, flashArea: 1 },
+  { id: 'red-pulse', name: 'Red alert pulse', description: 'A saturated red light pulsing on and off.', style: 'redpulse', fps: 15, loopSeconds: 5, sizeMB: 1.9, flashesPerSecond: 5, redFlashesPerSecond: 5, flashArea: 0.6 },
+  { id: 'timelapse', name: 'City timelapse', description: 'A long, high-frame-rate city timelapse.', style: 'timelapse', fps: 30, loopSeconds: 18, sizeMB: 11.4, flashesPerSecond: 1, redFlashesPerSecond: 0 },
 ]
 
 export const DEFAULT_HEADER_ID = 'jellyfish-strut'
@@ -177,7 +171,8 @@ export interface HeaderMeasurement {
   loopSeconds: number
   sizeMB: number
   flashesPerSecond: number
-  redFlash: boolean
+  /** Red flashes (WCAG 2.2's saturated-red rule) in the worst one-second window. */
+  redFlashesPerSecond: number
   /** Largest share of the frame (0–1) that changes in a single flash transition. */
   flashArea?: number
 }
@@ -187,9 +182,10 @@ export interface HeaderMeasurement {
  * upload. Frame rate is not: every upload is transcoded to WebM anyway, so a
  * file above the cap is transcoded down to it (ordinary GIFs often run at
  * 16–25 fps). Files that clear the guardrails get the PEA, measured on the
- * original frames. Severe flashing is hard-blocked: any red flash, 10 or more
- * flashes a second, or over-limit flashing across a quarter or more of the
- * header. Smaller over-limit flashing is published provisionally behind a
+ * original frames. Severe flashing is hard-blocked: more than three red
+ * flashes a second (people are more sensitive to saturated red), 10 or more
+ * general flashes a second, or over-limit flashing across a quarter or more of
+ * the header. Smaller over-limit flashing is published provisionally behind a
  * warning label with a 24-hour manual review, and anything else passes.
  */
 export function scanHeader(m: HeaderMeasurement): HeaderScan {
@@ -200,7 +196,7 @@ export function scanHeader(m: HeaderMeasurement): HeaderScan {
     { key: 'loop', label: 'Loop length', pass: m.loopSeconds <= L.loopSeconds, detail: `${m.loopSeconds} s (limit ${L.loopSeconds} s)` },
     { key: 'fps', label: 'Frame rate', pass: true, detail: transcoded ? `${m.fps} fps, transcoded down to ${L.fps} fps` : `${m.fps} fps (limit ${L.fps} fps)` },
     { key: 'flash', label: 'General flash', pass: m.flashesPerSecond <= L.flashesPerSecond, detail: `${m.flashesPerSecond} per second (limit ${L.flashesPerSecond})${m.flashesPerSecond > L.flashesPerSecond && m.flashArea !== undefined ? `, across ${Math.round(m.flashArea * 100)}% of the header` : ''}` },
-    { key: 'red', label: 'Red flash', pass: !m.redFlash, detail: m.redFlash ? 'Saturated red flashes found' : 'No saturated red flashes' },
+    { key: 'red', label: 'Red flash', pass: m.redFlashesPerSecond <= L.flashesPerSecond, detail: `${m.redFlashesPerSecond} per second (limit ${L.flashesPerSecond})` },
   ]
 
   if (checks.some((check) => (check.key === 'size' || check.key === 'loop') && !check.pass)) {
@@ -209,7 +205,8 @@ export function scanHeader(m: HeaderMeasurement): HeaderScan {
   const overLimit = m.flashesPerSecond > L.flashesPerSecond
   // Unknown area is treated as full-frame: the safe assumption.
   const largeArea = (m.flashArea ?? 1) >= L.severeFlashArea
-  if (m.redFlash || m.flashesPerSecond >= L.severeFlashesPerSecond || (overLimit && largeArea)) {
+  const redOverLimit = m.redFlashesPerSecond > L.flashesPerSecond
+  if (redOverLimit || m.flashesPerSecond >= L.severeFlashesPerSecond || (overLimit && largeArea)) {
     return { decision: 'BLOCK', checks, summary: 'Hard block. The flashing is severe enough to risk seizures, so this header cannot be published.' }
   }
   if (overLimit) {

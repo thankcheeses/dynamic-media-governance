@@ -268,3 +268,19 @@ The owner profile has a new **Make it yours** button. It opens a small form (pho
 | Playwright | 36/36 passed in Chromium, desktop and mobile (adds a test that fills the form with "Sam Tester" and the handle "sam tests!", expects `@samtests`, no verified badge, the device-only meta line, "Post by Sam Tester" articles, persistence across a reload, and the restore path back to B. Baynard-Malone). WebKit was not available here. |
 | Screenshots | The form and the renamed profile at 390 px wide: no page errors, no horizontal overflow. |
 | Photo upload | **Not tested.** The 256 px shrink (`squarePhoto`) has no automated test and was not tried by hand here; confirm it on the live site with a JPEG and a PNG. |
+
+## 2026-11-01 — Red flash by WCAG 2.2's chromaticity rule; red flashes get the 3-per-second limit
+
+The red-flash test now follows WCAG 2.2's working definition (ISO 9241-391): a transition counts as red when one state has R/(R+G+B) ≥ 0.8 **and** the two states differ by more than 0.2 in the CIE 1976 UCS diagram (u′v′ from sRGB → XYZ with the coefficients in the WCAG text; black is treated as achromatic). The previous `(R−G−B)×320 > 20` heuristic is gone. The arithmetic moved to `src/flash.ts` (DOM-free, unit-tested) and `scripts/analyze-header.py` mirrors it. The scan now records `redFlashesPerSecond` instead of a yes/no, and applies the same limit as general flashes: more than 3 red flashes a second is a hard block; 3 or fewer passes, as WCAG's threshold states.
+
+Because the three owner picks on GIPHY/Tenor had been measured under the old rule and their copies are no longer available here, they are now scanned in the viewer's browser before they play, like the themed picks. Re-uploading a copy in the header studio measures it under the new rule.
+
+| Check | Actual result |
+|---|---|
+| Re-measurement (local headers) | `scripts/analyze-header.py` on `clay-orbit.gif` and `neon-cats.gif`, and `--red-only` over the WebM frames of `citrus`, `moss`, `sea-glass`, `violet-hour`: red flashes 0/s for five; **neon cats 2/s** (was 0 under the old heuristic) with 3 general flashes/s — still passes. Hosted owner picks: **not re-measured** (clips not available here). |
+| Python ↔ TypeScript agreement | Same synthetic cases: full-frame red/black pulse at 15 fps → 8 red flashes/s in Python and >3 in TS; red/dark-red (brightness only) → 0; green/black → 0; sRGB red at u′v′ (0.4507, 0.5229) in both. |
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 28/28 passed (7 new in `src/test/flash.test.ts`; the hosted-pick tests now assert the browser scan; one new case checks 2 red/s passes and 4 red/s blocks) |
+| Playwright | 36/36 passed in Chromium, desktop and mobile (Dee's Tenor pick and the owner profile now mock the host GIF and wait for the browser scan). WebKit was not available here. |
+| Screenshot | Dee’s profile, ⓘ "Scanned before it went live" step at 390 px with the neon cats GIF standing in for Tenor: "General flashes 3 per second", "Red flashes 2 per second (limit 3)", "Passed"; no page errors. |
+| Live hosts | **Not tested.** GIPHY and Tenor are unreachable from this environment; the in-browser fetch of the owner's three picks (Tenor's CORS headers in particular) must be confirmed on the live site. |

@@ -27,7 +27,7 @@ const SCAN_MS = 1400
 /** A synthetic preset describing an uploaded file, so it can share the scan and player. */
 function uploadPreset(analysis: UploadAnalysis): HeaderPreset {
   const m = analysis.measurement
-  return { id: 'upload', name: analysis.media.name, description: `Uploaded header: ${analysis.media.name}`, style: 'upload', fps: m.fps, loopSeconds: m.loopSeconds, sizeMB: m.sizeMB, flashesPerSecond: m.flashesPerSecond, redFlash: m.redFlash, measured: true }
+  return { id: 'upload', name: analysis.media.name, description: `Uploaded header: ${analysis.media.name}`, style: 'upload', fps: m.fps, loopSeconds: m.loopSeconds, sizeMB: m.sizeMB, flashesPerSecond: m.flashesPerSecond, redFlashesPerSecond: m.redFlashesPerSecond, measured: true }
 }
 
 function ScanResult({ scan, notes, onPublish }: { scan: HeaderScan; notes?: string[]; onPublish: () => void }) {
@@ -175,7 +175,9 @@ function ScannedHostedHeader({ preset }: { preset: HeaderPreset }) {
     : error ? `Couldn’t scan it (${error}), so it stays a still frame`
     : 'Scanning for flashing before it plays…'
   return <div className="dynamic-header">
-    <img className="still" src={hosted.still} alt={`Profile header, still frame: ${preset.description}`} />
+    {hosted.still
+      ? <img className="still" src={hosted.still} alt={`Profile header, still frame: ${preset.description}`} />
+      : <div className="still" role="img" aria-label={`Profile header, not yet playing: ${preset.description}`} />}
     <span className="header-scan-note" role="status">{!scan && !error && <Loader2 size={13} className="spin" aria-hidden="true" />} {note}</span>
     <div className="header-controls"><a className="header-credit" href={hosted.pageUrl} target="_blank" rel="noreferrer">via {hosted.provider}</a></div>
   </div>

@@ -53,7 +53,7 @@ export function HeaderInfo({ preset, decision, upload, status, onClose }: {
         <dl className="tour-facts">
           <div><dt>Source</dt><dd>{source.label}</dd></div>
           <div><dt>General flashes</dt><dd>{m.flashesPerSecond} per second{area} (limit {HEADER_LIMITS.flashesPerSecond})</dd></div>
-          <div><dt>Red flashes</dt><dd>{m.redFlash ? 'Found' : 'None'}</dd></div>
+          <div><dt>Red flashes</dt><dd>{m.redFlashesPerSecond} per second (limit {HEADER_LIMITS.flashesPerSecond})</dd></div>
           <div><dt>Result</dt><dd>{provisional ? 'Provisional publish, under review' : 'Passed'}</dd></div>
         </dl>
       </>,
@@ -89,8 +89,8 @@ export function HeaderInfo({ preset, decision, upload, status, onClose }: {
         <ul className="tour-list">
           <li>A <strong>transition</strong> is a change in relative luminance of 10% or more where the darker state is below 0.80, over more than 21,824 px at a 1024×768 reference.</li>
           <li>A <strong>flash</strong> is a pair of opposing transitions. The scan reports the most flashes in any one-second window, wrapping the loop end back to the start.</li>
-          <li>A <strong>red flash</strong> involves saturated red: R / (R + G + B) ≥ 0.8.</li>
-          <li><strong>Decisions:</strong> over the size or loop limit is rejected; red flashing, 10+ flashes a second, or over-limit flashing across 25% or more of the header is hard-blocked; smaller over-limit flashing is published behind a warning; the rest passes.</li>
+          <li>A <strong>red flash</strong> is a pair of opposing transitions where one state is saturated red, R / (R + G + B) ≥ 0.8, and the colour moves by more than 0.2 in the CIE 1976 UCS diagram (WCAG 2.2’s working definition). Red flashes have the same limit of 3 a second.</li>
+          <li><strong>Decisions:</strong> over the size or loop limit is rejected; more than 3 red flashes a second, 10+ general flashes a second, or over-limit flashing across 25% or more of the header is hard-blocked; smaller over-limit flashing is published behind a warning; the rest passes.</li>
         </ul>
         <p className="tour-links">
           <a href={`${REPO}/src/analyze.ts`} target="_blank" rel="noreferrer">Browser analyzer</a>
