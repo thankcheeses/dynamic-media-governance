@@ -760,6 +760,7 @@
                         <div class="card metric reveal" style="--d: 120ms"><div class="metric__label">Flash Threshold</div><div class="metric__value">≤ 3 per second</div></div>
                         <div class="card metric reveal" style="--d: 180ms"><div class="metric__label">Red Flash Rule</div><div class="metric__value metric__value--sm">R/(R+G+B) ≥ 0.8</div></div>
                     </div>
+                    <p class="note reveal">The scan is a simplified screen based on WCAG 2.3.1’s general and red flash thresholds, not a certified photosensitive epilepsy analysis. A PASS means the clip stayed under these limits in this check; it is not a safety guarantee.</p>
                 </div>
 
                 <!-- Technical Guardrails -->
@@ -774,7 +775,7 @@
                         <div class="card metric reveal" style="--d: 120ms"><div class="metric__label">Maximum Loop Duration</div><div class="metric__value">10 seconds</div></div>
                         <div class="card metric reveal" style="--d: 180ms"><div class="metric__label">Playback Behavior</div><div class="metric__value metric__value--sm">Auto-pause on scroll + low power mode</div></div>
                     </div>
-                    <p class="note reveal">All uploads are transcoded server-side from GIF to WebM/VP9. This reduces average file size by 60–80% and significantly improves playback performance on lower-end Android devices.</p>
+                    <p class="note reveal">All uploads are transcoded server-side from GIF to WebM/VP9. We expect this to cut file size by roughly 60–80% (an estimate from typical GIF-to-VP9 results, not a measured benchmark) and to improve playback on lower-end Android devices.</p>
                 </div>
 
                 <!-- Identity Layer -->
@@ -783,7 +784,7 @@
                         <span class="sub__num">03.3</span>
                         <h3>Identity &amp; Abuse Prevention</h3>
                     </div>
-                    <p class="sub__intro reveal">Dynamic media carries meaningfully higher abuse risk than static images. This framework uses a <strong>strictly opt-in</strong> biometric anchor through X’s existing AU10TIX infrastructure. Users who decline verification retain full access to static headers and all non-dynamic profile features.</p>
+                    <p class="sub__intro reveal">Dynamic media carries meaningfully higher abuse risk than static images. This framework uses a <strong>strictly opt-in</strong> identity anchor through an ID-verification vendor such as AU10TIX; whether X already uses one for this purpose is not assumed here. Users who decline verification retain full access to static headers and all non-dynamic profile features.</p>
 
                     <div class="eyebrow reveal" style="color: var(--text-muted)">Three-strike enforcement model</div>
                     <ol class="strikes">
