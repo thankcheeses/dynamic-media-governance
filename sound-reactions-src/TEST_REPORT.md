@@ -323,3 +323,20 @@ Section 8 of `SPEC.md`. `.github/workflows/pages.yml` installs, lints, typecheck
 | Build steps | The staging copy (`git ls-files` → `cp --parents`) and the `vite build` into `_site/sound-reactions` were run locally with the same commands and an empty key: the staged site contains `index.html`, `README.md`, `SPEC.md`, `_config.yml`, `.nojekyll` and the built `sound-reactions/`. |
 | Workflow run | **Not run here.** No GitHub Actions runner in this environment. The first real run happens when this merges to `main`; the deploy job stays skipped until the owner switches the Pages source and the secret is added. |
 | Key handling | **Not tested with a real key.** The tracked-file check uses `git grep -F` on the secret from an environment variable, so the key never appears in the command line or the logs (GitHub also masks secrets in logs). |
+
+
+## 2026-11-02 — Low-power mode blanked the app; true-black theme; proposal reframed for X's teams
+
+**Bug.** Turning on Low-power mode in Settings made the whole prototype disappear (black screen, empty `#root`). Cause: `useAudio()` returned a new `stop` function on every render, and the Layout effect that pauses audio under low power listed `stop` as a dependency; with low power on, every render re-ran the effect, `stop()` emitted a playback-state change, that re-rendered Layout, and the loop ended in React error #185 ("maximum update depth exceeded"), which unmounts the tree. Fix: `play` and `stop` are now module-level constants, so their identity never changes. The hidden-tab effect had the same dependency and is fixed by the same change.
+
+**Theme.** Lights out now uses `#000` for surfaces as well as the page (stat cards, notices, the concept banner strip were `#0C0F11`/`#16181C`); accent tints are magenta instead of the leftover blue. The proposal page's raised surfaces are `#000000` and its ambient glow is reduced to a hint. Dim is unchanged.
+
+**Proposal copy.** The hero and executive summary now address X's product and engineering teams and add a "what you get" list (the numeric controls, the reference implementation, the stated boundaries). The sentence "X is preparing to introduce dynamic and interactive profile headers" is replaced with a conditional; X has announced no such feature and the page now says so. (An earlier note in this report said that sentence was not on the page; it was. The search that missed it used the wrong regex flavour.)
+
+| Check | Actual result |
+|---|---|
+| Reproduction | Before the fix, in the production build: toggling Low-power mode left `#root` empty and logged React error #185 from `Layout`'s effect via `audioController.stop → emit`. After the fix: Settings stays on screen, Home renders, Maya's header shows a still frame with "low-power mode is on" in the ⓘ panel. |
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 35/35 passed |
+| Playwright | 44/44 passed in Chromium, desktop and mobile (new regression test for the low-power toggle). WebKit was not available here. |
+| Screenshots | Governance page at 390 px on pure black; proposal hero and executive summary with the new copy. |
