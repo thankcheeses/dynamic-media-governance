@@ -1,0 +1,108 @@
+# Builds the prototype from source and deploys the whole site to GitHub Pages.
+#
+# Why this exists: the GIPHY key used by the header studio's search is a
+# build-time value (VITE_GIPHY_API_KEY). Building here lets it come from the
+# repository secret GIPHY_API_KEY instead of the source tree or git history.
+# Note what that does and does not protect: like any key a web page uses, it
+# ends up in the published JavaScript bundle and is visible to anyone who opens
+# DevTools (GIPHY designs web keys for that and rate-limits them). The secret
+# keeps it out of the repository and lets the owner rotate it in one place.
+#
+# To switch to this workflow the owner does two things once, in the repository
+# settings: Pages → Build and deployment → Source → "GitHub Actions", and
+# Secrets and variables → Actions → New repository secret → GIPHY_API_KEY.
+# Until the source is switched, Pages keeps serving the committed
+# `sound-reactions/` folder from the main branch; this workflow still builds
+# and tests on every push to main, and skips its deploy job.
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push cancels an older queued build.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      build_type: ${{ steps.mode.outputs.build_type }}
+    defaults:
+      run:
+        working-directory: sound-reactions-src
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: sound-reactions-src/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint, typecheck and unit tests
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+
+      - name: Stage the proposal page and repository files
+        working-directory: .
+        run: |
+          mkdir -p _site
+          # Every tracked file except the source tree, the committed build and the workflows.
+          git ls-files -z | grep -zvE '^(sound-reactions-src/|sound-reactions/|\.github/)' | xargs -0 -I{} cp --parents {} _site/
+          # Pages served by this workflow do not run Jekyll; make that explicit.
+          touch _site/.nojekyll
+
+      - name: Build the prototype
+        env:
+          VITE_HASH_ROUTER: '1'
+          # Empty when the secret is not set: the header studio then asks the viewer for their own key.
+          VITE_GIPHY_API_KEY: ${{ secrets.GIPHY_API_KEY }}
+        run: npx vite build --base ./ --outDir ../_site/sound-reactions --emptyOutDir
+
+      - name: Confirm the key is not in any tracked file
+        working-directory: .
+        env:
+          KEY: ${{ secrets.GIPHY_API_KEY }}
+        run: |
+          # The key may appear only in the built bundle, never in the repository.
+          if [ -n "$KEY" ] && git grep -qF -- "$KEY" -- . ':!_site'; then
+            echo "GIPHY_API_KEY appears in a tracked file" >&2
+            exit 1
+          fi
+
+      - name: Check how Pages is deployed
+        id: mode
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        # "workflow" once the owner has switched the Pages source to GitHub Actions; "legacy" while it deploys from the branch.
+        run: echo "build_type=$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type 2>/dev/null || echo unknown)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.build_type == 'workflow'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

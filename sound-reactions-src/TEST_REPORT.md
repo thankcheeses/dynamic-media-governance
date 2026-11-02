@@ -312,3 +312,14 @@ Section 4 of `SPEC.md`. The reaction picker has **Upload your own** and the comp
 | Screenshot | Picker at 390 px with the uploaded tile selected and the description filled: no page errors, no overflow. |
 | Formats | Only WAV was exercised in tests (generated). MP3/M4A/OGG decoding depends on the browser's codecs and was **not tested** here; try one of each on the live site. |
 | Loudness accuracy | The estimate is not K-weighted or gated. **Not compared against ffmpeg** on the same files here; treat the number as a rough guide, as the UI says. |
+
+## 2026-11-02 — Pages build workflow with the GIPHY key as a repository secret
+
+Section 8 of `SPEC.md`. `.github/workflows/pages.yml` installs, lints, typechecks and unit-tests the prototype, stages the proposal page and repository files, builds the prototype with `VITE_GIPHY_API_KEY` from the `GIPHY_API_KEY` secret, fails if that key appears in any tracked file, uploads the site as a Pages artifact, and deploys it only when the repository's Pages source is already "GitHub Actions" (it asks the Pages API for `build_type`). Nothing else in the repository changed.
+
+| Check | Actual result |
+|---|---|
+| YAML | Parses; two jobs (`build`, `deploy`), triggers `push` to `main` and `workflow_dispatch`. |
+| Build steps | The staging copy (`git ls-files` → `cp --parents`) and the `vite build` into `_site/sound-reactions` were run locally with the same commands and an empty key: the staged site contains `index.html`, `README.md`, `SPEC.md`, `_config.yml`, `.nojekyll` and the built `sound-reactions/`. |
+| Workflow run | **Not run here.** No GitHub Actions runner in this environment. The first real run happens when this merges to `main`; the deploy job stays skipped until the owner switches the Pages source and the secret is added. |
+| Key handling | **Not tested with a real key.** The tracked-file check uses `git grep -F` on the secret from an environment variable, so the key never appears in the command line or the logs (GitHub also masks secrets in logs). |
