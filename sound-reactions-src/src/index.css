@@ -17,9 +17,9 @@
   --warning: #FFD166;
   --danger: #F4212E;
   --bg: #000;
-  --surface: #0C0F11;
-  --surface-hover: #080A0C;
-  --soft-accent: rgba(29, 155, 240, .1);
+  --surface: #000;
+  --surface-hover: #0A0A0A;
+  --soft-accent: rgba(240, 21, 138, .08);
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); scroll-behavior: smooth; }

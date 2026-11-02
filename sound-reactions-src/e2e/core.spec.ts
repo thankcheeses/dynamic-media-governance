@@ -340,3 +340,20 @@ test('an uploaded clip over the reaction cap is blocked by the duration check in
   await expect(page.getByText('10s submitted')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Blocked' })).toBeDisabled()
 })
+
+test('low-power mode pauses audio and keeps the app on screen', async ({ page }) => {
+  // Regression: a re-created stop() in a low-power effect once looped setState until React unmounted everything.
+  await page.goto('/settings')
+  await page.getByText('Low-power mode', { exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible()
+  await page.getByRole('link', { name: 'Sound Reactions home' }).first().click()
+  await expect(page.getByRole('article').first()).toBeVisible()
+  await page.getByRole('link', { name: 'Maya Chen, view profile' }).click()
+  // The header shows a still frame: no pause button, and the ⓘ panel says why.
+  await expect(page.getByRole('button', { name: 'Pause header animation' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await page.getByRole('button', { name: /Next/ }).click()
+  await page.getByRole('button', { name: /Next/ }).click()
+  await expect(page.getByRole('heading', { name: 'How it plays' })).toBeVisible()
+  await expect(page.getByText(/low-power mode is on/).first()).toBeVisible()
+})

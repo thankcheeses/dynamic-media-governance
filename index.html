@@ -17,9 +17,9 @@
     <style>
         :root {
             --bg: #000000;
-            --bg-raised: #0b0b0d;
-            --surface: #16181c;
-            --surface-solid: #16181c;
+            --bg-raised: #000000;
+            --surface: #000000;
+            --surface-solid: #000000;
             --line: #2f3336;
             --line-strong: #536471;
             --text: #e7e9ea;
@@ -27,13 +27,13 @@
             --text-faint: #71767b;
             --accent: #f0158a;
             --accent-hover: #ff3fa4;
-            --accent-soft: rgba(240, 21, 138, 0.14);
+            --accent-soft: rgba(240, 21, 138, 0.10);
             --accent-ink: #ff4fae;
             --on-accent: #ffffff;
             --danger: #ff6b7a;
             --danger-soft: rgba(255, 107, 122, 0.1);
             --danger-line: rgba(255, 107, 122, 0.4);
-            --glow: rgba(240, 21, 138, 0.18);
+            --glow: rgba(240, 21, 138, 0.07);
             --shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 24px 48px -28px rgba(0, 0, 0, 0.8);
 
             --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -594,9 +594,9 @@
         <div class="hero__bg" aria-hidden="true"></div>
         <div class="wrap hero__inner">
             <div class="hero__content">
-                <div class="eyebrow reveal">A safety plan for X</div>
+                <div class="eyebrow reveal">For X product &amp; engineering · an independent proposal</div>
                 <h1 class="reveal" style="--d: 80ms">Moving profile banners and sound reactions, <em>made safe.</em></h1>
-                <p class="hero__lede reveal" style="--d: 160ms">People want GIF banners and quick sound reactions. Fast flashing can cause seizures, and sound can be used to harass. This is the plan for shipping both safely.</p>
+                <p class="hero__lede reveal" style="--d: 160ms">People keep asking X for GIF banners and quick sound reactions. Fast flashing can cause seizures, and sound can be used to harass. This is the safety layer to ship them with: specified with numbers, built as a working prototype, and testable today.</p>
                 <div class="hero__actions reveal" style="--d: 240ms">
                     <a class="btn btn--primary" href="sound-reactions/">Try it live
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -653,7 +653,7 @@
                 </div>
                 <div class="summary">
                     <div class="reveal">
-                        <p class="summary__lead">X is preparing to introduce dynamic and interactive profile headers. While this expands creative possibilities on the platform, it also creates meaningful new risks in accessibility, abuse prevention, and regulatory compliance that static images do not carry.</p>
+                        <p class="summary__lead">If X introduces dynamic profile headers and sound reactions, the creative upside is obvious. So are the new risks in accessibility, abuse prevention and regulatory exposure that static images do not carry. This proposal is written for the product and engineering teams who would own that launch; X has announced no such feature, and nothing here claims otherwise.</p>
                         <p class="summary__note">This is not about restricting creative features. It is about building the minimum safety and compliance infrastructure the platform will eventually need — before it becomes expensive or harmful to users.</p>
                     </div>
                     <div class="reveal" style="--d: 100ms">
@@ -662,6 +662,14 @@
                             <li>Protecting users from photosensitive epilepsy risk through mandatory pre-upload analysis</li>
                             <li>Reducing abuse surface with technical guardrails and identity-linked accountability</li>
                             <li>Meeting WCAG 2.2 accessibility guidance and obligations under the EU DSA and EU AI Act before enforcement creates liability</li>
+                        </ol>
+                    </div>
+                    <div class="reveal builders" style="--d: 140ms">
+                        <p class="prose" style="margin-bottom: 10px"><strong>What you get, if you are the team that would build this</strong></p>
+                        <ol class="objectives">
+                            <li>Upload-time controls with concrete numbers: 15 fps, 10 s loops, 8 MB, 3 flashes a second (general and red), 8 s reactions, 140 s voice posts, and an eight-check preflight. All of them are editable policy, not hard-coded opinion.</li>
+                            <li>A working reference implementation in the browser: the flash scan (WCAG 2.2 general and red-flash rules, CIE 1976 UCS), the header player rules, the reaction and voice-post players, a review queue and an audit log, with unit and end-to-end tests you can run from the repository.</li>
+                            <li>An honest boundary. Abuse and copyright checks are labelled SIMULATED, the scan is a screen rather than a certified analyser, and the identity layer is a proposal. The places that need X's own services are marked, not papered over.</li>
                         </ol>
                     </div>
                 </div>
