@@ -620,3 +620,9 @@ a.x-follow-name:hover strong { text-decoration: underline; }
 .x-upload-describe label .fine-print { display: inline; font-weight: 400; margin-left: 6px; }
 .x-upload-describe textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--x-input); color: var(--text); font: inherit; font-size: 15px; resize: vertical; }
 .x-upload-notes { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--x-gray); font-size: 13px; }
+
+/* Phones: X's home has For you / Following and a pen button, not an inline composer or topic tabs. */
+@media (max-width: 700px) {
+  .x-composer-row { display: none; }
+  .x-tabs .x-tab-topic { display: none; }
+}

@@ -55,7 +55,7 @@ export default function Feed() {
     <header className="x-timeline-header">
       <h1 className="sr-only">Home</h1>
       <div className="x-tabs" role="tablist" aria-label="Timeline">
-        {TABS.map(({ id, label }) => <button key={id} role="tab" aria-selected={tab === id} className={tab === id ? 'active' : ''} onClick={() => setTab(id)}>
+        {TABS.map(({ id, label }, index) => <button key={id} role="tab" aria-selected={tab === id} className={`${tab === id ? 'active' : ''} ${index > 1 ? 'x-tab-topic' : ''}`} onClick={() => setTab(id)}>
           <span>{label}</span>
         </button>)}
       </div>

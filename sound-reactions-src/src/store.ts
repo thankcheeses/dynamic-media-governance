@@ -188,7 +188,14 @@ export const useAppStore = create<AppState>()(persist((set, get) => ({
 }), {
   name: 'sound-reactions-demo-v3',
   storage: createJSONStorage(() => safeStorage),
-  version: 1,
+  version: 2,
+  // v2: Lights out is the only theme that ships black, so a saved Dim choice is reset once. Low-power mode is
+  // reset too: before the fix in src/audio.ts, turning it on blanked the app, so a saved "on" was never a working choice.
+  migrate: (persisted, version) => {
+    const state = persisted as Partial<AppState> | undefined
+    if (version < 2 && state?.settings) return { ...state, settings: { ...state.settings, theme: 'lights-out' as const, lowPower: false } }
+    return state
+  },
   partialize: (state) => ({
     ...state,
     // Only live microphone recordings (blob: URLs) are session-only. Generated
