@@ -39,6 +39,15 @@ The key is saved only in that browser. Every GIF you pick is scanned for flashin
 
 To let every visitor search without entering a key, build with `VITE_GIPHY_API_KEY=<key>`. The key is then visible to anyone who views the page source. That is normal for GIPHY keys, but keep the key on GIPHY's free beta tier, which is rate-limited.
 
+## Deployment
+
+`.github/workflows/pages.yml` builds the prototype from source on every push to `main` (lint, typecheck, unit tests, then `vite build`) and can deploy the whole site to GitHub Pages. To use it instead of the committed `sound-reactions/` folder:
+
+1. Repository **Settings → Pages → Build and deployment → Source**: choose **GitHub Actions**.
+2. **Settings → Secrets and variables → Actions → New repository secret**: name `GIPHY_API_KEY`, value your GIPHY key. Never put the key in a file or a commit; the workflow fails if it finds the key in a tracked file.
+
+The key is read at build time into the published JavaScript, so visitors can see it (as with any web GIPHY key); the secret keeps it out of the repository and lets you rotate it in one place. Until step 1 is done the workflow only builds and tests, and Pages keeps serving the committed folder.
+
 ## Limits
 
 One person wrote this proposal. It is not legal advice, and it describes no feature X has shipped.

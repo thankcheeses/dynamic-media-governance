@@ -19,6 +19,8 @@ export interface Clip {
   copyright: boolean
   audioUrl?: string
   simulated?: boolean
+  /** Loudness was estimated in the browser from an uploaded file (unweighted RMS), not measured with ffmpeg at build time. */
+  approxLoudness?: boolean
   /** Library sound this clip came from; survives id rewrites when copied onto posts. */
   soundId?: string
   category?: SoundCategory
