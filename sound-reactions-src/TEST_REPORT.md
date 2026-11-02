@@ -340,3 +340,15 @@ Section 8 of `SPEC.md`. `.github/workflows/pages.yml` installs, lints, typecheck
 | Unit/component tests | 35/35 passed |
 | Playwright | 44/44 passed in Chromium, desktop and mobile (new regression test for the low-power toggle). WebKit was not available here. |
 | Screenshots | Governance page at 390 px on pure black; proposal hero and executive summary with the new copy. |
+
+## 2026-11-02 — Lights out enforced once, low-power reset once, phone home screen closer to X
+
+The owner's phone showed the navy **Dim** theme and still-frame banners. Both were saved settings in their browser: Dim had been selected earlier, and Low-power mode had been switched on during the blank-screen bug and stayed on across the reload. The persisted store is now at version 2 with a one-time migration that sets the theme to Lights out and Low-power mode to off; Dim remains selectable afterwards. On phones (≤ 700 px) the home screen no longer shows the inline composer (X uses the pen button there) or the topic tabs beyond For you / Following.
+
+| Check | Actual result |
+|---|---|
+| Live site (fresh browser, via a remote fetch) | The proposal page serves the new copy on black. The owner profile shows the ⓘ and pause controls on the banner, which only render after the in-browser scan passes, so the GIPHY fetch and scan work in the wild. A headless screenshot showed the banner area dark, which is consistent with a canvas that had not been painted by the time the capture ran; it is not evidence either way about animation on a real phone. |
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 35/35 passed |
+| Playwright | 44/44 passed in Chromium, desktop and mobile (full run before the low-power reset was added to the migration; the settings, low-power and persistence tests re-run after it). WebKit was not available here. |
+| Migration from a real v1 store | **Not tested with the owner's actual saved data**; the migration only touches `settings.theme` and `settings.lowPower`. |
