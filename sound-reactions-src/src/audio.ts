@@ -309,7 +309,11 @@ class AudioController {
 
 export const audioController = new AudioController()
 
+/** Stable: play and stop never change identity, so effects may list them as dependencies without re-running every render. */
+const play = (clip: Clip) => void audioController.play(clip)
+const stop = (message?: string) => audioController.stop(message)
+
 export function useAudio() {
   const state = useSyncExternalStore(audioController.subscribe, audioController.getSnapshot, audioController.getSnapshot)
-  return { state, play: (clip: Clip) => void audioController.play(clip), stop: (message?: string) => audioController.stop(message) }
+  return { state, play, stop }
 }
