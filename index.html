@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Media Governance · Moving profile banners and sound reactions, made safe</title>
-    <meta name="description" content="A proposal for letting people use GIF profile banners and short sound reactions safely: every GIF is screened for seizure-risk flashing, kept small and calm, and no sound ever plays unless you tap. Includes a working prototype.">
-    <meta property="og:title" content="Dynamic Media Governance · Moving profile banners and sound reactions, made safe">
-    <meta property="og:description" content="Every GIF is screened for seizure-risk flashing, kept small and calm, and no sound ever plays unless you tap. Read the plan and try the prototype.">
+    <title>Dynamic Media Governance · Animated profile headers, made safe</title>
+    <meta name="description" content="An independent policy proposal for safely shipping animated profile headers on a social platform: every GIF is screened for seizure-risk flashing and kept small and calm. Includes Sound Reactions, a working browser prototype. Not affiliated with X.">
+    <meta property="og:title" content="Dynamic Media Governance · Animated profile headers, made safe">
+    <meta property="og:description" content="An independent policy proposal for safely shipping animated profile headers on a social platform. Read the plan and try the Sound Reactions prototype.">
+    <meta property="og:image" content="https://thankcheeses.github.io/dynamic-media-governance/sound-reactions/headers/violet-hour.jpg">
+    <meta property="og:image:alt" content="A sample animated profile header: a lavender crystal inside a wireframe shell on a dark violet background.">
     <meta property="og:url" content="https://thankcheeses.github.io/dynamic-media-governance/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary">
@@ -613,13 +615,13 @@
 
             <figure class="mock reveal" style="--d: 200ms" id="preview" aria-label="Preview of the proposal: a profile with a GIF banner and a sound reaction">
                 <div class="mock__banner">
-                    <video data-header-video muted playsinline loop preload="metadata" poster="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy_s.gif" aria-label="Animated GIF banner: SpongeBob strutting across a green room while a jellyfish floats beside him.">
-                        <source src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy.mp4" type="video/mp4">
+                    <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/violet-hour.jpg" aria-label="Animated banner: a lavender crystal turning slowly inside a wireframe shell, with two thin orbits, on a dark violet background.">
+                        <source src="sound-reactions/headers/violet-hour.webm" type="video/webm">
                     </video>
                     <button class="mock__pause" type="button" data-header-pause aria-label="Pause banner animation" aria-pressed="false">
                         <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg>
                     </button>
-                    <a class="mock__credit" href="https://giphy.com/gifs/dancing-spongebob-squarepants-jellyfish-jam-rdXF0gnAyUAfK" target="_blank" rel="noreferrer">via GIPHY</a>
+                    <a class="mock__credit" href="sound-reactions/#/profile">Sample header</a>
                     <span class="mock__note mock__note--banner"><b>1</b> GIF banner, checked for seizure-risk flashing</span>
                 </div>
                 <div class="mock__head">
@@ -860,7 +862,7 @@
                 <div class="limits">
                     <div class="limit reveal"><h3>Client-side rendering attacks</h3><p>This framework governs upload-time controls. Malicious client-side injection after scanning requires platform-level sandboxing.</p></div>
                     <div class="limit reveal"><h3>Steganography</h3><p>Automated PEA scanning has known technical limitations against hidden triggers. Behavioral signals provide a secondary detection layer.</p></div>
-                    <div class="limit reveal"><h3>Biometric data concentration</h3><p>Scoped exclusively to dynamic media uploads. Static headers remain unaffected. Existing 30-day retention policies apply.</p></div>
+                    <div class="limit reveal"><h3>Biometric data concentration</h3><p>Scoped exclusively to dynamic media uploads. Static headers remain unaffected. This proposal assumes verification data is deleted within 30 days; the actual period would be set by the platform and its vendor.</p></div>
                     <div class="limit reveal"><h3>Artistic false positives</h3><p>The provisional publish model was specifically designed to protect legitimate creators from overly aggressive automated blocking.</p></div>
                 </div>
             </div>
@@ -909,17 +911,17 @@
                 <a class="proto reveal" href="sound-reactions/#/profile">
                     <div class="proto__body">
                         <div class="card__label">Sound Reactions · concept prototype</div>
-                        <h3>See a real GIF banner pass the scan</h3>
-                        <p>The banner on the right is a real GIF playing straight from GIPHY, the way X serves GIFs. The prototype fetches it and runs the flash scan in your browser before it is allowed to play; an earlier pass on the owner’s copy found 14 fps on a 1.3-second loop, 0.5 MB and 1 general flash per second, under the limit of 3. Two more real GIFs play from Tenor on other profiles; one runs at 20 fps and is drawn at the 15 fps cap. Open a profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s banner, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
+                        <h3>See a GIF banner pass the scan</h3>
+                        <p>The banner on the right is “Violet hour”, one of the prototype’s own rendered sample headers: 15 fps on a 10-second loop, with 0 general and 0 red flashes per second in the build-time scan, under the limit of 3. In the prototype, the owner’s profile plays a GIF hosted on GIPHY; this proposal assumes a platform would serve GIFs from its own or a partner’s media host, so the prototype fetches that GIF and runs the flash scan in your browser before it is allowed to play. Two more real GIFs play from Tenor on other profiles; one runs at 20 fps and is drawn at the 15 fps cap. Open a profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s banner, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
                         <span class="proto__cta">Open Sound Reactions
                             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                         </span>
                     </div>
                     <div class="proto__media">
-                        <video data-header-video muted playsinline loop preload="metadata" poster="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy_s.gif" aria-label="Real GIF banner, via GIPHY: SpongeBob strutting across a green room while a jellyfish floats beside him.">
-                            <source src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/giphy.mp4" type="video/mp4">
+                        <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/violet-hour.jpg" aria-label="Animated banner: a lavender crystal turning slowly inside a wireframe shell, with two thin orbits, on a dark violet background.">
+                        <source src="sound-reactions/headers/violet-hour.webm" type="video/webm">
                         </video>
-                        <span class="proto__chip">Real GIF · via GIPHY · PEA passed</span>
+                        <span class="proto__chip">Sample header · 0 flashes per second · scan passed</span>
                     </div>
                 </a>
                 <p class="note reveal">Not affiliated with X. Source code is in the <a href="https://github.com/thankcheeses/dynamic-media-governance/tree/main/sound-reactions-src">sound-reactions-src</a> folder of this repository.</p>
