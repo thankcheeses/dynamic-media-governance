@@ -55,3 +55,7 @@ One person wrote this proposal. It is not legal advice, and it describes no feat
 ## Author
 
 Brianna Baynard · [LinkedIn](https://www.linkedin.com/in/brianna-baynard)
+
+## License
+
+MIT. See [LICENSE](LICENSE). Sound files and GIFs loaded from third parties keep their own terms.
