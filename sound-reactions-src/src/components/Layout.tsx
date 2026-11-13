@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from
 import { AudioLines, FileClock, FolderArchive, GitCompareArrows, Home, MoreHorizontal, PenLine, Presentation, Search, Settings, ShieldCheck, UserRound, Volume2, VolumeX } from 'lucide-react'
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Toaster } from 'sonner'
-import { audioController, useAudio } from '../audio'
+import { useAudio } from '../audio'
 import { useAppStore } from '../store'
 import { HAS_GENERATED_AUDIO } from '../data'
 import { avatarContent, avatarStyle } from '../avatar'
@@ -104,19 +104,13 @@ export function Layout({ children }: { children: ReactNode }) {
   const location = useLocation()
   const settings = useAppStore((state) => state.settings)
   const setSetting = useAppStore((state) => state.setSetting)
-  const { state: playback, stop } = useAudio()
+  const { state: playback } = useAudio()
   const isFeed = location.pathname === '/'
   const [drawer, setDrawer] = useState(false)
   const [tour, setTour] = useState(() => !tourSeen())
   const closeTour = useCallback(() => { markTourSeen(); setTour(false) }, [])
   const me = ownerLook(useIdentity((state) => state.identity))
-  useEffect(() => { audioController.setVolume(settings.volume, settings.muted) }, [settings.volume, settings.muted])
-  useEffect(() => {
-    const visibility = () => { if (document.hidden) stop('Paused because the tab was hidden') }
-    document.addEventListener('visibilitychange', visibility)
-    return () => document.removeEventListener('visibilitychange', visibility)
-  }, [stop])
-  useEffect(() => { if (settings.lowPower) stop('Paused because low-power mode is on') }, [settings.lowPower, stop])
+  // Volume, hidden-tab and low-power handling live in the audio controller (src/audio.ts), not here.
   useEffect(() => { window.scrollTo(0, 0) }, [location.pathname])
 
   return <div className={`app theme-${settings.theme} ${settings.reducedMotion ? 'reduce-motion' : ''}`}>

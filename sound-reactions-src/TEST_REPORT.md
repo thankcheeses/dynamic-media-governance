@@ -352,3 +352,26 @@ The owner's phone showed the navy **Dim** theme and still-frame banners. Both we
 | Unit/component tests | 35/35 passed |
 | Playwright | 44/44 passed in Chromium, desktop and mobile (full run before the low-power reset was added to the migration; the settings, low-power and persistence tests re-run after it). WebKit was not available here. |
 | Migration from a real v1 store | **Not tested with the owner's actual saved data**; the migration only touches `settings.theme` and `settings.lowPower`. |
+
+## 2026-11-08 — Six deepening refactors from the architecture review (`/improve-codebase-architecture`)
+
+The review (report kept outside the repo) found six shallow spots and the owner asked for all of them. No visible copy changed except where a defect was fixed. New modules: `src/headerScan.ts` (one scan entry point, replaces `hostedScan.ts`), `src/banner.ts` (banner resolver and the tagged header pick), `src/ledger.ts` (submission ledger), `src/persistence.ts` (allow-list persistence, preferences, migrations, storage v3), `src/motionPolicy.ts` (one motion rule table), `src/profileView.ts` (profile view-model and `displayAuthor`). `src/audio.ts` now owns the playback policy with injectable deps; Layout lost its three audio effects. Decisions are in `docs/adr/0001` and `0002`; vocabulary in `GLOSSARY.md`.
+
+**Defects fixed along the way** (all found by reading, confirmed by the new tests):
+- A hosted sample published from the header studio was stored as an "upload": lost on reload, no "via" credit on the banner (rule 14), and a Tenor GIF described as picked from GIPHY. It is now a preset pick with Tenor/GIPHY provenance and credit, and it persists.
+- A GIPHY pick's banner now carries the "via GIPHY" credit link.
+- Picking the default header explicitly on an imported profile now shows it (the archive still showed before, because "chosen" was inferred from the id).
+- An audit entry whose free text contained `x-` (for example a scan of "Relax-time.gif") was dropped from storage; ephemerality is now a flag.
+- A sound started after low-power mode was switched on used to play; the controller now refuses it and says so.
+- Highlights pins on the owner demo's posts now persist, as the copy promised.
+
+**Deliberately unchanged:** data saver still has no effect on audio (the Settings copy promises no prefetch; the controller never prefetched). That needs a product decision before it is encoded; noted in the review.
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | **87/87 passed** in 10 files (52 new: scan entry point and banner resolver, ledger and persistence, motion policy table, profile view-model, audio policy with a fake Web Audio graph) |
+| Playwright | **44/44 passed** in Chromium, desktop and mobile, on the refactored build, before the new e2e test was added; then the GIPHY test (extended with the banner credit) and the new studio-hosted-pick regression test passed 4/4 in both projects. WebKit was not available here. |
+| Regression test order | The new e2e test was written after the fix, not before; it asserts the three symptoms (credit link, Tenor provenance, pick survives reload) that the old code could not produce. |
+| Hosted build | `../sound-reactions/` rebuilt (hash router). |
+| Migration from a real v2 store | **Not tested with the owner's actual saved data**; `migrateState` is unit-tested on synthetic v1 and v2 saves. |

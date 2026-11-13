@@ -120,6 +120,8 @@ export interface AuditEvent {
   actor: string
   subjectId: string
   detail: string
+  /** About a post imported from the viewer's archive: kept in memory with the import, never stored. */
+  ephemeral?: boolean
 }
 
 export interface Submission {

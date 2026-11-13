@@ -86,8 +86,8 @@ export async function searchGiphy(query: string, key: string, signal?: AbortSign
 }
 
 /** Download a picked GIF so it can be scanned and transcoded like an upload. */
-export async function fetchGiphyFile(gif: GiphyGif): Promise<File> {
-  const response = await fetch(gif.gif)
+export async function fetchGiphyFile(gif: GiphyGif, fetchImpl: typeof fetch = (...args) => fetch(...args)): Promise<File> {
+  const response = await fetchImpl(gif.gif)
   if (!response.ok) throw new GiphyError(`Couldn’t download that GIF from GIPHY (HTTP ${response.status}).`)
   const blob = await response.blob()
   const name = `${gif.title.replace(/[^\w .-]+/g, '').slice(0, 60) || 'giphy'}.gif`

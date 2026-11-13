@@ -7,8 +7,8 @@ import { useAppStore } from '../store'
 import type { Post, QuotedPost } from '../types'
 import { avatarContent, avatarStyle } from '../avatar'
 import { OWNER_HANDLE, profilePath } from '../accounts'
-import { ownerLook, useIdentity } from '../identity'
-import { useImport } from '../importStore'
+import { useIdentity } from '../identity'
+import { displayAuthor } from '../profileView'
 import { SoundReactionChip, VoicePostPlayer } from './AudioClip'
 import { ReactionPicker } from './ReactionPicker'
 
@@ -50,8 +50,8 @@ function PostMenu({ post, onMute }: { post: Post; onMute?: (handle: string) => v
   const [open, setOpen] = useState(false)
   // Highlights are a local pin, for the viewer's own posts: the imported archive or the owner demo.
   const pinnable = post.ephemeral || post.handle === OWNER_HANDLE
-  const pinned = useImport((state) => state.highlights.includes(post.id))
-  const toggleHighlight = useImport((state) => state.toggleHighlight)
+  const pinned = useAppStore((state) => state.highlights.includes(post.id))
+  const toggleHighlight = useAppStore((state) => state.toggleHighlight)
   useEffect(() => {
     if (!open) return
     const close = () => setOpen(false)
@@ -77,13 +77,7 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
   const [picker, setPicker] = useState(false)
   const { liked, reposted, bookmarked, togglePostAction } = useAppStore()
   const identity = useIdentity((state) => state.identity)
-  // The owner's posts take the visitor's "Make it yours" name and photo. The handle inside the
-  // post stays the owner's so profile links and searches keep working.
-  const me = post.handle === OWNER_HANDLE && identity ? ownerLook(identity) : null
-  const author = me?.name ?? post.author
-  const shownHandle = me?.handle ?? post.handle
-  const initials = me?.initials ?? post.initials
-  const verified = me ? false : post.verified
+  const { author, handle: shownHandle, initials, verified, photo } = displayAuthor(post, identity)
   const isLiked = liked.includes(post.id)
   const isReposted = reposted.includes(post.id)
   const isBookmarked = bookmarked.includes(post.id)
@@ -110,7 +104,7 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
 
   return (
     <article className={`x-post ${embedded ? 'embedded' : ''}`} aria-label={`Post by ${author}`}>
-      <Link to={profilePath(post.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(initials)}>{avatarContent(initials, me?.photo ?? post.photo)}</Link>
+      <Link to={profilePath(post.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(initials)}>{avatarContent(initials, photo)}</Link>
       <div className="x-post-main">
         {post.repostOf && <div className="x-post-context"><Repeat2 size={14} aria-hidden="true" /> {author} reposted {post.repostOf}</div>}
         <header className="x-post-byline">
@@ -128,7 +122,7 @@ export function PostCard({ post, embedded = false, onMute }: { post: Post; embed
             : <div key={index} className="x-media-missing" role="img" aria-label={item.note}>{item.note}</div>)}
         </div>}
         {post.quote && <QuoteCard quote={post.quote} />}
-        {post.voice && <VoicePostPlayer clip={post.voice} handle={shownHandle} initials={initials} photo={me?.photo} />}
+        {post.voice && <VoicePostPlayer clip={post.voice} handle={shownHandle} initials={initials} photo={photo} />}
         {post.reaction && <SoundReactionChip reaction={post.reaction} post={post} />}
         <div className="x-actions">
           <Action to="/compose" className="reply" label={`Reply to ${post.handle}, ${post.replyCount} replies`}>

@@ -189,8 +189,31 @@ test('GIPHY search shows still frames and scans a picked GIF before it can play'
   await page.getByRole('button', { name: 'Scan Calm orbit' }).click()
   await expect(page.getByText('PASS', { exact: true })).toBeVisible({ timeout: 30_000 })
   await page.getByRole('button', { name: 'Use this header' }).click()
+  // Rule 14: a GIF that plays from GIPHY keeps its attribution on the banner itself.
+  await expect(page.locator('.dynamic-header').getByRole('link', { name: 'via GIPHY' })).toHaveAttribute('href', 'https://giphy.com/gifs/calm1')
   await page.getByRole('button', { name: 'About this header' }).click()
   await expect(page.getByText('A GIF picked from GIPHY')).toBeVisible()
+})
+
+test('a hosted sample chosen in the studio keeps its identity: Tenor credit and provenance, and it survives a reload', async ({ page }) => {
+  // Regression: a hosted pick published from the studio used to be stored as an "upload", which lost it on reload,
+  // dropped the "via" credit from the banner, and described a Tenor GIF as picked from GIPHY.
+  await page.route(/tenor\.com\/.*\.gif$/, (route) => route.fulfill({ headers: { 'access-control-allow-origin': '*' }, contentType: 'image/gif', path: 'public/headers/clay-orbit.gif' }))
+  await page.goto('/profile')
+  await page.getByRole('button', { name: 'Edit profile' }).click()
+  await page.getByRole('radio', { name: /SpongeBob at the computer/ }).click()
+  await expect(page.getByText('PASS', { exact: true })).toBeVisible({ timeout: 30_000 })
+  await page.getByRole('button', { name: 'Use this header' }).click()
+  const header = page.locator('.dynamic-header')
+  await expect(header.getByRole('link', { name: 'via Tenor' })).toHaveAttribute('href', /tenor\.com/)
+  await expect(header.locator('canvas')).toBeVisible({ timeout: 20000 })
+  await page.getByRole('button', { name: 'About this header' }).click()
+  await expect(page.getByText(/A GIF playing from Tenor/)).toBeVisible()
+  await page.keyboard.press('Escape')
+  const saved = JSON.parse(await page.evaluate(() => localStorage.getItem('sound-reactions-demo-v3') ?? '{}')) as { state: { profileHeader: unknown } }
+  expect(saved.state.profileHeader).toMatchObject({ kind: 'preset', presetId: 'spongebob-computer', decision: 'PASS', chosen: true })
+  await page.reload()
+  await expect(page.locator('.dynamic-header').getByRole('link', { name: 'via Tenor' })).toBeVisible({ timeout: 20000 })
 })
 
 test('the header info tour explains the scan without cluttering the banner', async ({ page }) => {

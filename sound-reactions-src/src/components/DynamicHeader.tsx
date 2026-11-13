@@ -4,14 +4,9 @@ import { HeaderInfo } from './HeaderInfo'
 import { useAppStore } from '../store'
 import type { UploadedMedia } from '../analyze'
 import type { HeaderDecision, HeaderPreset, HeaderStyle, HostedHeader } from '../headers'
+import { headerPlayback, usePrefersReducedMotion } from '../motionPolicy'
+import type { Credit, Provenance } from '../banner'
 
-/**
- * Only calm styles are ever animated. Styles that flash are drawn as a single
- * still frame everywhere: the prototype never puts flashing content on screen.
- * The confetti style animates as a slow, non-flashing stand-in once a viewer
- * chooses to play it past its warning label.
- */
-const ANIMATABLE: HeaderStyle[] = ['video', 'upload', 'aurora', 'waves', 'confetti']
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`
 const TAU = Math.PI * 2
 
@@ -77,18 +72,6 @@ function drawHeader(ctx: CanvasRenderingContext2D, style: HeaderStyle, w: number
   ctx.restore()
 }
 
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(() => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)
-  useEffect(() => {
-    const query = window.matchMedia?.('(prefers-reduced-motion: reduce)')
-    if (!query) return
-    const update = () => setReduced(query.matches)
-    query.addEventListener?.('change', update)
-    return () => query.removeEventListener?.('change', update)
-  }, [])
-  return reduced
-}
-
 function useCanvasSize(ref: React.RefObject<HTMLCanvasElement | null>) {
   const [size, setSize] = useState({ w: 0, h: 0 })
   useEffect(() => {
@@ -151,7 +134,7 @@ function CanvasThumb({ preset }: { preset: HeaderPreset }) {
  * A hosted GIF plays in a hidden video and is drawn to the canvas at most 15
  * times a second, so a 20 fps file still shows at the framework's cap.
  */
-export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPreset; decision: HeaderDecision; upload?: UploadedMedia | null }) {
+export function DynamicHeader({ preset, decision, upload, credit, provenance }: { preset: HeaderPreset; decision: HeaderDecision; upload?: UploadedMedia | null; credit?: Credit | null; provenance?: Provenance }) {
   const ref = useRef<HTMLCanvasElement>(null)
   const { w, h } = useCanvasSize(ref)
   const settings = useAppStore((state) => state.settings)
@@ -169,14 +152,9 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
   const hosted = preset.hosted
   // A hosted GIF that was scanned in this browser plays its scanned frames, not the host's video.
   const hostVideo = hosted && !upload ? hosted : undefined
-  const provisional = decision === 'PROVISIONAL'
-  const stillReason = !ANIMATABLE.includes(preset.style) ? 'Still frame only'
-    : settings.reducedMotion || osReduced ? 'Still frame: reduced motion is on'
-    : settings.lowPower ? 'Still frame: low-power mode is on'
-    : settings.dataSaver ? 'Still frame: data saver is on'
-    : null
-  const gated = provisional && !warningAccepted
-  const running = !stillReason && !gated && !userPaused && inView && !scrolling && !hidden
+  const { gated, running, status, canPause } = headerPlayback({ style: preset.style, fps: preset.fps, decision, settings, osReduced, warningAccepted, userPaused, inView, scrolling, hidden })
+  // The "via" credit: the banner resolver states it; a preset rendered on its own falls back to its host.
+  const shownCredit = credit === undefined ? (hosted ? { provider: hosted.provider, pageUrl: hosted.pageUrl } : null) : credit
 
   useEffect(() => {
     const video = videoRef.current
@@ -234,13 +212,6 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
     return () => { cancelAnimationFrame(raf); video?.removeEventListener('loadeddata', draw) }
   }, [preset, hostVideo, upload, w, h, running])
 
-  const status = gated ? 'Waiting behind its warning label'
-    : stillReason ? stillReason.replace('Still frame: ', 'Showing a still frame because ')
-    : userPaused ? 'Paused by you'
-    : hidden ? 'Paused because the tab is hidden'
-    : !inView ? 'Paused because it is off-screen'
-    : scrolling ? 'Paused while you scroll'
-    : `Playing at up to ${Math.min(preset.fps, 15)} fps`
   return <div className={`dynamic-header ${gated ? 'is-gated' : ''}`}>
     {hosted
       ? <>
@@ -260,14 +231,14 @@ export function DynamicHeader({ preset, decision, upload }: { preset: HeaderPres
       <button type="button" onClick={() => setWarningAccepted(true)}>Play header</button>
     </div>}
     <div className="header-controls">
-      {hosted && <a className="header-credit" href={hosted.pageUrl} target="_blank" rel="noreferrer">via {hosted.provider}</a>}
+      {shownCredit && <a className="header-credit" href={shownCredit.pageUrl} target="_blank" rel="noreferrer">via {shownCredit.provider}</a>}
       <button type="button" className="header-pause" aria-label="About this header" aria-haspopup="dialog" onClick={() => setInfoOpen(true)}>
         <Info size={17} aria-hidden="true" />
       </button>
-      {!stillReason && !gated && <button type="button" className="header-pause" aria-pressed={userPaused} aria-label={userPaused ? 'Play header animation' : 'Pause header animation'} onClick={() => setUserPaused(!userPaused)}>
+      {canPause && <button type="button" className="header-pause" aria-pressed={userPaused} aria-label={userPaused ? 'Play header animation' : 'Pause header animation'} onClick={() => setUserPaused(!userPaused)}>
       {userPaused ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
     </button>}
     </div>
-    {infoOpen && <HeaderInfo preset={preset} decision={decision} upload={upload} status={status} onClose={closeInfo} />}
+    {infoOpen && <HeaderInfo preset={preset} decision={decision} upload={upload} provenance={provenance} status={status} onClose={closeInfo} />}
   </div>
 }

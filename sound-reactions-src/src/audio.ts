@@ -1,7 +1,19 @@
 import { useSyncExternalStore } from 'react'
-import type { Clip } from './types'
+import type { AppSettings, Clip } from './types'
 import { toast } from 'sonner'
 import { useAppStore } from './store'
+
+/** What the controller needs from the outside world. Tests pass fakes; the app passes the store and the window. */
+export interface AudioDeps {
+  /** Records a playback audit entry. */
+  audit: (type: string, subjectId: string, detail: string) => void
+  /** The Web Audio constructor, or null where the browser has none. */
+  contextClass: () => (typeof AudioContext) | null
+  /** Shows the viewer a short message. */
+  notify: (message: string) => void
+}
+
+export type PlaybackSettings = Pick<AppSettings, 'volume' | 'muted' | 'lowPower'>
 
 /** 0.05 s of silence (8 kHz mono WAV) used once to switch iOS into playback mode. */
 const SILENT_WAV = 'data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA'
@@ -17,7 +29,9 @@ export interface PlaybackState {
   message: string
 }
 
-class AudioController {
+export class AudioController {
+  private readonly deps: AudioDeps
+  constructor(deps: AudioDeps) { this.deps = deps }
   private ctx: AudioContext | null = null
   private master: GainNode | null = null
   private sources: AudioScheduledSourceNode[] = []
@@ -34,6 +48,7 @@ class AudioController {
   private startedAt = 0
   private volume = 0.7
   private muted = false
+  private lowPower = false
   private state: PlaybackState = { clipId: null, status: 'idle', elapsed: 0, duration: 0, message: '' }
   private listeners = new Set<() => void>()
 
@@ -43,6 +58,24 @@ class AudioController {
   private emit(patch: Partial<PlaybackState>) {
     this.state = { ...this.state, ...patch }
     this.listeners.forEach((listener) => listener())
+  }
+
+  /**
+   * The playback policy, applied whenever settings change: the volume follows the
+   * viewer's setting, and low-power mode stops whatever is playing. play() reads
+   * the same flag, so a clip started while low power is on is refused too.
+   */
+  applySettings(settings: PlaybackSettings) {
+    this.setVolume(settings.volume, settings.muted)
+    this.lowPower = settings.lowPower
+    if (settings.lowPower && this.state.clipId) this.stop('Paused because low-power mode is on')
+  }
+
+  /** Stops playback when the tab is hidden. Installed once by the app; tests call it with a fake document. */
+  watchVisibility(doc: { hidden: boolean; addEventListener(type: 'visibilitychange', listener: () => void): void; removeEventListener(type: 'visibilitychange', listener: () => void): void }): () => void {
+    const onChange = () => { if (doc.hidden) this.stop('Paused because the tab was hidden') }
+    doc.addEventListener('visibilitychange', onChange)
+    return () => doc.removeEventListener('visibilitychange', onChange)
   }
 
   setVolume(volume: number, muted: boolean) {
@@ -115,7 +148,7 @@ class AudioController {
 
   /** Create the context and analyser. Only ever called from play(), inside a user gesture. */
   private ensureGraph(): AudioContext | null {
-    const AudioContextClass = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    const AudioContextClass = this.deps.contextClass()
     if (!AudioContextClass) return null
     this.unlockDevice()
     if (!this.ctx) this.ctx = new AudioContextClass()
@@ -148,7 +181,12 @@ class AudioController {
   async play(clip: Clip) {
     if (this.state.clipId === clip.id && this.state.status === 'playing') { this.stop(); return }
     this.stop()
-    useAppStore.getState().addAudit('playback_started', clip.id, `User-initiated playback: ${clip.name}`)
+    if (this.lowPower) {
+      this.emit({ message: 'Low-power mode is on, so sounds stay paused' })
+      this.deps.notify('Low-power mode is on. Turn it off in Settings to play sounds.')
+      return
+    }
+    this.deps.audit('playback_started', clip.id, `User-initiated playback: ${clip.name}`)
     this.emit({ clipId: clip.id, status: 'playing', elapsed: 0, duration: clip.duration, message: `Playing ${clip.name}` })
     this.startedAt = performance.now()
     this.timer = setInterval(() => {
@@ -207,7 +245,7 @@ class AudioController {
         if (token !== this.playToken) return
         // Never fail silently: say so, then play the synthesized version of the same sound.
         this.emit({ message: `${clip.name}: audio file unavailable, playing the backup version` })
-        toast(`Couldn't load the ${clip.name} sound (${reason}). Playing the backup version.`)
+        this.deps.notify(`Couldn't load the ${clip.name} sound (${reason}). Playing the backup version.`)
       }
     }
 
@@ -233,7 +271,7 @@ class AudioController {
   private warnBlocked() {
     if (this.warnedBlocked) return
     this.warnedBlocked = true
-    toast('Your browser is holding the sound back. Tap play again, and check your volume. On iPhone, flip the silent switch off.')
+    this.deps.notify('Your browser is holding the sound back. Tap play again, and check your volume. On iPhone, flip the silent switch off.')
   }
 
   /** Fetch + decode once per file; later plays reuse the decoded buffer. */
@@ -307,7 +345,17 @@ class AudioController {
   }
 }
 
-export const audioController = new AudioController()
+export const createAudioController = (deps: AudioDeps) => new AudioController(deps)
+
+/** The app's controller: audits go to the store, settings come from it, the tab's visibility pauses it. */
+export const audioController = createAudioController({
+  audit: (type, subjectId, detail) => useAppStore.getState().addAudit(type, subjectId, detail),
+  contextClass: () => (typeof window === 'undefined' ? null : window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ?? null),
+  notify: (message) => { toast(message) },
+})
+audioController.applySettings(useAppStore.getState().settings)
+useAppStore.subscribe((state, previous) => { if (state.settings !== previous.settings) audioController.applySettings(state.settings) })
+if (typeof document !== 'undefined') audioController.watchVisibility(document)
 
 /** Stable: play and stop never change identity, so effects may list them as dependencies without re-running every render. */
 const play = (clip: Clip) => void audioController.play(clip)

@@ -2,29 +2,22 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ArrowLeft, ArrowRight, X as XIcon } from 'lucide-react'
 import type { UploadedMedia } from '../analyze'
+import { isMeasured, provenanceLabel, provenanceOf, type Provenance } from '../banner'
 import { HEADER_LIMITS, type HeaderDecision, type HeaderPreset } from '../headers'
 
 const REPO = 'https://github.com/thankcheeses/dynamic-media-governance/tree/main/sound-reactions-src'
 const FRAMEWORK = 'https://thankcheeses.github.io/dynamic-media-governance/'
 
-function sourceOf(preset: HeaderPreset, upload?: UploadedMedia | null): { label: React.ReactNode; measured: boolean } {
-  if (preset.hosted && upload) return { label: <>A GIF playing from <a href={preset.hosted.pageUrl} target="_blank" rel="noreferrer">{preset.hosted.provider}</a>, fetched and scanned in your browser before it was allowed to play</>, measured: true }
-  if (upload?.source === 'giphy') return { label: 'A GIF picked from GIPHY', measured: true }
-  if (upload) return { label: 'A file uploaded in this browser', measured: true }
-  if (preset.hosted) return { label: <>The owner’s own pick, playing from <a href={preset.hosted.pageUrl} target="_blank" rel="noreferrer">{preset.hosted.provider}</a> and measured on the owner’s copy of the clip</>, measured: true }
-  if (preset.ownerFile) return { label: 'The owner’s own GIF, kept in the repository at the owner’s request', measured: true }
-  if (preset.media) return { label: 'A GIF rendered with three.js for this prototype', measured: true }
-  return { label: 'A sample header with fixture values', measured: false }
-}
-
 /**
  * A short tour of how a dynamic header was checked and how it plays, opened from
  * the ⓘ button on the banner. The banner itself stays clean; the details live here.
  */
-export function HeaderInfo({ preset, decision, upload, status, onClose }: {
+export function HeaderInfo({ preset, decision, upload, provenance, status, onClose }: {
   preset: HeaderPreset
   decision: HeaderDecision
   upload?: UploadedMedia | null
+  /** Where the header came from, as the banner resolver states it. Derived from the preset when a caller has no resolver. */
+  provenance?: Provenance
   status: string
   onClose: () => void
 }) {
@@ -38,7 +31,8 @@ export function HeaderInfo({ preset, decision, upload, status, onClose }: {
   }, [onClose])
 
   const m = upload?.measurement ?? preset
-  const source = sourceOf(preset, upload)
+  const where = provenance ?? provenanceOf(preset, upload ?? null)
+  const source = { label: where.kind === 'hosted' ? <>A GIF playing from <a href={where.pageUrl} target="_blank" rel="noreferrer">{where.provider}</a>, fetched and scanned in your browser before it was allowed to play</> : provenanceLabel(where), measured: isMeasured(where) }
   const provisional = decision === 'PROVISIONAL'
   const transcoded = m.fps > HEADER_LIMITS.fps
   const area = m.flashArea !== undefined && m.flashesPerSecond > 0 ? `, covering up to ${Math.round(m.flashArea * 100)}% of the header` : ''

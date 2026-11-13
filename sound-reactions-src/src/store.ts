@@ -1,13 +1,18 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
-import { DEFAULT_CONFIG, DEFAULT_SETTINGS, SEED_POSTS } from './data'
 import type { UploadedMedia } from './analyze'
-import { DEFAULT_HEADER_ID, type HeaderDecision } from './headers'
+import { DEFAULT_PICK, type HeaderPick } from './banner'
+import { DEFAULT_CONFIG, DEFAULT_SETTINGS, SEED_POSTS } from './data'
+import { isEphemeralPostId, ownerPost, recordDecision, type LedgerClock } from './ledger'
+import { migrateState, partializeState, settingsFrom, STORAGE_KEY, STORAGE_VERSION, type PersistedState } from './persistence'
 import type { AppSettings, AuditEvent, Clip, GovernanceConfig, MediaKind, Post, PreflightResult, Submission } from './types'
 
-const isSessionAudio = (url?: string) => Boolean(url?.startsWith('blob:'))
-const uid = (prefix: string) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-const now = () => new Date().toISOString()
+export { EPHEMERAL_PREFIX } from './ledger'
+
+const clock: LedgerClock = {
+  id: (prefix) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+  now: () => new Date().toISOString(),
+}
 
 const safeStorage: Storage = {
   getItem: (key) => { try { return window.localStorage.getItem(key) } catch { return null } },
@@ -18,7 +23,7 @@ const safeStorage: Storage = {
   get length() { try { return window.localStorage.length } catch { return 0 } },
 }
 
-interface AppState {
+export interface AppState {
   settings: AppSettings
   config: GovernanceConfig
   posts: Post[]
@@ -28,13 +33,17 @@ interface AppState {
   reposted: string[]
   bookmarked: string[]
   favorites: string[]
-  /** The live dynamic profile header. Only PASS or PROVISIONAL headers can be set. */
-  profileHeader: { presetId: string; decision: HeaderDecision }
-  setProfileHeader: (presetId: string, decision: HeaderDecision) => void
-  /** A header the viewer uploaded. Session-only: it is never written to storage. */
+  /** Post ids pinned to the Highlights tab: the owner demo's posts persist, imported posts' pins die with the import. */
+  highlights: string[]
+  /** The viewer's live header pick. Only PASS or PROVISIONAL headers can be set. */
+  profileHeader: HeaderPick
+  /** Publishes a preset the viewer scanned and chose in the studio. */
+  pickPreset: (presetId: string, decision: HeaderPick['decision']) => void
+  /** Publishes a file scanned in this tab. Its frames are session-only: they are never written to storage. */
+  pickUpload: (media: UploadedMedia, decision: HeaderPick['decision']) => void
   uploadedHeader: UploadedMedia | null
-  setUploadedHeader: (media: UploadedMedia | null) => void
   toggleFavorite: (soundId: string) => void
+  toggleHighlight: (postId: string) => void
   setSetting: <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => void
   setConfig: (config: GovernanceConfig) => void
   addAudit: (type: string, subjectId: string, detail: string) => void
@@ -45,13 +54,10 @@ interface AppState {
   togglePostAction: (postId: string, action: 'like' | 'repost' | 'bookmark') => void
   /** Adds posts to the top of the feed (used for an imported archive; such posts are flagged ephemeral). */
   addPosts: (posts: Post[]) => void
-  /** Drops ephemeral posts and every submission or audit entry about them. */
+  /** Drops ephemeral posts and every submission, audit entry or pin about them. */
   removeEphemeral: () => void
   resetDemo: () => void
 }
-
-/** Id prefix of posts imported from the viewer's own archive. */
-export const EPHEMERAL_PREFIX = 'x-'
 
 const baseState = {
   settings: DEFAULT_SETTINGS,
@@ -63,81 +69,48 @@ const baseState = {
   reposted: [] as string[],
   bookmarked: [] as string[],
   favorites: [] as string[],
-  profileHeader: { presetId: DEFAULT_HEADER_ID, decision: 'PASS' as HeaderDecision },
+  highlights: [] as string[],
+  profileHeader: DEFAULT_PICK,
   uploadedHeader: null as UploadedMedia | null,
 }
+
+const toggle = (list: string[], id: string, toFront = false) => (list.includes(id) ? list.filter((item) => item !== id) : toFront ? [id, ...list] : [...list, id])
 
 export const useAppStore = create<AppState>()(persist((set, get) => ({
   ...baseState,
   setSetting: (key, value) => set((state) => ({ settings: { ...state.settings, [key]: value } })),
   setConfig: (config) => set({ config }),
-  setProfileHeader: (presetId, decision) => set({ profileHeader: { presetId, decision } }),
-  setUploadedHeader: (media) => set({ uploadedHeader: media }),
+  pickPreset: (presetId, decision) => set({ profileHeader: { kind: 'preset', presetId, decision, chosen: true }, uploadedHeader: null }),
+  pickUpload: (media, decision) => set({ profileHeader: { kind: 'upload', decision }, uploadedHeader: media }),
   addAudit: (type, subjectId, detail) => set((state) => ({
-    audits: [...state.audits, { id: uid('evt'), timestamp: now(), type, actor: 'local-demo-user', subjectId, detail }],
+    audits: [...state.audits, { id: clock.id('evt'), timestamp: clock.now(), type, actor: 'local-demo-user', subjectId, detail, ...(isEphemeralPostId(subjectId) ? { ephemeral: true } : {}) }],
   })),
   publish: (clip, postText, kind, result) => {
-    const submissionId = uid('sub')
-    const postId = uid('post')
-    const submission: Submission = {
-      id: submissionId, submittedAt: now(), clip, postText, postId,
-      decision: result.decision, status: result.outcome, reasonCodes: result.reasonCodes, checks: result.checks,
-      statementOfReasons: result.decision === 'PASS' ? 'Published locally after all configured preflight checks passed.' : `Submission ${result.outcome === 'HOLD' ? 'held' : 'blocked'} by deterministic preflight. Automated checks are disclosed; no AI moderation was used.`,
-    }
-    const events: AuditEvent[] = [
-      { id: uid('evt'), timestamp: now(), type: 'media_submitted', actor: 'local-demo-user', subjectId: submissionId, detail: `${kind} submitted: ${clip.name}` },
-      { id: uid('evt'), timestamp: now(), type: 'preflight_started', actor: 'local-demo-user', subjectId: submissionId, detail: 'Eight configured checks started' },
-      ...result.checks.map((check) => ({ id: uid('evt'), timestamp: now(), type: 'check_completed', actor: 'preflight-engine', subjectId: submissionId, detail: `${check.label}: ${check.passed ? 'PASS' : check.policy}` })),
-      ...(result.decision !== 'PASS' ? [{ id: uid('evt'), timestamp: now(), type: 'flagged', actor: 'preflight-engine', subjectId: submissionId, detail: result.reasonCodes.join(', ') }] : []),
-      ...(result.decision === 'REVIEW' ? [{ id: uid('evt'), timestamp: now(), type: 'review_requested', actor: 'preflight-engine', subjectId: submissionId, detail: result.reasonCodes.join(', ') }] : []),
-      { id: uid('evt'), timestamp: now(), type: 'decision_recorded', actor: 'preflight-engine', subjectId: submissionId, detail: `${result.decision}: ${result.reasonCodes.join(', ') || 'all checks passed'}` },
-    ]
-    set((state) => {
-      const newPost: Post = {
-        id: postId, author: 'B. Baynard-Malone', handle: '@baynardmalone', initials: 'BB', timestamp: 'now',
-        body: postText || `Shared a ${kind === 'voice' ? 'voice post' : `${clip.name} sound reaction`}.`,
-        voice: kind === 'voice' ? { ...clip, id: `${clip.id}-${postId}` } : undefined,
-        reaction: kind === 'reaction' ? { ...clip, id: `${clip.id}-${postId}`, count: 1 } : undefined,
-        replyCount: 0, repostCount: 0, likeCount: 0, viewCount: 1, following: true,
-      }
-      return {
-        submissions: [submission, ...state.submissions], audits: [...state.audits, ...events],
-        posts: result.decision === 'PASS' ? [newPost, ...state.posts] : state.posts,
-      }
-    })
-    return submissionId
+    const { submission, events, post } = recordDecision({ kind: 'publish', clip, postText, mediaKind: kind, result }, clock)
+    set((state) => ({ submissions: [submission, ...state.submissions], audits: [...state.audits, ...events], posts: post ? [post, ...state.posts] : state.posts }))
+    return submission.id
   },
   addReaction: (postId, clip, result) => {
-    const submissionId = uid('sub')
-    const submission: Submission = {
-      id: submissionId, submittedAt: now(), clip, postText: `Reaction to ${postId}`, postId,
-      decision: result.decision, status: result.outcome, reasonCodes: result.reasonCodes, checks: result.checks,
-    }
+    const { submission, events } = recordDecision({ kind: 'reaction', clip, postId, result }, clock)
     set((state) => ({
       submissions: [submission, ...state.submissions],
+      audits: [...state.audits, ...events],
       posts: result.decision === 'PASS' ? state.posts.map((post) => post.id === postId ? { ...post, reaction: { ...clip, id: `${clip.id}-${postId}`, count: (post.reaction?.count ?? 0) + 1 } } : post) : state.posts,
-      audits: [...state.audits,
-        { id: uid('evt'), timestamp: now(), type: 'media_submitted', actor: 'local-demo-user', subjectId: submissionId, detail: `Reaction added to ${postId}` },
-        { id: uid('evt'), timestamp: now(), type: 'preflight_started', actor: 'preflight-engine', subjectId: submissionId, detail: 'Eight configured checks started' },
-        ...result.checks.map((check) => ({ id: uid('evt'), timestamp: now(), type: 'check_completed', actor: 'preflight-engine', subjectId: submissionId, detail: `${check.label}: ${check.passed ? 'PASS' : check.policy}` })),
-        ...(result.decision !== 'PASS' ? [{ id: uid('evt'), timestamp: now(), type: 'flagged', actor: 'preflight-engine', subjectId: submissionId, detail: result.reasonCodes.join(', ') }] : []),
-        ...(result.decision === 'REVIEW' ? [{ id: uid('evt'), timestamp: now(), type: 'review_requested', actor: 'preflight-engine', subjectId: submissionId, detail: result.reasonCodes.join(', ') }] : []),
-        { id: uid('evt'), timestamp: now(), type: 'decision_recorded', actor: 'preflight-engine', subjectId: submissionId, detail: `${result.decision}: ${result.reasonCodes.join(', ') || 'all checks passed'}` },
-      ],
     }))
   },
   reportReaction: (postId, reason) => {
     const post = get().posts.find((item) => item.id === postId)
     if (!post?.reaction) return
-    const submissionId = uid('report')
+    const submissionId = clock.id('report')
     const submission: Submission = {
-      id: submissionId, submittedAt: now(), clip: post.reaction, postText: post.body, postId,
+      id: submissionId, submittedAt: clock.now(), clip: post.reaction, postText: post.body, postId,
       decision: 'REVIEW', status: 'REPORTED', reasonCodes: ['USER_REPORT'], checks: [], reportReason: reason,
       statementOfReasons: 'Report received under the simulated DSA notice-and-action flow. No moderation decision has yet been made.',
     }
+    const ephemeral = isEphemeralPostId(postId)
     set((state) => ({
       submissions: [submission, ...state.submissions],
-      audits: [...state.audits, { id: uid('evt'), timestamp: now(), type: 'reaction_reported', actor: 'local-demo-user', subjectId: submissionId, detail: `${postId}: ${reason}` }],
+      audits: [...state.audits, { id: clock.id('evt'), timestamp: clock.now(), type: 'reaction_reported', actor: 'local-demo-user', subjectId: submissionId, detail: `${postId}: ${reason}`, ...(ephemeral ? { ephemeral: true } : {}) }],
     }))
   },
   moderate: (submissionId, action) => set((state) => {
@@ -150,62 +123,46 @@ export const useAppStore = create<AppState>()(persist((set, get) => ({
       : action === 'remove'
         ? `Removed after simulated human review. Grounds: ${target.reportReason || target.reasonCodes.join(', ') || 'policy review'}. Automated preflight signals were disclosed and were not the sole basis for this demo decision.`
         : 'Escalated to a second simulated reviewer. No final restriction has been applied.'
-    const approvedPost: Post | null = publishHeld && target.postId ? {
-      id: target.postId, author: 'B. Baynard-Malone', handle: '@baynardmalone', initials: 'BB', timestamp: 'now',
-      body: target.postText || `Shared a ${target.clip.kind === 'voice' ? 'voice post' : `${target.clip.name} sound reaction`}.`,
-      voice: target.clip.kind === 'voice' ? { ...target.clip, id: `${target.clip.id}-${target.postId}` } : undefined,
-      reaction: target.clip.kind === 'reaction' ? { ...target.clip, id: `${target.clip.id}-${target.postId}`, count: 1 } : undefined,
-      replyCount: 0, repostCount: 0, likeCount: 0, viewCount: 1, following: true,
-    } : null
+    const approvedPost = publishHeld && target.postId ? ownerPost(target.postId, target.clip, target.postText) : null
+    const ephemeral = isEphemeralPostId(target.postId)
     return {
       submissions: state.submissions.map((item) => item.id === submissionId ? { ...item, status, statementOfReasons: statement } : item),
       posts: approvedPost ? [approvedPost, ...state.posts] : action === 'remove' && target.postId ? state.posts.map((post) => post.id === target.postId && post.reaction ? { ...post, reaction: { ...post.reaction, removed: true } } : post) : state.posts,
-      audits: [...state.audits, { id: uid('evt'), timestamp: now(), type: 'moderation_action', actor: 'simulated-reviewer', subjectId: submissionId, detail: `${action.toUpperCase()}: ${statement}` }],
+      audits: [...state.audits, { id: clock.id('evt'), timestamp: clock.now(), type: 'moderation_action', actor: 'simulated-reviewer', subjectId: submissionId, detail: `${action.toUpperCase()}: ${statement}`, ...(ephemeral ? { ephemeral: true } : {}) }],
     }
   }),
   togglePostAction: (postId, action) => set((state) => {
     const key = action === 'like' ? 'liked' : action === 'repost' ? 'reposted' : 'bookmarked'
     const active = state[key].includes(postId)
     return {
-      [key]: active ? state[key].filter((id) => id !== postId) : [...state[key], postId],
+      [key]: toggle(state[key], postId),
       posts: action === 'bookmark' ? state.posts : state.posts.map((post) => {
         if (post.id !== postId) return post
         return action === 'like' ? { ...post, likeCount: post.likeCount + (active ? -1 : 1) } : { ...post, repostCount: post.repostCount + (active ? -1 : 1) }
       }),
     }
   }),
-  toggleFavorite: (soundId) => set((state) => ({ favorites: state.favorites.includes(soundId) ? state.favorites.filter((id) => id !== soundId) : [...state.favorites, soundId] })),
+  toggleFavorite: (soundId) => set((state) => ({ favorites: toggle(state.favorites, soundId) })),
+  toggleHighlight: (postId) => set((state) => ({ highlights: toggle(state.highlights, postId, true) })),
   addPosts: (posts) => set((state) => ({ posts: [...posts, ...state.posts.filter((post) => !posts.some((p) => p.id === post.id))] })),
   removeEphemeral: () => set((state) => {
-    const gone = new Set(state.submissions.filter((sub) => sub.postId?.startsWith(EPHEMERAL_PREFIX)).map((sub) => sub.id))
+    const gone = new Set(state.submissions.filter((sub) => isEphemeralPostId(sub.postId)).map((sub) => sub.id))
     return {
       posts: state.posts.filter((post) => !post.ephemeral),
       submissions: state.submissions.filter((sub) => !gone.has(sub.id)),
-      audits: state.audits.filter((event) => !gone.has(event.subjectId) && !event.detail.includes(EPHEMERAL_PREFIX)),
+      audits: state.audits.filter((event) => !event.ephemeral && !gone.has(event.subjectId)),
+      highlights: state.highlights.filter((id) => !isEphemeralPostId(id)),
     }
   }),
   resetDemo: () => set({ ...baseState, settings: get().settings, config: DEFAULT_CONFIG }),
 }), {
-  name: 'sound-reactions-demo-v3',
+  name: STORAGE_KEY,
   storage: createJSONStorage(() => safeStorage),
-  version: 2,
-  // v2: Lights out is the only theme that ships black, so a saved Dim choice is reset once. Low-power mode is
-  // reset too: before the fix in src/audio.ts, turning it on blanked the app, so a saved "on" was never a working choice.
-  migrate: (persisted, version) => {
-    const state = persisted as Partial<AppState> | undefined
-    if (version < 2 && state?.settings) return { ...state, settings: { ...state.settings, theme: 'lights-out' as const, lowPower: false } }
-    return state
+  version: STORAGE_VERSION,
+  migrate: (persisted, version) => migrateState(persisted, version),
+  partialize: (state) => partializeState(state),
+  merge: (persisted, current) => {
+    const { preferences, ...rest } = (persisted ?? {}) as Partial<PersistedState>
+    return { ...current, ...rest, settings: settingsFrom(preferences), uploadedHeader: null }
   },
-  partialize: (state) => ({
-    ...state,
-    // Only live microphone recordings (blob: URLs) are session-only. Generated
-    // library sounds are static files and persist like any other post.
-    posts: state.posts.filter((post) => !post.ephemeral && !isSessionAudio(post.voice?.audioUrl) && !isSessionAudio(post.reaction?.audioUrl)),
-    // Reactions on imported posts (ids starting "x-") and their audit trail stay in memory with the import.
-    submissions: state.submissions.filter((submission) => !isSessionAudio(submission.clip.audioUrl) && !submission.postId?.startsWith(EPHEMERAL_PREFIX)),
-    audits: state.audits.filter((event) => !event.detail.includes(EPHEMERAL_PREFIX) && !state.submissions.some((sub) => sub.id === event.subjectId && sub.postId?.startsWith(EPHEMERAL_PREFIX))),
-    // Uploaded headers live only in this tab, like microphone recordings.
-    uploadedHeader: null,
-    profileHeader: state.profileHeader.presetId === 'upload' ? { presetId: DEFAULT_HEADER_ID, decision: 'PASS' as HeaderDecision } : state.profileHeader,
-  }),
 }))
