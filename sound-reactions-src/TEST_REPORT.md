@@ -392,3 +392,14 @@ The owner asked for a more Twitter-like font, a flow where nobody has to hunt fo
 | Font actually applied | In the built app on an emulated Pixel 7, `document.fonts.check('15px "Inter Variable"')` returned true and the body's computed font family starts with Inter Variable. |
 | Screenshots (emulated Pixel 7, desktop 1280) | Inspected: tour on Dee's profile, pill after closing, Next card at the foot. A first pass showed the pill and compose button covering the Next card on phones; the card now has clearance. **Not re-captured after that spacing fix.** |
 | Real phone | **Not tested on the owner's device.** |
+
+## 2026-11-13 — Whole-number frame rate in the banner status line
+
+Recording a demo exposed "Playing at up to 13.26 fps" in the ⓘ panel for a GIF whose native rate is not a whole number. The status line now rounds. The measured rate on the "Within the limits" step is unchanged, since that one is a measurement.
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit tests | 93/93 passed (1 new case in the motion policy table) |
+| Playwright | **Not re-run**; the change is one string in a unit-tested pure function. |
+| Hosted build | Rebuilt. |
