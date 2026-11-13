@@ -1,12 +1,14 @@
 /*
  * X-style shell: a familiar three-column timeline built from our own components.
- * No X logo, Chirp font or copied assets. Values match X's dark ("Lights out")
+ * No X logo, Chirp font or copied assets. The typeface is Inter (SIL Open Font
+ * License), self-hosted from the bundle so nothing is fetched from a font host;
+ * it is the closest open face to X's own at X's sizes (15/20 body, 700 names, 800 titles). Values match X's dark ("Lights out")
  * conventions where they meet WCAG AA; where X's own colors fail AA (white text on
  * #1D9BF0), this layer uses dark text on the accent instead.
  * Layout: nav 275 · timeline 600 · aside 350 (+30 gutter); collapses at 1280/1000/700.
  */
 :root {
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-ui: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --x-gray: #71767B;          /* post metadata on pure black: 4.6:1 */
   --x-ink-on-accent: #0F1419; /* text/icons placed on --accent: 6.9:1 */
   --x-white-pill: #EFF3F4;
@@ -23,7 +25,8 @@
   --z-modal: 60;
 }
 .theme-dim { --x-gray: #8B98A5; --x-input: #273340; --x-row-hover: rgba(255, 255, 255, 0.03); }
-body, .app { font-family: var(--font-ui); font-size: 15px; }
+body, .app { font-family: var(--font-ui); font-size: 15px; line-height: 20px; font-feature-settings: "ss01", "cv11"; -webkit-font-smoothing: antialiased; }
+button, input, textarea, select { font-family: inherit; }
 
 /* Persistent concept label: required on every screen. */
 .concept-banner { position: sticky; top: 0; z-index: var(--z-banner); height: var(--x-banner-h); padding: 0 max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--bg); color: var(--text); border-bottom: 1px solid var(--border); font-size: 11px; letter-spacing: 0.06em; }
@@ -625,4 +628,28 @@ a.x-follow-name:hover strong { text-decoration: underline; }
 @media (max-width: 700px) {
   .x-composer-row { display: none; }
   .x-tabs .x-tab-topic { display: none; }
+}
+
+/* Next-stop card: the foot of every page says where to go next. */
+.next-stop { margin: 28px 16px 24px; }
+.next-stop a { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; row-gap: 2px; align-items: center; padding: 14px 16px; border: 1px solid var(--border); border-radius: 16px; color: var(--text); text-decoration: none; transition: border-color 120ms ease-out, background-color 120ms ease-out; }
+.next-stop a:hover, .next-stop a:focus-visible { border-color: var(--accent); background: var(--soft-accent); }
+.next-stop-label { grid-column: 1; color: var(--x-gray); font-size: 13px; }
+.next-stop strong { grid-column: 1; font-size: 17px; font-weight: 800; line-height: 22px; }
+.next-stop-go { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 9999px; background: var(--x-white-pill); color: #0F1419; font-size: 14px; font-weight: 700; white-space: nowrap; }
+@media (max-width: 700px) {
+  /* Leaves room for the tour pill and the compose button, which float above the tab bar. */
+  .next-stop { margin: 24px 12px 88px; }
+  .next-stop a { grid-template-columns: 1fr; }
+  .next-stop-go { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 10px; }
+}
+
+/* Tour pill: phones only, where the banner's Tour button shrinks to a "?". Small, out of the thumb's way, and dismissible. */
+.tour-pill { display: none; }
+@media (max-width: 700px) {
+  .tour-pill { position: fixed; left: calc(12px + env(safe-area-inset-left, 0px)); bottom: calc(53px + 14px + env(safe-area-inset-bottom, 0px)); z-index: var(--z-dock); display: inline-flex; align-items: center; height: 36px; border: 1px solid var(--accent); border-radius: 9999px; background: #000; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6); }
+  .tour-pill button { height: 100%; border: 0; background: transparent; color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; }
+  .tour-pill-open { display: inline-flex; align-items: center; gap: 6px; padding: 0 6px 0 5px; }
+  .tour-pill-open > span { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--x-ink-on-accent); }
+  .tour-pill-hide { display: inline-grid; place-items: center; width: 30px; padding: 0; color: var(--x-gray) !important; border-left: 1px solid var(--border) !important; border-radius: 0 9999px 9999px 0; }
 }

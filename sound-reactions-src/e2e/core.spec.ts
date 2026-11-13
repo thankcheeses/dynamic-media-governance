@@ -246,6 +246,26 @@ test('the welcome tour opens on a first visit, links back to the proposal, and s
   await expect(page.getByRole('heading', { name: 'Welcome! This is a pretend X' })).toBeVisible()
 })
 
+test('the tour drives to each page, resumes where it was closed, and every page ends with a Next card', async ({ page }) => {
+  await page.getByRole('button', { name: 'Take the tour' }).click()
+  await page.getByRole('button', { name: 'Next', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Sound reactions' })).toBeVisible()
+  await page.getByRole('button', { name: 'Next', exact: true }).click()
+  await expect(page).toHaveURL(/\/u\/deesaysso$/)
+  await expect(page.getByRole('heading', { name: 'Moving banners' })).toBeVisible()
+  await page.getByRole('button', { name: 'Close tour' }).click()
+  // Reopening picks up at the same step rather than starting over.
+  await page.getByRole('button', { name: 'Take the tour' }).click()
+  await expect(page.getByText('Step 3 of 7')).toBeVisible()
+  await page.getByRole('button', { name: 'Close tour' }).click()
+  // The foot of the page says where to go next, and the chain continues from there.
+  const next = page.getByRole('navigation', { name: 'Next in the walkthrough' })
+  await expect(next).toContainText('Try your own banner')
+  await next.getByRole('link').click()
+  await expect(page).toHaveURL(/\/profile$/)
+  await expect(page.getByRole('navigation', { name: 'Next in the walkthrough' })).toContainText('Post a sound yourself')
+})
+
 test('an X archive zip is read in the browser, fills the tabs, makes no outside requests, and clears cleanly', async ({ page, baseURL }) => {
   const { zipSync, strToU8 } = await import('fflate')
   const ytd = (name: string, rows: unknown[]) => strToU8(`window.YTD.${name}.part0 = ${JSON.stringify(rows)}`)

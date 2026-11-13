@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { AudioLines, FileClock, FolderArchive, GitCompareArrows, Home, MoreHorizontal, PenLine, Presentation, Search, Settings, ShieldCheck, UserRound, Volume2, VolumeX } from 'lucide-react'
+import { AudioLines, FileClock, FolderArchive, GitCompareArrows, Home, MoreHorizontal, PenLine, Presentation, Search, Settings, ShieldCheck, UserRound, Volume2, VolumeX, X as XIcon } from 'lucide-react'
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { useAudio } from '../audio'
@@ -9,11 +9,9 @@ import { avatarContent, avatarStyle } from '../avatar'
 import { ownerLook, useIdentity } from '../identity'
 import { Verified } from './PostCard'
 import { profilePath } from '../accounts'
-import { WelcomeTour } from './WelcomeTour'
-
-const TOUR_KEY = 'sound-reactions-tour-seen'
-const tourSeen = () => { try { return window.localStorage.getItem(TOUR_KEY) === '1' } catch { return false } }
-const markTourSeen = () => { try { window.localStorage.setItem(TOUR_KEY, '1') } catch { /* storage may be unavailable */ } }
+import { NextStopCard, WelcomeTour } from './WelcomeTour'
+import { TOUR_STEPS } from './tourSteps'
+import { tourProgress } from '../journey'
 
 const navigation = [
   { to: '/', label: 'Home', icon: Home },
@@ -107,8 +105,13 @@ export function Layout({ children }: { children: ReactNode }) {
   const { state: playback } = useAudio()
   const isFeed = location.pathname === '/'
   const [drawer, setDrawer] = useState(false)
-  const [tour, setTour] = useState(() => !tourSeen())
-  const closeTour = useCallback(() => { markTourSeen(); setTour(false) }, [])
+  const [tour, setTour] = useState(() => !tourProgress.seen())
+  const [tourStep, setTourStep] = useState(() => tourProgress.step(TOUR_STEPS.length))
+  const [pillHidden, setPillHidden] = useState(() => tourProgress.pillHidden())
+  const goToStep = useCallback((step: number) => { tourProgress.saveStep(step); setTourStep(step) }, [])
+  // Closing remembers the step so the tour resumes there; finishing starts it from the top next time.
+  const closeTour = useCallback((finished: boolean) => { tourProgress.markSeen(); if (finished) goToStep(0); setTour(false) }, [goToStep])
+  const hidePill = () => { tourProgress.hidePill(); setPillHidden(true) }
   const me = ownerLook(useIdentity((state) => state.identity))
   // Volume, hidden-tab and low-power handling live in the audio controller (src/audio.ts), not here.
   useEffect(() => { window.scrollTo(0, 0) }, [location.pathname])
@@ -135,7 +138,11 @@ export function Layout({ children }: { children: ReactNode }) {
       <Link to="/settings" className="x-icon-link" aria-label="Open settings"><Settings size={20} /></Link>
     </div>
     {drawer && <AccountDrawer onClose={() => setDrawer(false)} />}
-    {tour && <WelcomeTour onClose={closeTour} />}
+    {tour && <WelcomeTour step={tourStep} onStep={goToStep} onClose={closeTour} />}
+    {!tour && !pillHidden && <div className="tour-pill">
+      <button type="button" className="tour-pill-open" onClick={() => setTour(true)} aria-label={tourStep > 0 ? `Resume the tour at step ${tourStep + 1} of ${TOUR_STEPS.length}` : 'Start the guided tour'}><span aria-hidden="true">?</span>{tourStep > 0 ? `Resume tour · ${tourStep + 1}/${TOUR_STEPS.length}` : 'Tour'}</button>
+      <button type="button" className="tour-pill-hide" onClick={hidePill} aria-label="Hide the tour button. The ? at the top still opens it"><XIcon size={14} aria-hidden="true" /></button>
+    </div>}
 
     <div className="x-shell">
       <header className="x-nav">
@@ -155,7 +162,7 @@ export function Layout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main id="main-content" className={`x-main ${isFeed ? '' : 'workspace'}`}>{children}</main>
+      <main id="main-content" className={`x-main ${isFeed ? '' : 'workspace'}`}>{children}<NextStopCard /></main>
 
       {isFeed && <aside className="x-aside" aria-label="Trends and suggestions">
         <div className="x-aside-sticky">
