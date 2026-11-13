@@ -375,3 +375,20 @@ The review (report kept outside the repo) found six shallow spots and the owner 
 | Regression test order | The new e2e test was written after the fix, not before; it asserts the three symptoms (credit link, Tenor provenance, pick survives reload) that the old code could not produce. |
 | Hosted build | `../sound-reactions/` rebuilt (hash router). |
 | Migration from a real v2 store | **Not tested with the owner's actual saved data**; `migrateState` is unit-tested on synthetic v1 and v2 saves. |
+
+## 2026-11-13 — Inter typeface, a guided journey, and a tour that is easy to find
+
+The owner asked for a more Twitter-like font, a flow where nobody has to hunt for the next page, and a tour that is visible without nagging.
+
+- **Font.** The prototype used the device's system font (Roboto on Android). It now ships Inter (SIL Open Font License) from its own bundle via `@fontsource-variable/inter`; nothing is fetched from a font host, so the Content Security Policy is unchanged. Chirp is X's proprietary face and is still not used (rule 2). The proposal page already used Inter.
+- **Journey.** `src/journey.ts` is one ordered list of eight stops (feed, a profile, my profile, compose, governance, audit, compare, presentation, then the proposal). Every page ends with a Next card pointing to the stop after it; Settings and Privacy point back to the start.
+- **Tour.** Seven steps, and Next now opens the page each step talks about. Closing remembers the step and reopening resumes there. On phones, where the banner button shrinks to a "?", a small "Tour" pill sits bottom-left with its own dismiss button; the "?" always remains.
+
+| Check | Actual result |
+|---|---|
+| ESLint / strict TypeScript | Passed |
+| Unit/component tests | 92/92 passed in 11 files (5 new, `journey.test.ts`) |
+| Playwright | 48/48 passed in Chromium, desktop and mobile (new test: the tour drives, resumes, and the Next cards chain). WebKit was not available here. |
+| Font actually applied | In the built app on an emulated Pixel 7, `document.fonts.check('15px "Inter Variable"')` returned true and the body's computed font family starts with Inter Variable. |
+| Screenshots (emulated Pixel 7, desktop 1280) | Inspected: tour on Dee's profile, pill after closing, Next card at the foot. A first pass showed the pill and compose button covering the Next card on phones; the card now has clearance. **Not re-captured after that spacing fix.** |
+| Real phone | **Not tested on the owner's device.** |

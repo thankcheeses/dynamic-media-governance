@@ -60,7 +60,8 @@ If Chromium is not discovered automatically, set `CHROME_PATH` to a local Chromi
 - `src/components/AudioClip.tsx`: voice/reaction players, progress, captions, reporting and scroll-away behavior.
 - `src/components/ReactionPicker.tsx`: sound preview/selection and prior-hour reaction rate count.
 - Domain vocabulary and decisions: `../GLOSSARY.md` and `../docs/adr/`. Use the glossary's words in code, tests and copy.
-- `src/components/Layout.tsx`: persistent concept banner, responsive shell, drawer and tour. (Audio settings and visibility handling moved into `src/audio.ts`.)
+- `src/journey.ts`: the ordered stops of the walkthrough and the tour's saved progress. `src/components/tourSteps.tsx` holds the tour copy; `WelcomeTour.tsx` renders the tour (Next opens each step's page; closing resumes later) and the Next card at the foot of every page. Typeface: Inter, self-hosted from the bundle (never Chirp).
+- `src/components/Layout.tsx`: persistent concept banner, responsive shell, drawer, tour state and the phone-only tour pill. (Audio settings and visibility handling moved into `src/audio.ts`.)
 - `src/pages/Composer.tsx`: media selection, live preflight and real/simulated recording flows.
 - `src/pages/Governance.tsx`: editable policy controls, review queue and decisions.
 - `src/pages/Audit.tsx`: searchable/filterable local audit timeline and JSON export.
