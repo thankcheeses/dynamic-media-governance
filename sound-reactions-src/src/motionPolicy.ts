@@ -88,6 +88,6 @@ export function headerPlayback(input: HeaderPlaybackInput): HeaderPlayback {
     : hidden ? 'Paused because the tab is hidden'
     : !inView ? 'Paused because it is off-screen'
     : scrolling ? 'Paused while you scroll'
-    : `Playing at up to ${Math.min(fps, 15)} fps`
+    : `Playing at up to ${Math.round(Math.min(fps, 15))} fps`
   return { stillReason, gated, running, status, canPause: !stillReason && !gated }
 }

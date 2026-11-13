@@ -22,6 +22,7 @@ describe('motion policy', () => {
   it.each([
     [{}, 'Playing at up to 15 fps', true, true],
     [{ fps: 12 }, 'Playing at up to 12 fps', true, true],
+    [{ fps: 13.26 }, 'Playing at up to 13 fps', true, true],
     [{ settings: { ...DEFAULT_SETTINGS, reducedMotion: true } }, 'Showing a still frame because reduced motion is on', false, false],
     [{ osReduced: true }, 'Showing a still frame because reduced motion is on', false, false],
     [{ settings: { ...DEFAULT_SETTINGS, lowPower: true } }, 'Showing a still frame because low-power mode is on', false, false],
