@@ -56,7 +56,7 @@ export interface HeaderPreset {
   ownerFile?: boolean
   /**
    * True for a hosted GIF with no measurements yet: the viewer's browser fetches
-   * and scans it before it is allowed to play (src/hostedScan.ts).
+   * and scans it before it is allowed to play (src/headerScan.ts).
    */
   scanInBrowser?: boolean
 }

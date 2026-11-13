@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { IcosahedronGeometry, Mesh, PerspectiveCamera, Scene, ShaderMaterial, WebGLRenderer } from 'three'
 import { audioController } from '../audio'
-import { motionAllowed } from '../motion'
+import { richMotionAllowed, usePrefersReducedMotion } from '../motionPolicy'
 import { useAppStore } from '../store'
 
 /**
@@ -71,13 +71,13 @@ function webglAvailable() {
 export default function SoundOrb({ fallback }: { fallback: ReactNode }) {
   const host = useRef<HTMLDivElement>(null)
   const [failed, setFailed] = useState(() => !webglAvailable())
-  const lowPower = useAppStore((state) => state.settings.lowPower || state.settings.dataSaver)
-  const reducedSetting = useAppStore((state) => state.settings.reducedMotion)
+  const settings = useAppStore((state) => state.settings)
+  const osReduced = usePrefersReducedMotion()
+  const animated = richMotionAllowed(settings, osReduced)
 
   useEffect(() => {
     const el = host.current
     if (failed || !el) return
-    const animated = motionAllowed() && !lowPower
     let renderer: WebGLRenderer
     try {
       renderer = new WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' })
@@ -136,7 +136,7 @@ export default function SoundOrb({ fallback }: { fallback: ReactNode }) {
       renderer.dispose()
       renderer.domElement.remove()
     }
-  }, [failed, lowPower, reducedSetting])
+  }, [failed, animated])
 
   if (failed) return <>{fallback}</>
   return <div className="x-orb" ref={host} aria-hidden="true" />

@@ -1,16 +1,16 @@
 import { animate, stagger } from 'animejs'
+import { osReducedMotion, uiMotionAllowed } from './motionPolicy'
 import { useAppStore } from './store'
 
 /**
- * Single owner for UI motion. Every animation in the app goes through here so
- * reduced motion (OS setting or the in-app toggle) is honored in one place, and
- * each element property has exactly one animator (anime.js), never CSS + JS at once.
+ * Single owner for UI motion. Every animation in the app goes through here, and
+ * the rule for whether it may run lives in src/motionPolicy.ts with the header
+ * and orb rules, so reduced motion is honoured the same way everywhere. Each
+ * element property has exactly one animator (anime.js), never CSS + JS at once.
  * Easing follows the house rule: exponential ease-out, no bounce or elastic.
  */
 export function motionAllowed(): boolean {
-  if (useAppStore.getState().settings.reducedMotion) return false
-  if (typeof window === 'undefined' || !window.matchMedia) return false
-  return !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  return uiMotionAllowed(useAppStore.getState().settings, osReducedMotion())
 }
 
 type Target = Element | Element[] | NodeListOf<Element> | null | undefined

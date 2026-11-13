@@ -21,8 +21,10 @@ const MAX_DECODE_SECONDS = HEADER_LIMITS.loopSeconds + 2
 
 export interface UploadedMedia {
   name: string
-  /** Where the file came from: picked from the device, or from GIPHY. */
-  source?: 'device' | 'giphy'
+  /** Where the file came from: picked from the device, picked in the GIPHY panel, or a hosted preset's own GIF. */
+  source?: 'device' | 'giphy' | 'hosted'
+  /** The host the file was fetched from, when it was not the viewer's device. */
+  provider?: 'GIPHY' | 'Tenor'
   sourceUrl?: string
   measurement: HeaderMeasurement
   kind: 'gif' | 'video'
@@ -106,7 +108,9 @@ async function decodeVideo(file: File): Promise<Decoded> {
   }
 }
 
-export async function analyzeUpload(file: File, origin?: { source: 'device' | 'giphy'; sourceUrl?: string }): Promise<UploadAnalysis> {
+export type MediaOrigin = Pick<UploadedMedia, 'source' | 'provider' | 'sourceUrl'>
+
+export async function analyzeUpload(file: File, origin?: MediaOrigin): Promise<UploadAnalysis> {
   const isGif = file.type === 'image/gif' || /\.gif$/i.test(file.name)
   const isVideo = file.type.startsWith('video/')
   if (!isGif && !isVideo) throw new Error('Choose a GIF or a video file (MP4, WebM or MOV)')

@@ -5,17 +5,15 @@ import { toast } from 'sonner'
 import { DynamicHeader, HeaderThumb } from '../components/DynamicHeader'
 import { PostCard, Verified } from '../components/PostCard'
 import { avatarContent, avatarStyle } from '../avatar'
-import { OWNER_HANDLE, accountFor, type Account } from '../accounts'
-import { analyzeUpload, type UploadAnalysis } from '../analyze'
+import { resolveBanner, type Banner } from '../banner'
 import { GiphyPanel } from '../components/GiphyPanel'
-import { fetchGiphyFile } from '../giphy'
-import { fetchHostedFile, scanHosted } from '../hostedScan'
-import { BIO_MAX, HANDLE_MAX, NAME_MAX, initialsOf, normalizeHandle, ownerLook, squarePhoto, useIdentity } from '../identity'
-import { DEFAULT_HEADER_ID, HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, scanHeader, type HeaderDecision, type HeaderPreset, type HeaderScan } from '../headers'
+import { BIO_MAX, HANDLE_MAX, NAME_MAX, initialsOf, normalizeHandle, squarePhoto, useIdentity } from '../identity'
+import { HEADER_LIMITS, HEADER_PRESETS, headerPreset, isPublishable, type HeaderScan } from '../headers'
+import { hostedScanState, scanHosted, scanSource, useHostedScanStates, type HeaderSource, type ScannedHeader } from '../headerScan'
 import { useAppStore } from '../store'
-import { isImportedHandle, useImport } from '../importStore'
+import { useImport } from '../importStore'
 import { ImportArchive } from '../components/ImportArchive'
-import type { ImportedAccount } from '../archive'
+import { compactCount, profileFor, type MetaRow, type ProfileModel } from '../profileView'
 
 const decisionLabel: Record<HeaderScan['decision'], string> = {
   PASS: 'PASS',
@@ -26,12 +24,6 @@ const decisionLabel: Record<HeaderScan['decision'], string> = {
 
 /** Simulated scan time for samples. The framework budgets 10–20 seconds for a real PEA scan. */
 const SCAN_MS = 1400
-
-/** A synthetic preset describing an uploaded file, so it can share the scan and player. */
-function uploadPreset(analysis: UploadAnalysis): HeaderPreset {
-  const m = analysis.measurement
-  return { id: 'upload', name: analysis.media.name, description: `Uploaded header: ${analysis.media.name}`, style: 'upload', fps: m.fps, loopSeconds: m.loopSeconds, sizeMB: m.sizeMB, flashesPerSecond: m.flashesPerSecond, redFlashesPerSecond: m.redFlashesPerSecond, measured: true }
-}
 
 function ScanResult({ scan, notes, onPublish }: { scan: HeaderScan; notes?: string[]; onPublish: () => void }) {
   return <div className={`scan-result decision-${scan.decision.toLowerCase()}`}>
@@ -50,17 +42,20 @@ function ScanResult({ scan, notes, onPublish }: { scan: HeaderScan; notes?: stri
   </div>
 }
 
+/** A file picked here (device or GIPHY) becomes a session-only upload; a sample or hosted pick is published by id. */
+const isFileSource = (source: HeaderSource | null) => source?.kind === 'device' || source?.kind === 'giphy'
+
 function HeaderStudio({ onDone }: { onDone: () => void }) {
-  const { profileHeader, setProfileHeader, setUploadedHeader, addAudit } = useAppStore()
-  const [selected, setSelected] = useState(profileHeader.presetId === 'upload' ? HEADER_PRESETS[0].id : profileHeader.presetId)
+  const { profileHeader, pickPreset, pickUpload, addAudit } = useAppStore()
+  const [selected, setSelected] = useState(profileHeader.kind === 'preset' ? profileHeader.presetId : HEADER_PRESETS[0].id)
   const [scanning, setScanning] = useState(false)
-  const [scan, setScan] = useState<HeaderScan | null>(null)
-  const [upload, setUpload] = useState<UploadAnalysis | null>(null)
-  const [uploadError, setUploadError] = useState('')
-  const timer = useRef<number | undefined>(undefined)
+  const [source, setSource] = useState<HeaderSource | null>(null)
+  const [result, setResult] = useState<ScannedHeader | null>(null)
+  const [error, setError] = useState('')
+  const token = useRef(0)
   const closeRef = useRef<HTMLButtonElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
-  useEffect(() => () => window.clearTimeout(timer.current), [])
+  useEffect(() => () => { token.current++ }, [])
   useEffect(() => {
     closeRef.current?.focus()
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onDone() }
@@ -68,48 +63,40 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
     return () => document.removeEventListener('keydown', onKey)
   }, [onDone])
 
-  const preset = upload ? uploadPreset(upload) : headerPreset(selected)
+  const preset = result?.preset ?? headerPreset(selected)
+  const fileResult = isFileSource(source) ? result : null
+
+  /** Every scan in the studio goes through the one entry point; a hosted pick shares the banner's per-tab cache. */
+  const run = async (next: HeaderSource) => {
+    const mine = ++token.current
+    setSource(next); setResult(null); setError(''); setScanning(true)
+    try {
+      const scanned = next.kind === 'hosted' ? await scanHosted(next.preset, { audit: addAudit }) : await scanSource(next, { audit: addAudit, fixtureDelayMs: SCAN_MS })
+      if (mine === token.current) setResult(scanned)
+    } catch (err) {
+      if (mine === token.current) setError(err instanceof Error ? err.message : 'That file couldn’t be read')
+    } finally {
+      if (mine === token.current) setScanning(false)
+    }
+  }
   const choose = (id: string) => {
-    setSelected(id); setUpload(null); setScan(null); setScanning(false); setUploadError(''); window.clearTimeout(timer.current)
+    token.current++
+    setSelected(id); setSource(null); setResult(null); setError(''); setScanning(false)
     // A hosted sample with no measurements is fetched and scanned for real, like a GIPHY pick.
     const sample = headerPreset(id)
-    if (sample.scanInBrowser) void scanFile(() => fetchHostedFile(sample), `hosted:${sample.id}`, { source: 'giphy', sourceUrl: sample.hosted?.pageUrl })
-  }
-  const runScan = () => {
-    setScanning(true); setScan(null)
-    timer.current = window.setTimeout(() => {
-      const result = scanHeader(preset)
-      setScan(result); setScanning(false)
-      addAudit('header_scanned', preset.id, `${preset.name}: ${result.decision}. ${result.checks.filter((c) => !c.pass).map((c) => c.label).join(', ') || 'All checks passed'}`)
-    }, SCAN_MS)
-  }
-  const scanFile = async (load: () => Promise<File>, source: string, origin?: { source: 'device' | 'giphy'; sourceUrl?: string }) => {
-    window.clearTimeout(timer.current)
-    setUploadError(''); setScan(null); setUpload(null); setScanning(true)
-    try {
-      const file = await load()
-      const analysis = await analyzeUpload(file, origin)
-      const result = scanHeader(uploadPreset(analysis))
-      setUpload(analysis); setScan(result)
-      const m = analysis.measurement
-      addAudit('header_scanned', source, `${file.name}: ${result.decision}. ${m.flashesPerSecond} flashes/s, ${m.fps} fps, ${m.loopSeconds} s, ${m.sizeMB} MB`)
-    } catch (error) {
-      setUploadError(error instanceof Error ? error.message : 'That file couldn’t be read')
-    } finally {
-      setScanning(false)
-    }
+    if (sample.scanInBrowser) void run({ kind: 'hosted', preset: sample })
   }
   const onFile = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (file) void scanFile(async () => file, 'upload', { source: 'device' })
+    if (file) void run({ kind: 'device', file })
   }
   const publish = () => {
-    if (!scan || !isPublishable(scan.decision)) return
-    if (upload) setUploadedHeader(upload.media)
-    setProfileHeader(upload ? 'upload' : preset.id, scan.decision)
-    addAudit(scan.decision === 'PASS' ? 'header_published' : 'header_published_provisional', preset.id, scan.decision === 'PASS' ? `${preset.name} is live` : `${preset.name} is live behind a warning label; manual review due within 24 hours`)
-    toast.success(scan.decision === 'PASS' ? 'Header updated' : 'Header published with a warning label')
+    if (!result || !source || !isPublishable(result.scan.decision)) return
+    if (isFileSource(source) && result.analysis) pickUpload(result.analysis.media, result.scan.decision)
+    else pickPreset(selected, result.scan.decision)
+    addAudit(result.scan.decision === 'PASS' ? 'header_published' : 'header_published_provisional', preset.id, result.scan.decision === 'PASS' ? `${preset.name} is live` : `${preset.name} is live behind a warning label; manual review due within 24 hours`)
+    toast.success(result.scan.decision === 'PASS' ? 'Header updated' : 'Header published with a warning label')
     onDone()
   }
 
@@ -126,64 +113,54 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
         <button type="button" className="x-outline-pill" onClick={() => fileRef.current?.click()} disabled={scanning}><Upload size={16} aria-hidden="true" /> Upload a GIF or video</button>
         <span className="fine-print">Checked in your browser. Nothing is uploaded anywhere, and it is gone when you close the tab.</span>
       </div>
-      <GiphyPanel disabled={scanning} onPick={(gif) => void scanFile(() => fetchGiphyFile(gif), `giphy:${gif.id}`, { source: 'giphy', sourceUrl: gif.url })} />
-      {uploadError && <p className="scan-blocked" role="alert">{uploadError}</p>}
-      {upload && <div className="studio-upload-preview"><img src={upload.media.poster} alt="" /><span><strong>{upload.media.name}</strong><small>Still frame. Nothing plays until it passes.{upload.media.source === 'giphy' && <> · <a href={upload.media.sourceUrl} target="_blank" rel="noreferrer">Via GIPHY</a></>}</small></span></div>}
+      <GiphyPanel disabled={scanning} onPick={(gif) => void run({ kind: 'giphy', gif })} />
+      {error && <p className="scan-blocked" role="alert">{error}</p>}
+      {fileResult?.analysis && <div className="studio-upload-preview"><img src={fileResult.analysis.media.poster} alt="" /><span><strong>{fileResult.analysis.media.name}</strong><small>Still frame. Nothing plays until it passes.{fileResult.analysis.media.source === 'giphy' && <> · <a href={fileResult.analysis.media.sourceUrl} target="_blank" rel="noreferrer">Via GIPHY</a></>}</small></span></div>}
 
       <h3 className="studio-subhead">Or try a sample</h3>
       <div className="studio-grid" role="radiogroup" aria-label="Sample headers">
-        {HEADER_PRESETS.map((item) => <button key={item.id} type="button" role="radio" aria-checked={!upload && item.id === selected} className={`studio-card ${!upload && item.id === selected ? 'selected' : ''}`} onClick={() => choose(item.id)}>
+        {HEADER_PRESETS.map((item) => <button key={item.id} type="button" role="radio" aria-checked={!fileResult && item.id === selected} className={`studio-card ${!fileResult && item.id === selected ? 'selected' : ''}`} onClick={() => choose(item.id)}>
           <HeaderThumb preset={item} />
           <span className="studio-card-body"><strong>{item.name}</strong><small>{item.scanInBrowser ? 'Scanned in your browser when picked' : `${item.fps} fps · ${item.loopSeconds} s · ${item.sizeMB} MB`}</small><small className={item.measured || item.scanInBrowser ? 'measured' : ''}>{item.hosted ? `Real GIF · via ${item.hosted.provider}${item.measured ? ' · measured' : ''}` : item.measured ? 'Real GIF · measured' : 'Sample · fixture values'}</small></span>
         </button>)}
       </div>
-      {!upload && <>
+      {!fileResult && <>
         <p className="studio-desc"><strong>{preset.name}:</strong> {preset.description}</p>
         <div className="studio-actions">
-          <button type="button" className="x-pill-button" onClick={runScan} disabled={scanning}>
+          <button type="button" className="x-pill-button" onClick={() => void run({ kind: 'fixture', preset: headerPreset(selected) })} disabled={scanning}>
             {scanning ? <><Loader2 size={16} className="spin" aria-hidden="true" /> Scanning…</> : <><ShieldCheck size={16} aria-hidden="true" /> Run PEA scan</>}
           </button>
           <span className="fine-print">{preset.measured ? 'Numbers measured from the GIF by the prototype’s analyzer (a simplified WCAG 2.3.1 screen, not a certified tool).' : 'Simulated: flash counts are fixture values.'} A real scan takes 10–20 seconds.</span>
         </div>
       </>}
       <div aria-live="polite">
-        {scanning && !upload && <p className="scan-note"><Loader2 size={14} className="spin" aria-hidden="true" /> Scanning frames…</p>}
-        {scan && <ScanResult scan={scan} notes={upload?.notes} onPublish={publish} />}
+        {scanning && !fileResult && <p className="scan-note"><Loader2 size={14} className="spin" aria-hidden="true" /> Scanning frames…</p>}
+        {result && <ScanResult scan={result.scan} notes={result.notes} onPublish={publish} />}
       </div>
     </section>
   </div>
 }
 
-/**
- * A hosted GIF nobody measured ahead of time. It shows its still frame while the
- * browser fetches and scans it, then plays its scanned frames if it passes. A
- * failed or blocked scan leaves the still frame up.
- */
-function ScannedHostedHeader({ preset }: { preset: HeaderPreset }) {
-  const [analysis, setAnalysis] = useState<UploadAnalysis | null>(null)
-  const [error, setError] = useState('')
-  // The parent keys this component by preset, so a new preset starts with fresh state.
-  useEffect(() => {
-    let live = true
-    scanHosted(preset).then((result) => { if (live) setAnalysis(result) }).catch((err: unknown) => { if (live) setError(err instanceof Error ? err.message : 'the scan failed') })
-    return () => { live = false }
-  }, [preset])
-  const hosted = preset.hosted!
-  const scan = analysis ? scanHeader(analysis.measurement) : null
-  if (analysis && scan && isPublishable(scan.decision)) {
-    const scanned: HeaderPreset = { ...preset, ...analysis.measurement, fps: Math.round(1000 / analysis.media.frameMs), measured: true, scanInBrowser: false }
-    return <DynamicHeader preset={scanned} decision={scan.decision} upload={analysis.media} />
+/** Renders whatever the banner resolver decided. The still-frame states carry their reason on the banner itself. */
+function ProfileBanner({ banner }: { banner: Banner }) {
+  switch (banner.kind) {
+    case 'none': return <div className="dynamic-header plain-header" role="img" aria-label="No header image" />
+    case 'archive-still': return <div className="dynamic-header"><img className="still" src={banner.src} alt="Your X header image, from your archive" /></div>
+    case 'playable': return <DynamicHeader key={banner.key} preset={banner.preset} decision={banner.decision} upload={banner.upload} credit={banner.credit} provenance={banner.provenance} />
+    default: {
+      const { preset, still, credit } = banner
+      const note = banner.kind === 'blocked' ? 'Blocked by the scan, so it stays a still frame'
+        : banner.kind === 'failed' ? `Couldn’t scan it (${banner.reason}), so it stays a still frame`
+        : 'Scanning for flashing before it plays…'
+      return <div className="dynamic-header">
+        {still
+          ? <img className="still" src={still} alt={`Profile header, still frame: ${preset.description}`} />
+          : <div className="still" role="img" aria-label={`Profile header, not yet playing: ${preset.description}`} />}
+        <span className="header-scan-note" role="status">{banner.kind === 'scanning' && <Loader2 size={13} className="spin" aria-hidden="true" />} {note}</span>
+        <div className="header-controls"><a className="header-credit" href={credit.pageUrl} target="_blank" rel="noreferrer">via {credit.provider}</a></div>
+      </div>
+    }
   }
-  const note = scan ? 'Blocked by the scan, so it stays a still frame'
-    : error ? `Couldn’t scan it (${error}), so it stays a still frame`
-    : 'Scanning for flashing before it plays…'
-  return <div className="dynamic-header">
-    {hosted.still
-      ? <img className="still" src={hosted.still} alt={`Profile header, still frame: ${preset.description}`} />
-      : <div className="still" role="img" aria-label={`Profile header, not yet playing: ${preset.description}`} />}
-    <span className="header-scan-note" role="status">{!scan && !error && <Loader2 size={13} className="spin" aria-hidden="true" />} {note}</span>
-    <div className="header-controls"><a className="header-credit" href={hosted.pageUrl} target="_blank" rel="noreferrer">via {hosted.provider}</a></div>
-  </div>
 }
 
 /**
@@ -255,17 +232,13 @@ function MakeItYours({ onDone }: { onDone: () => void }) {
   </div>
 }
 
-function headerFor(account: Account, own: { presetId: string; decision: HeaderDecision }, mine: boolean): { preset: HeaderPreset; decision: HeaderDecision } | null {
-  if (mine) return { preset: headerPreset(own.presetId === 'upload' ? DEFAULT_HEADER_ID : own.presetId), decision: own.presetId === 'upload' ? 'PASS' : own.decision }
-  return account.headerId ? { preset: headerPreset(account.headerId), decision: account.headerDecision ?? 'PASS' } : null
-}
-
 const TABS = ['Posts', 'Replies', 'Highlights', 'Media', 'Likes'] as const
-const compact = (n: number) => (n >= 10000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K` : n.toLocaleString())
 
-/** The imported archive account in the shape the profile page renders. */
-function importedAsAccount(imp: ImportedAccount): Account & { photo?: string; headerStill?: string; location: string; website: string; joined: string } {
-  return { handle: imp.handle, name: imp.name, initials: imp.initials, verified: imp.verified, bio: imp.bio, headerId: null, following: imp.following ?? 0, followers: imp.followers ?? 0, fictional: false, photo: imp.photo, headerStill: imp.headerStill, location: imp.location, website: imp.website, joined: imp.joined }
+const META_ICONS = { link: Link2, pin: MapPin, calendar: CalendarDays, archive: FolderArchive } as const
+function Meta({ row }: { row: MetaRow }) {
+  const Icon = META_ICONS[row.icon]
+  if (row.href) return <a href={row.href}><Icon size={16} aria-hidden="true" />{row.text}</a>
+  return <span><Icon size={16} aria-hidden="true" />{row.text}</span>
 }
 
 /** /me before anything is imported: explains the preview and opens the importer. */
@@ -287,39 +260,35 @@ function ImportLanding() {
 
 function ProfileView({ handle, imported = false }: { handle?: string; imported?: boolean }) {
   const navigate = useNavigate()
-  const { posts, profileHeader, uploadedHeader } = useAppStore()
+  const { posts, profileHeader, uploadedHeader, highlights, addAudit } = useAppStore()
   const importState = useImport()
+  const identity = useIdentity((state) => state.identity)
   const [editing, setEditing] = useState(false)
   const [personalizing, setPersonalizing] = useState(false)
   const [importing, setImporting] = useState(false)
-  const closeImport = useCallback(() => setImporting(false), [])
   const [following, setFollowing] = useState(false)
   const [tab, setTab] = useState<(typeof TABS)[number]>('Posts')
   const close = useCallback(() => setEditing(false), [])
   const closePersonalize = useCallback(() => setPersonalizing(false), [])
-  const identity = useIdentity((state) => state.identity)
-  const isImported = imported || isImportedHandle(handle, importState.account)
-  const importedAccount = isImported && importState.account ? importedAsAccount(importState.account) : null
-  const found = isImported ? importedAccount : accountFor(handle ?? OWNER_HANDLE)
+  const closeImport = useCallback(() => setImporting(false), [])
   useEffect(() => { window.scrollTo(0, 0) }, [])
-  if (!found) return imported ? <ImportLanding /> : <Navigate to="/" replace />
 
-  const isOwner = found.handle === OWNER_HANDLE
-  // The owner account is shown with the visitor's own identity when they have set one.
-  const me = isOwner ? ownerLook(identity) : null
-  const account: Account & { photo?: string } = me ? { ...found, name: me.name, bio: me.bio, initials: me.initials, verified: !me.custom, photo: me.photo } : found
-  const shownHandle = me?.handle ?? account.handle
-  // The viewer's own profile: the owner demo, or their imported archive. Both use the viewer's header pick.
-  const mine = isOwner || isImported
-  const own = posts.filter((post) => post.handle === account.handle)
-  const topLevel = own.filter((post) => !post.replyTo)
-  const replies = own.filter((post) => post.replyTo)
-  const withMedia = own.filter((post) => post.media?.some((item) => item.kind === 'image'))
-  const highlighted = own.filter((post) => importState.highlights.includes(post.id))
-  const header = headerFor(account, profileHeader, mine)
-  const ownUpload = mine && profileHeader.presetId === 'upload' ? uploadedHeader : null
-  // Until the viewer picks a banner, their imported profile shows the still header image from the archive.
-  const archiveStill = isImported && profileHeader.presetId === DEFAULT_HEADER_ID && !ownUpload ? importedAccount?.headerStill : undefined
+  const resolution = profileFor({ handle, imported, identity, importAccount: importState.account, importStats: importState.stats, posts, highlights })
+  const model: ProfileModel | null = resolution.kind === 'profile' ? resolution.model : null
+  // The banner follows the hosted-scan cache: a change there re-renders this page.
+  useHostedScanStates()
+  const banner: Banner = model
+    ? resolveBanner({ account: model.account, mine: model.mine, isImported: model.isImported, pick: profileHeader, uploadedHeader, hostedScan: hostedScanState })
+    : { kind: 'none' }
+  const pendingHosted = banner.kind === 'scanning' ? banner.preset : null
+  useEffect(() => {
+    if (pendingHosted && hostedScanState(pendingHosted.id).status === 'idle') void scanHosted(pendingHosted, { audit: addAudit }).catch(() => undefined)
+  }, [pendingHosted, addAudit])
+
+  if (resolution.kind === 'import-landing') return <ImportLanding />
+  if (!model) return <Navigate to="/" replace />
+  const { account, shownHandle, actions, meta, empty } = model
+
   const clearImport = () => { importState.clear(); toast('Your import was cleared from this device'); navigate('/profile') }
   const back = () => (window.history.length > 1 ? navigate(-1) : navigate('/'))
   const share = async () => {
@@ -330,18 +299,10 @@ function ProfileView({ handle, imported = false }: { handle?: string; imported?:
   return <div className="x-profile">
     <div className="x-profile-bar">
       <button type="button" className="icon-button" onClick={back} aria-label="Back"><ArrowLeft size={20} /></button>
-      <div><strong>{account.name} {account.verified && <Verified />}</strong><span>{isImported && importState.stats ? `${importState.stats.posts.toLocaleString()} posts` : `${own.length} ${own.length === 1 ? 'post' : 'posts'}`}</span></div>
+      <div><strong>{account.name} {account.verified && <Verified />}</strong><span>{model.postCount}</span></div>
     </div>
     <div className="x-profile-banner">
-      {ownUpload
-        ? <DynamicHeader key={`upload-${profileHeader.decision}`} preset={{ id: 'upload', name: ownUpload.name, description: `Uploaded header: ${ownUpload.name}`, style: 'upload', ...ownUpload.measurement, fps: Math.round(1000 / ownUpload.frameMs), measured: true }} decision={profileHeader.decision} upload={ownUpload} />
-        : archiveStill
-          ? <div className="dynamic-header"><img className="still" src={archiveStill} alt="Your X header image, from your archive" /></div>
-        : header?.preset.scanInBrowser
-          ? <ScannedHostedHeader key={`${account.handle}-${header.preset.id}`} preset={header.preset} />
-          : header
-          ? <DynamicHeader key={`${account.handle}-${header.preset.id}-${header.decision}`} preset={header.preset} decision={header.decision} />
-          : <div className="dynamic-header plain-header" role="img" aria-label="No header image" />}
+      <ProfileBanner banner={banner} />
       <div className="x-banner-actions">
         <button type="button" className="x-banner-button" onClick={back} aria-label="Back"><ArrowLeft size={18} /></button>
         <span>
@@ -352,15 +313,15 @@ function ProfileView({ handle, imported = false }: { handle?: string; imported?:
     </div>
     <div className="x-profile-head">
       <span className="avatar x-profile-avatar" aria-hidden="true" style={avatarStyle(account.initials)}>{avatarContent(account.initials, account.photo)}</span>
-      {isImported
+      {actions === 'imported'
         ? <div className="x-profile-buttons">
             <button type="button" className="x-edit-profile x-share" onClick={clearImport}>Clear my import</button>
             <button type="button" className="x-edit-profile" onClick={() => setEditing(true)} aria-haspopup="dialog">Edit profile</button>
           </div>
-        : isOwner
+        : actions === 'owner'
         ? <div className="x-profile-buttons">
             <button type="button" className="x-edit-profile x-share" onClick={share}>Share</button>
-            <button type="button" className="x-edit-profile" onClick={() => setPersonalizing(true)} aria-haspopup="dialog">{me?.custom ? 'Edit my details' : 'Make it yours'}</button>
+            <button type="button" className="x-edit-profile" onClick={() => setPersonalizing(true)} aria-haspopup="dialog">{model.customIdentity ? 'Edit my details' : 'Make it yours'}</button>
             <button type="button" className="x-edit-profile" onClick={() => setImporting(true)} aria-haspopup="dialog">Use my X archive</button>
             <button type="button" className="x-edit-profile" onClick={() => setEditing(true)} aria-haspopup="dialog">Edit profile</button>
           </div>
@@ -370,43 +331,37 @@ function ProfileView({ handle, imported = false }: { handle?: string; imported?:
       <h1>{account.name} {account.verified && <Verified />}</h1>
       <span className="x-handle">{shownHandle}</span>
       <p className="x-profile-bio">{account.bio}</p>
-      <div className="x-profile-meta">
-        {isOwner && <a href="https://thankcheeses.github.io/dynamic-media-governance/"><Link2 size={16} aria-hidden="true" />thankcheeses.github.io/dynamic-media-governance</a>}
-        {importedAccount?.location && <span><MapPin size={16} aria-hidden="true" />{importedAccount.location}</span>}
-        {importedAccount?.website && <span><Link2 size={16} aria-hidden="true" />{importedAccount.website.replace(/^https?:\/\//, '')}</span>}
-        {importedAccount?.joined && <span><CalendarDays size={16} aria-hidden="true" />Joined {importedAccount.joined}</span>}
-        <span><FolderArchive size={16} aria-hidden="true" style={isImported ? undefined : { display: 'none' }} />{isImported ? 'From your X archive · on this device only' : null}{!isImported && <><CalendarDays size={16} aria-hidden="true" />{account.fictional ? 'Fictional account' : me?.custom ? 'Your profile, on this device only' : 'Prototype profile · October 2026'}</>}</span>
-      </div>
+      <div className="x-profile-meta">{meta.map((row) => <Meta key={`${row.icon}-${row.text}`} row={row} />)}</div>
       <div className="x-profile-follows">
-        {(!isImported || importState.account?.following !== null) && <span><strong>{compact(account.following)}</strong> Following</span>}
-        {(!isImported || importState.account?.followers !== null) && <span><strong>{compact(account.followers + (following ? 1 : 0))}</strong> Followers</span>}
-        {isOwner && <small>(the prototype’s fictional accounts)</small>}
+        {model.following !== null && <span><strong>{compactCount(model.following)}</strong> Following</span>}
+        {model.followers !== null && <span><strong>{compactCount(model.followers + (following ? 1 : 0))}</strong> Followers</span>}
+        {model.followsNote && <small>{model.followsNote}</small>}
       </div>
     </div>
     <div className="x-tabs x-profile-tabs" role="tablist" aria-label="Profile sections">
       {TABS.map((name) => <button key={name} type="button" role="tab" aria-selected={tab === name} className={tab === name ? 'active' : ''} onClick={() => setTab(name)}><span>{name}</span></button>)}
     </div>
     <div role="tabpanel" aria-label={tab}>
-      {tab === 'Posts' && (topLevel.length === 0 ? <div className="profile-empty"><h3>No posts yet</h3></div> : topLevel.map((post) => <PostCard key={post.id} post={post} />))}
-      {tab === 'Replies' && (replies.length === 0
-        ? <div className="profile-empty"><h3>No replies</h3><p className="muted">{isImported ? 'Your archive had no replies among the posts shown.' : 'This demo account has no replies.'}</p></div>
-        : replies.map((post) => <PostCard key={post.id} post={post} />))}
-      {tab === 'Highlights' && (highlighted.length === 0
-        ? <div className="profile-empty"><h3>No highlights yet</h3><p className="muted">{isImported ? 'X does not include Highlights in the archive. ' : ''}{mine ? 'Open ··· on one of your posts and choose Add to Highlights. Pins stay on this device.' : 'This demo account has no highlights.'}</p></div>
-        : highlighted.map((post) => <PostCard key={post.id} post={post} />))}
-      {tab === 'Media' && (withMedia.length === 0
-        ? <div className="profile-empty"><h3>No media</h3><p className="muted">{isImported ? 'No images were found in what you imported. Pick the whole zip to include them.' : 'This demo account has no photos or videos.'}</p></div>
-        : withMedia.map((post) => <PostCard key={post.id} post={post} />))}
-      {tab === 'Likes' && (isImported
-        ? (importState.likes.length === 0
+      {tab === 'Posts' && (model.topLevel.length === 0 ? <div className="profile-empty"><h3>No posts yet</h3></div> : model.topLevel.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Replies' && (model.replies.length === 0
+        ? <div className="profile-empty"><h3>No replies</h3><p className="muted">{empty.replies}</p></div>
+        : model.replies.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Highlights' && (model.highlighted.length === 0
+        ? <div className="profile-empty"><h3>No highlights yet</h3><p className="muted">{empty.highlights}</p></div>
+        : model.highlighted.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Media' && (model.withMedia.length === 0
+        ? <div className="profile-empty"><h3>No media</h3><p className="muted">{empty.media}</p></div>
+        : model.withMedia.map((post) => <PostCard key={post.id} post={post} />))}
+      {tab === 'Likes' && (empty.likes
+        ? <div className="profile-empty"><h3>{empty.likes.title}</h3><p className="muted">{empty.likes.body}</p></div>
+        : importState.likes.length === 0
           ? <div className="profile-empty"><h3>No likes</h3><p className="muted">No like.js was in what you imported.</p></div>
           : <>
               <p className="x-likes-note muted">{importState.likes.length.toLocaleString()} liked posts from your archive. X exports the text and a link, not who wrote them.</p>
               {importState.likes.slice(0, 200).map((like) => <article key={like.id} className="x-post x-like" aria-label="Liked post">
                 <div className="x-post-main"><p className="x-post-text">{like.text || '(no text in the archive)'}</p>{like.url && <a className="x-like-link" href={like.url} target="_blank" rel="noreferrer">View on X</a>}</div>
               </article>)}
-            </>)
-        : <div className="profile-empty"><h3>Likes are private here</h3><p className="muted">{mine ? 'The demo keeps likes on the posts themselves; use your X archive to see your own.' : 'This demo account’s likes are not shown.'}</p></div>)}
+            </>)}
     </div>
     {editing && <HeaderStudio onDone={close} />}
     {personalizing && <MakeItYours onDone={closePersonalize} />}
