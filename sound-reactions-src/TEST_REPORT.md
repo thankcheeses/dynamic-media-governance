@@ -406,7 +406,7 @@ Recording a demo exposed "Playing at up to 13.26 fps" in the ⓘ panel for a GIF
 
 ## 2026-11-14 — Link preview cards
 
-The proposal link showed a small square crop of a sample header when pasted into a post. Both pages now declare a large-image card using the owner's own card designs (supplied as images, resized to 1200×627): `og/dynamic-media-governance.png` for the proposal and `public/og-card.png` for the prototype.
+The proposal link showed a small square crop of a sample header when pasted into a post. Both pages now declare a large-image card using the owner's own card designs (supplied as images, resized to 1200×627): `og/dynamic-media-governance-proposal.png` for the proposal (the first version shipped the wrong card, NHID-Clinical; corrected and renamed on 2026-11-14) and `public/og-card.png` for the prototype.
 
 | Check | Actual result |
 |---|---|
