@@ -107,10 +107,36 @@ button, input, textarea, select { font-family: inherit; }
 
 .x-composer-row { display: flex; gap: 12px; padding: 16px 16px 12px; border-bottom: 1px solid var(--border); }
 .x-composer-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.x-composer-placeholder { padding: 6px 0 14px; color: var(--x-gray); font-size: 20px; line-height: 24px; }
+.x-composer-input { width: 100%; min-height: 44px; padding: 6px 0 14px; border: 0; outline: 0; background: transparent; color: var(--text); font: inherit; font-size: 20px; line-height: 24px; resize: none; field-sizing: content; max-height: 240px; }
+.x-composer-input::placeholder { color: var(--x-gray); }
+.x-composer-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
 .x-composer-tools { display: flex; align-items: center; gap: 16px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--accent); }
 .x-composer-post { margin-left: auto; height: 36px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 9999px; background: var(--accent); color: var(--x-ink-on-accent); font-size: 15px; font-weight: 700; }
-.x-composer-row:hover .x-composer-post { filter: brightness(1.08); }
+.x-composer-post { border: 0; cursor: pointer; }
+.x-composer-post:hover:not(:disabled) { filter: brightness(1.08); }
+.x-composer-post:disabled { opacity: 0.5; cursor: default; }
+.x-composer-tool, .x-emoji-toggle { width: 36px; height: 36px; margin: 0 -8px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 9999px; background: transparent; color: var(--accent); cursor: pointer; }
+.x-composer-tool:hover, .x-emoji-toggle:hover, .x-emoji-toggle[aria-expanded="true"] { background: var(--soft-accent); }
+.x-composer-count { margin-left: auto; color: var(--x-gray); font-size: 13px; font-variant-numeric: tabular-nums; }
+.x-composer-count + .x-composer-post { margin-left: 0; }
+
+/* Emoji picker: every Unicode emoji, by group, with a name search. */
+/* The panel is anchored to the tool row, not the button, so it never runs off a phone screen. */
+.x-composer-tools, .post-text-tools { position: relative; }
+.x-emoji { display: inline-flex; }
+.x-emoji-panel { position: absolute; top: calc(100% + 6px); left: 0; z-index: var(--z-menu); width: min(340px, 100%); padding: 10px; border: 1px solid var(--border); border-radius: 16px; background: var(--bg); box-shadow: rgba(255, 255, 255, 0.2) 0 0 15px, rgba(255, 255, 255, 0.15) 0 0 3px 1px; }
+.x-emoji-search { width: 100%; height: 38px; padding: 0 14px; border: 1px solid var(--border); border-radius: 9999px; background: var(--x-input); color: var(--text); font: inherit; font-size: 15px; }
+.x-emoji-tabs { display: flex; margin-top: 8px; border-bottom: 1px solid var(--border); }
+.x-emoji-tabs button { flex: 1; min-width: 0; height: 40px; padding: 0; border: 0; border-bottom: 2px solid transparent; background: transparent; font-size: 19px; line-height: 1; cursor: pointer; filter: grayscale(0.6); opacity: 0.75; }
+.x-emoji-tabs button.active { border-bottom-color: var(--accent); filter: none; opacity: 1; }
+.x-emoji-heading { min-height: 18px; margin: 10px 2px 6px; color: var(--x-gray); font-size: 13px; font-weight: 700; }
+.x-emoji-empty { margin: 4px 2px 8px; color: var(--x-gray); font-size: 14px; }
+.x-emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); max-height: 260px; overflow-y: auto; overscroll-behavior: contain; }
+.x-emoji-grid button { height: 40px; padding: 0; border: 0; border-radius: 8px; background: transparent; font-size: 24px; line-height: 1; cursor: pointer; }
+.x-emoji-grid button:hover, .x-emoji-grid button:focus-visible { background: var(--x-row-hover); }
+.post-text-tools { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.post-text-tools .x-emoji-toggle { margin: 0 0 0 -8px; }
+.post-text-tools .character-count { margin-top: 0; }
 
 .x-show-posts { width: 100%; height: 49px; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--accent); font-size: 15px; transition: background 150ms ease-out; }
 .x-show-posts:hover { background: var(--x-row-hover); }
@@ -312,7 +338,7 @@ button, input, textarea, select { font-family: inherit; }
   .x-fab { position: fixed; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(53px + 16px + env(safe-area-inset-bottom, 0px)); z-index: var(--z-dock); width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent); color: var(--x-ink-on-accent); box-shadow: rgba(101, 119, 134, 0.2) 0 0 8px, rgba(101, 119, 134, 0.25) 0 1px 3px 1px; transition: transform 120ms ease-out; }
   .x-fab:active { transform: scale(0.95); }
   .x-feed-end { padding-bottom: 96px; }
-  .x-composer-placeholder { font-size: 18px; }
+  .x-composer-input { font-size: 18px; }
   .x-post { padding: 12px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); }
   .x-actions { margin-inline: -7px -6px; gap: 0; }
   .x-action-icon { width: 30px; height: 30px; }
@@ -624,9 +650,8 @@ a.x-follow-name:hover strong { text-decoration: underline; }
 .x-upload-describe textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--x-input); color: var(--text); font: inherit; font-size: 15px; resize: vertical; }
 .x-upload-notes { margin: 0; padding-left: 18px; display: grid; gap: 4px; color: var(--x-gray); font-size: 13px; }
 
-/* Phones: X's home has For you / Following and a pen button, not an inline composer or topic tabs. */
+/* Phones: X's home has For you / Following, not topic tabs. The post box stays so a post can be written right on the timeline. */
 @media (max-width: 700px) {
-  .x-composer-row { display: none; }
   .x-tabs .x-tab-topic { display: none; }
 }
 

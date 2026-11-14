@@ -414,3 +414,17 @@ The proposal link showed a small square crop of a sample header when pasted into
 | Hosted build | Rebuilt; `sound-reactions/og-card.png` and the new meta tags are present in the built `index.html`. |
 | Lint / typecheck / unit tests | Passed (93/93); no source code changed. |
 | Card as rendered by X | **Not tested.** X fetches the page itself after deploy and caches previews, so an older preview can persist for a while. |
+
+## 2026-11-14 — Post box, emoji picker and text-only posts
+
+The timeline's "What's happening?" row was a picture of a post box that only linked to the composer; its emoji icon did nothing. It is now a working post box (`src/components/PostBox.tsx`), shown on phones as well. The emoji button opens a picker with the full Unicode emoji set (`unicode-emoji-json`, MIT, bundled and loaded only when the picker opens; nothing is fetched from another site), grouped in nine tabs with a name search. A text post goes to the top of the feed on this device and writes one `text_post_published` audit line; with no sound attached, no preflight runs. The composer (`/compose`) gained the same emoji button, a "Text only" media type, and takes over a draft started on the timeline. Uploading your own sound was already there (2026-11-02) and is unchanged. On the composer the floating pen and tour pill no longer cover the Post bar.
+
+| Check | Actual result |
+|---|---|
+| Lint / typecheck | Passed. |
+| Unit tests | 98/98 passed (12 files); new: emoji set, search and insert-at-cursor rules; text post and empty-post refusal. |
+| Playwright, Chromium desktop + mobile | 52/52 passed; new: post box with emoji picker (9 tabs, Flags, search, insert, post, reload, audit line) and text-only composer with a carried-over draft. |
+| WebKit | **Not run** in this environment. |
+| Screenshots | Post box with the picker open inspected at 390×844 and 1280×900; the panel stays inside the screen on the phone size. |
+| Emoji rendering | **Not tested on real devices.** Emoji are drawn by the device's own font, so a phone with an older system font can show a blank box for the newest ones. |
+| Hosted build | Rebuilt. |

@@ -104,6 +104,8 @@ export function Layout({ children }: { children: ReactNode }) {
   const setSetting = useAppStore((state) => state.setSetting)
   const { state: playback } = useAudio()
   const isFeed = location.pathname === '/'
+  /** The composer has its own Post bar along the bottom; the floating pen and tour pill would sit on top of it. */
+  const isCompose = location.pathname === '/compose'
   const [drawer, setDrawer] = useState(false)
   const [tour, setTour] = useState(() => !tourProgress.seen())
   const [tourStep, setTourStep] = useState(() => tourProgress.step(TOUR_STEPS.length))
@@ -139,7 +141,7 @@ export function Layout({ children }: { children: ReactNode }) {
     </div>
     {drawer && <AccountDrawer onClose={() => setDrawer(false)} />}
     {tour && <WelcomeTour step={tourStep} onStep={goToStep} onClose={closeTour} />}
-    {!tour && !pillHidden && <div className="tour-pill">
+    {!tour && !pillHidden && !isCompose && <div className="tour-pill">
       <button type="button" className="tour-pill-open" onClick={() => setTour(true)} aria-label={tourStep > 0 ? `Resume the tour at step ${tourStep + 1} of ${TOUR_STEPS.length}` : 'Start the guided tour'}><span aria-hidden="true">?</span>{tourStep > 0 ? `Resume tour · ${tourStep + 1}/${TOUR_STEPS.length}` : 'Tour'}</button>
       <button type="button" className="tour-pill-hide" onClick={hidePill} aria-label="Hide the tour button. The ? at the top still opens it"><XIcon size={14} aria-hidden="true" /></button>
     </div>}
@@ -195,7 +197,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <nav className="x-bottom-tabs" aria-label="Mobile navigation">{mobileTabs.map(({ to, label, icon: Icon }) => <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => isActive ? 'active' : ''} aria-label={label}>
       {({ isActive }) => <Icon size={24} strokeWidth={isActive ? 2.5 : 1.75} />}
     </NavLink>)}</nav>
-    <Link to="/compose" className="x-fab" aria-label="Compose a new post"><PenLine size={22} /></Link>
+    {!isCompose && <Link to="/compose" className="x-fab" aria-label="Compose a new post"><PenLine size={22} /></Link>}
     <div className="sr-only" role="status" aria-live="polite">{playback.message}</div>
     <Toaster position="bottom-center" toastOptions={{ className: 'x-toast' }} />
   </div>

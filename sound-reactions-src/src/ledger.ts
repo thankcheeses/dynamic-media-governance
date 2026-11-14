@@ -39,6 +39,12 @@ export function ownerPost(postId: string, clip: Clip, postText: string): Post {
   }
 }
 
+/** A plain text post by the owner account: no sound, so no preflight and no submission. */
+export function textPost(postId: string, text: string): Post {
+  const owner = ACCOUNTS.find((account) => account.handle === OWNER_HANDLE)!
+  return { id: postId, author: owner.name, handle: owner.handle, initials: owner.initials, timestamp: 'now', body: text.trim(), replyCount: 0, repostCount: 0, likeCount: 0, viewCount: 1, following: true }
+}
+
 /** The audit trail every preflight produces: submitted, started, one line per check, flagged/review when needed, decided. */
 export function preflightTrail(clock: LedgerClock, submissionId: string, submitted: string, result: PreflightResult, ephemeral: boolean): AuditEvent[] {
   const event = (type: string, actor: string, detail: string): AuditEvent => ({ id: clock.id('evt'), timestamp: clock.now(), type, actor, subjectId: submissionId, detail, ...(ephemeral ? { ephemeral: true } : {}) })

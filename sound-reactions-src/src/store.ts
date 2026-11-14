@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 import type { UploadedMedia } from './analyze'
 import { DEFAULT_PICK, type HeaderPick } from './banner'
 import { DEFAULT_CONFIG, DEFAULT_SETTINGS, SEED_POSTS } from './data'
-import { isEphemeralPostId, ownerPost, recordDecision, type LedgerClock } from './ledger'
+import { isEphemeralPostId, ownerPost, recordDecision, textPost, type LedgerClock } from './ledger'
 import { migrateState, partializeState, settingsFrom, STORAGE_KEY, STORAGE_VERSION, type PersistedState } from './persistence'
 import type { AppSettings, AuditEvent, Clip, GovernanceConfig, MediaKind, Post, PreflightResult, Submission } from './types'
 
@@ -48,6 +48,8 @@ export interface AppState {
   setConfig: (config: GovernanceConfig) => void
   addAudit: (type: string, subjectId: string, detail: string) => void
   publish: (clip: Clip, postText: string, kind: MediaKind, result: PreflightResult) => string
+  /** Publishes a text-only post to the local feed. Returns its id, or null when the text is empty. */
+  postText: (text: string) => string | null
   addReaction: (postId: string, clip: Clip, result: PreflightResult) => void
   reportReaction: (postId: string, reason: string) => void
   moderate: (submissionId: string, action: 'approve' | 'remove' | 'escalate') => void
@@ -89,6 +91,15 @@ export const useAppStore = create<AppState>()(persist((set, get) => ({
     const { submission, events, post } = recordDecision({ kind: 'publish', clip, postText, mediaKind: kind, result }, clock)
     set((state) => ({ submissions: [submission, ...state.submissions], audits: [...state.audits, ...events], posts: post ? [post, ...state.posts] : state.posts }))
     return submission.id
+  },
+  postText: (text) => {
+    if (!text.trim()) return null
+    const post = textPost(clock.id('post'), text)
+    set((state) => ({
+      posts: [post, ...state.posts],
+      audits: [...state.audits, { id: clock.id('evt'), timestamp: clock.now(), type: 'text_post_published', actor: 'local-demo-user', subjectId: post.id, detail: 'Text post published locally; no sound attached, so no preflight ran' }],
+    }))
+    return post.id
   },
   addReaction: (postId, clip, result) => {
     const { submission, events } = recordDecision({ kind: 'reaction', clip, postId, result }, clock)

@@ -58,6 +58,8 @@ If Chromium is not discovered automatically, set `CHROME_PATH` to a local Chromi
 - `src/data.ts`: fictional seed content, six sound definitions, settings and governance defaults.
 - `src/types.ts`: shared domain types.
 - `src/components/AudioClip.tsx`: voice/reaction players, progress, captions, reporting and scroll-away behavior.
+- `src/components/PostBox.tsx`: the post box at the top of the timeline (text post, emoji, link to the sound composer carrying the draft). Text-only posts go through `postText` in the store (`textPost` in `src/ledger.ts`): no sound, so no preflight and no submission, one `text_post_published` audit line.
+- `src/emoji.ts` + `src/components/EmojiPicker.tsx`: the full Unicode emoji set (`unicode-emoji-json`, lazy-loaded from the bundle, never fetched from another site), name search and the insert-at-cursor rule; used by the post box and the composer.
 - `src/components/ReactionPicker.tsx`: sound preview/selection and prior-hour reaction rate count.
 - Domain vocabulary and decisions: `../GLOSSARY.md` and `../docs/adr/`. Use the glossary's words in code, tests and copy.
 - `src/journey.ts`: the ordered stops of the walkthrough and the tour's saved progress. `src/components/tourSteps.tsx` holds the tour copy; `WelcomeTour.tsx` renders the tour (Next opens each step's page; closing resumes later) and the Next card at the foot of every page. Typeface: Inter, self-hosted from the bundle (never Chirp).
