@@ -108,7 +108,6 @@ const MEASURED: HeaderPreset[] = manifest.map((m) => ({
 function giphy(base: string, pageUrl: string): HostedHeader {
   return { provider: 'GIPHY', pageUrl, mp4: `${base}giphy.mp4`, gif: `${base}giphy.gif`, still: `${base}giphy_s.gif` }
 }
-const GIPHY_JELLYFISH = 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeWdlYnVkYnNjZjR2ajg5dGdobnVuMnI5dHUwcTZ4bDcwNW93cnduNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rdXF0gnAyUAfK/'
 
 /** A hosted GIF nobody has measured yet. Its numbers arrive from the viewer's own scan. */
 function unscanned(preset: Pick<HeaderPreset, 'id' | 'name' | 'description' | 'hosted'>): HeaderPreset {
@@ -124,8 +123,6 @@ const PICKED: HeaderPreset[] = [
     hosted: giphy('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjI0cGdoY2I2amVtYWJybGFxMmV2enB6ZjR4NXFnOGdqbWVjdGE2bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zcXVdsykoJ2GvHdWqw/', 'https://giphy.com/gifs/ryndean-sage-cleanse-incense-zcXVdsykoJ2GvHdWqw') }),
   unscanned({ id: 'garifuna-cooking', name: 'Grandmother’s kitchen', description: 'Hands stirring a pot of Garifuna machuca over the caption “I learned to cook watching my grandmother, my mom, my aunts”.',
     hosted: giphy('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExemV4eTlxNTU3OXV0ZGd5cGszcXJzdmdyaWY5OGxieDhnc2prbDJrNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/UtscVw1JGFrsOSLlGV/', 'https://giphy.com/gifs/cooking-black-woman-soul-food-UtscVw1JGFrsOSLlGV') }),
-  unscanned({ id: 'code-loop', name: 'Code scrolling', description: 'JavaScript scrolling up a dark editor in a seamless loop.',
-    hosted: giphy('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThmejBlb3hpZWV3c2drendnYjc2OHFwdW81bm53bndnczd6d3k2eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT9IgzoKnwFNmISR8I/', 'https://giphy.com/gifs/code-coding-seamless-xT9IgzoKnwFNmISR8I') }),
   unscanned({ id: 'ml-training', name: 'Training', description: 'Orange nodes of a small neural network linking up on a dark grid under the word “Training”.',
     hosted: giphy('https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYzdxNDBiNW9kdzk4b2dueGIzMHk3N2p3NmF0NnZ4ZHo2dHVlYjRydSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/nRutofER2qASM0dhKH/', 'https://giphy.com/gifs/TEAMAF-training-machine-learning-neural-network-nRutofER2qASM0dhKH') }),
   unscanned({ id: 'kg-right-now', name: 'Right now!', description: 'Kevin Garnett grinning and shouting “Right now!” on a Showtime basketball set.',
@@ -134,16 +131,17 @@ const PICKED: HeaderPreset[] = [
 
 /**
  * The owner's own GIF picks. Each plays from its host and is credited there;
- * nothing is copied into the repository. Like the picks below, they are
+ * nothing is copied into the repository. The first is the owner profile's
+ * default: a plain code-scrolling loop, chosen because it shows no third-party
+ * character or person. It has to be a remotely hosted GIF, since the point is
+ * to show a hosted GIF being fetched and scanned before it may play. Like the picks below, they are
  * scanned in the viewer's browser before they animate. (Earlier numbers taken
  * on the owner's copies predate the CIE 1976 UCS red-flash rule, so they are
  * not carried as measurements; the owner can re-upload a copy to measure it.)
  */
 const HOSTED: HeaderPreset[] = [
-  unscanned({ id: 'jellyfish-strut', name: 'Jellyfish strut', description: 'SpongeBob strutting across a green room while a jellyfish floats beside him, from the Jellyfish Jam scene.',
-    hosted: giphy(GIPHY_JELLYFISH, 'https://giphy.com/gifs/dancing-spongebob-squarepants-jellyfish-jam-rdXF0gnAyUAfK') }),
-  unscanned({ id: 'spongebob-computer', name: 'SpongeBob at the computer', description: 'A worried SpongeBob typing at an old beige computer in a red room.',
-    hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/spongebob-computer-fire-gif-21352118', mp4: 'https://media.tenor.com/tWD3GjJcoHgAAAPo/spongebob-computer.mp4', webm: 'https://media.tenor.com/tWD3GjJcoHgAAAPs/spongebob-computer.webm', gif: 'https://media1.tenor.com/m/tWD3GjJcoHgAAAAC/spongebob-computer.gif' } }),
+  unscanned({ id: 'code-loop', name: 'Code scrolling', description: 'JavaScript scrolling up a dark editor in a seamless loop.',
+    hosted: giphy('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMThmejBlb3hpZWV3c2drendnYjc2OHFwdW81bm53bndnczd6d3k2eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT9IgzoKnwFNmISR8I/', 'https://giphy.com/gifs/code-coding-seamless-xT9IgzoKnwFNmISR8I') }),
   unscanned({ id: 'paid-in-full', name: 'Making it rain', description: 'Rico from Paid in Full tossing cash into the air in a packed club.',
     hosted: { provider: 'Tenor', pageUrl: 'https://tenor.com/view/money-rico-paid-raining-money-gif-5009446', mp4: 'https://media.tenor.com/YTe7HLNWvAQAAAPo/money-rico.mp4', webm: 'https://media.tenor.com/YTe7HLNWvAQAAAPs/money-rico.webm', gif: 'https://media1.tenor.com/m/YTe7HLNWvAQAAAAC/money-rico.gif' } }),
   ...PICKED,
@@ -159,7 +157,7 @@ export const HEADER_PRESETS: HeaderPreset[] = [
   { id: 'timelapse', name: 'City timelapse', description: 'A long, high-frame-rate city timelapse.', style: 'timelapse', fps: 30, loopSeconds: 18, sizeMB: 11.4, flashesPerSecond: 1, redFlashesPerSecond: 0 },
 ]
 
-export const DEFAULT_HEADER_ID = 'jellyfish-strut'
+export const DEFAULT_HEADER_ID = 'code-loop'
 
 export function headerPreset(id: string): HeaderPreset {
   return HEADER_PRESETS.find((preset) => preset.id === id) ?? HEADER_PRESETS[0]
