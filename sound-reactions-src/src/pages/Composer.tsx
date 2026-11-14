@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react'
-import { AlertCircle, AudioLines, CheckCircle2, Mic2, Pause, Play, ShieldCheck, Square, Upload } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { AlertCircle, AudioLines, CheckCircle2, Mic2, Pause, Play, ShieldCheck, Square, Type, Upload } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { audioController, useAudio } from '../audio'
+import { EmojiPicker } from '../components/EmojiPicker'
 import { PreflightPanel } from '../components/PreflightPanel'
 import { Toggle } from '../components/Toggle'
 import { SOUND_LIBRARY, VOICE_DEMO } from '../data'
@@ -13,11 +14,14 @@ import type { Clip, MediaKind } from '../types'
 
 export default function Composer() {
   const navigate = useNavigate()
-  const { config, settings, setSetting, publish } = useAppStore()
+  const draft = (useLocation().state as { text?: string } | null)?.text
+  const { config, settings, setSetting, publish, postText: publishText } = useAppStore()
   const { state: playback, stop } = useAudio()
   const [kind, setKind] = useState<MediaKind>('reaction')
   const [clip, setClip] = useState<Clip>({ ...SOUND_LIBRARY[0] })
-  const [postText, setPostText] = useState('A quieter way to add tone to the conversation.')
+  const [postText, setPostText] = useState(draft || 'A quieter way to add tone to the conversation.')
+  const [textOnly, setTextOnly] = useState(false)
+  const postRef = useRef<HTMLTextAreaElement>(null)
   const [recordingExplainer, setRecordingExplainer] = useState(false)
   const [recording, setRecording] = useState(false)
   const [recordSeconds, setRecordSeconds] = useState(0)
@@ -38,7 +42,7 @@ export default function Composer() {
 
   const updateClip = (patch: Partial<Clip>) => setClip((current) => ({ ...current, ...patch }))
   const switchKind = (value: MediaKind) => {
-    stop(); setKind(value); setSimulatedRecording(false); setRecordError('')
+    stop(); setKind(value); setTextOnly(false); setSimulatedRecording(false); setRecordError('')
     setClip(value === 'voice' ? { ...VOICE_DEMO } : { ...SOUND_LIBRARY[0] })
   }
   const scenario = (name: 'pass' | 'transcript' | 'long' | 'abuse') => {
@@ -114,6 +118,11 @@ export default function Composer() {
     }
   }
 
+  const submitText = () => {
+    if (!publishText(postText)) return
+    toast.success('Posted to the feed on this device'); navigate('/')
+  }
+
   const submit = () => {
     const submissionId = publish(clip, postText, kind, result)
     audioController.stop()
@@ -123,9 +132,10 @@ export default function Composer() {
   }
 
   return <div className="page-wrap composer-page"><header className="page-header"><span className="eyebrow">LOCAL COMPOSER</span><h1>Create with sound</h1><p>Preview, describe and preflight before anything enters the fictional feed.</p></header>
-    <section className="composer-section"><label className="field-label" htmlFor="post-text">Post text</label><textarea id="post-text" value={postText} onChange={(event) => setPostText(event.target.value)} maxLength={280} rows={3} /><div className="character-count">{postText.length} / 280</div>
-      <fieldset className="media-selector"><legend>Media type</legend><button type="button" className={kind === 'reaction' ? 'selected' : ''} onClick={() => switchKind('reaction')} aria-pressed={kind === 'reaction'}><AudioLines size={20} /><span><strong>Sound reaction</strong><small>Compact · ≤ {config.durationLimit}s</small></span></button><button type="button" className={kind === 'voice' ? 'selected' : ''} onClick={() => switchKind('voice')} aria-pressed={kind === 'voice'}><Mic2 size={20} /><span><strong>Voice post</strong><small>Full-width · ≤ 140s</small></span></button></fieldset>
+    <section className="composer-section"><label className="field-label" htmlFor="post-text">Post text</label><textarea id="post-text" ref={postRef} value={postText} onChange={(event) => setPostText(event.target.value)} maxLength={280} rows={3} /><div className="post-text-tools"><EmojiPicker target={postRef} value={postText} onChange={setPostText} /><span className="character-count">{postText.length} / 280</span></div>
+      <fieldset className="media-selector"><legend>Media type</legend><button type="button" className={!textOnly && kind === 'reaction' ? 'selected' : ''} onClick={() => switchKind('reaction')} aria-pressed={!textOnly && kind === 'reaction'}><AudioLines size={20} /><span><strong>Sound reaction</strong><small>Compact · ≤ {config.durationLimit}s</small></span></button><button type="button" className={!textOnly && kind === 'voice' ? 'selected' : ''} onClick={() => switchKind('voice')} aria-pressed={!textOnly && kind === 'voice'}><Mic2 size={20} /><span><strong>Voice post</strong><small>Full-width · ≤ 140s</small></span></button><button type="button" className={textOnly ? 'selected' : ''} onClick={() => { stop(); setTextOnly(true) }} aria-pressed={textOnly}><Type size={20} /><span><strong>Text only</strong><small>No sound · no checks needed</small></span></button></fieldset>
     </section>
+    {textOnly ? <div className="publish-bar"><span>{postText.trim() ? 'Ready for local feed' : 'Write something to post'}</span><button className="primary-button" onClick={submitText} disabled={!postText.trim()}>Post locally</button></div> : <>
     {kind === 'reaction' && <section className="composer-section"><span className="field-label">Sound</span><div className="composer-sounds">{SOUND_LIBRARY.map((item) => <button key={item.id} className={clip.id === item.id ? 'selected' : ''} onClick={() => { stop(); setClip({ ...item }); setSimulatedRecording(false) }}><span aria-hidden="true">{item.emoji}</span>{item.name}<small>{item.duration}s</small></button>)}</div></section>}
     <section className="composer-section"><div className="section-title-row"><h2>Preview & describe</h2><span className="origin-badge">NO AUTOPLAY</span></div>
       <div className="draft-player"><button className={kind === 'voice' ? 'voice-play' : 'sound-play'} onClick={() => isPlaying ? stop() : void audioController.play(clip)} aria-label={`${isPlaying ? 'Pause' : 'Preview'} ${clip.name}`}>{isPlaying ? <Pause size={20} /> : <Play size={20} fill="currentColor" />}</button><div><strong>{clip.name}</strong><span>{clip.duration}s · {clip.sizeKb} KB · {clip.lufs} LUFS{clip.audioUrl && !clip.audioUrl.startsWith('blob:') ? ' (measured)' : clip.approxLoudness ? ' (approx., measured here)' : ' (approx.)'}</span></div><button className="secondary-button" onClick={() => stop()}><Square size={14} /> Stop</button></div>
@@ -146,5 +156,6 @@ export default function Composer() {
     <section className="composer-section playback-settings"><h2>Playback settings</h2><Toggle label="Captions and descriptions" checked={settings.captions} onChange={(value) => setSetting('captions', value)} /><Toggle label="Reduce waveform motion" checked={settings.reducedMotion} onChange={(value) => setSetting('reducedMotion', value)} /><Link to="/settings" className="text-link">Open all playback settings</Link></section>
     <div aria-live="polite" aria-atomic="true"><PreflightPanel result={result} /></div>
     <div className="publish-bar"><span>{result.decision === 'PASS' ? 'Ready for local feed' : result.decision === 'REVIEW' ? 'Will be held for review' : 'Will not publish'}</span><button className="primary-button" onClick={submit} disabled={result.decision === 'BLOCK'}>{result.decision === 'PASS' ? 'Publish locally' : result.decision === 'REVIEW' ? 'Submit for review' : 'Blocked'}</button></div>
+    </>}
   </div>
 }

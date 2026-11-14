@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { AudioLines, ImageIcon, Mic, Smile } from 'lucide-react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { AudioLines } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
+import { PostBox } from '../components/PostBox'
 import { PostCard } from '../components/PostCard'
 import { SEED_POSTS } from '../data'
 import { staggerIn } from '../motion'
 import { useAppStore } from '../store'
 import type { Post } from '../types'
-import { avatarContent, avatarStyle } from '../avatar'
-import { ownerLook, useIdentity } from '../identity'
 
 const TABS = [
   { id: 'for-you', label: 'For you' },
@@ -27,7 +26,6 @@ function matches(post: Post, q: string) {
 
 export default function Feed() {
   const posts = useAppStore((state) => state.posts)
-  const me = ownerLook(useIdentity((state) => state.identity))
   const [params, setParams] = useSearchParams()
   const query = params.get('q')?.trim() ?? ''
   const [tab, setTab] = useState<TabId>('for-you')
@@ -66,16 +64,7 @@ export default function Feed() {
       <button onClick={() => { params.delete('q'); setParams(params) }}>Clear</button>
     </div>}
 
-    <Link to="/compose" className="x-composer-row">
-      <span className="avatar" aria-hidden="true" style={avatarStyle(me.initials)}>{avatarContent(me.initials, me.photo)}</span>
-      <span className="x-composer-body">
-        <span className="x-composer-placeholder">What’s happening?</span>
-        <span className="x-composer-tools" aria-hidden="true">
-          <Mic size={19} /><AudioLines size={19} /><ImageIcon size={19} /><Smile size={19} />
-          <span className="x-composer-post">Post</span>
-        </span>
-      </span>
-    </Link>
+    <PostBox />
 
     {!extra && !query && <button className="x-show-posts" onClick={() => setExtra(true)}>Show 3 posts</button>}
 

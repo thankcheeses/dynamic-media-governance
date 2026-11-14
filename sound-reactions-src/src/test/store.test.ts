@@ -52,6 +52,24 @@ describe('submission ledger', () => {
   })
 })
 
+describe('text posts', () => {
+  it('puts a text-only post at the top of the feed with one audit line and no submission', () => {
+    const id = useAppStore.getState().postText('  just words 👏  ')
+    const state = useAppStore.getState()
+    expect(state.posts[0]).toMatchObject({ id, body: 'just words 👏', handle: '@baynardmalone' })
+    expect(state.posts[0].reaction).toBeUndefined()
+    expect(state.posts[0].voice).toBeUndefined()
+    expect(state.submissions).toHaveLength(0)
+    expect(state.audits.map((event) => event.type)).toEqual(['text_post_published'])
+  })
+
+  it('refuses an empty post', () => {
+    const before = useAppStore.getState().posts.length
+    expect(useAppStore.getState().postText('   ')).toBeNull()
+    expect(useAppStore.getState().posts).toHaveLength(before)
+  })
+})
+
 describe('persistence policy', () => {
   it('keeps an audit whose free text contains "x-" and drops audits flagged ephemeral', () => {
     const state = useAppStore.getState()
