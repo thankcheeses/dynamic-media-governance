@@ -403,3 +403,14 @@ Recording a demo exposed "Playing at up to 13.26 fps" in the ⓘ panel for a GIF
 | Unit tests | 93/93 passed (1 new case in the motion policy table) |
 | Playwright | **Not re-run**; the change is one string in a unit-tested pure function. |
 | Hosted build | Rebuilt. |
+
+## 2026-11-14 — Link preview cards
+
+The proposal link showed a small square crop of a sample header when pasted into a post. Both pages now declare a large-image card using the owner's own card designs (supplied as images, resized to 1200×627): `og/dynamic-media-governance.png` for the proposal and `public/og-card.png` for the prototype.
+
+| Check | Actual result |
+|---|---|
+| Files | Both PNGs are 1200×627 and referenced by absolute URL in `og:image` and `twitter:image`. |
+| Hosted build | Rebuilt; `sound-reactions/og-card.png` and the new meta tags are present in the built `index.html`. |
+| Lint / typecheck / unit tests | Passed (93/93); no source code changed. |
+| Card as rendered by X | **Not tested.** X fetches the page itself after deploy and caches previews, so an older preview can persist for a while. |
