@@ -33,6 +33,8 @@
             --text-faint: #71767b;
             --accent: #f0158a;
             --accent-hover: #ff3fa4;
+            --accent-fill: #d1127a; /* behind white text: 5.1:1 (the brighter --accent gives 4.05:1) */
+            --accent-fill-hover: #b30d68;
             --accent-soft: rgba(240, 21, 138, 0.10);
             --accent-ink: #ff4fae;
             --on-accent: #ffffff;
@@ -67,7 +69,7 @@
             --line-strong: #cfd9de;
             --text: #0f1419;
             --text-muted: #536471;
-            --text-faint: #6c7a85;
+            --text-faint: #5d6b77;
             --accent: #d1127a;
             --accent-hover: #b30d68;
             --accent-soft: rgba(209, 18, 122, 0.09);
@@ -473,8 +475,8 @@
         .layers .card__index { color: var(--accent-soft); font-size: 4rem; }
         .eyebrow { font-family: var(--font-body); font-weight: 800; letter-spacing: 0.08em; font-size: 0.78rem; }
         .btn { font-weight: 700; min-height: 48px; }
-        .btn--primary { background: var(--accent); color: var(--on-accent, #fff); }
-        .btn--primary:hover { background: var(--accent-hover); color: #fff; }
+        .btn--primary { background: var(--accent-fill); color: var(--on-accent, #fff); }
+        .btn--primary:hover { background: var(--accent-fill-hover); color: #fff; }
         .btn--ghost { border-color: var(--line-strong); background: transparent; }
         button.btn { font-family: inherit; font-size: 0.92rem; cursor: pointer; color: var(--text); }
         .card { box-shadow: none; }
@@ -490,10 +492,10 @@
         .site-tabs a { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.2s, color 0.2s; }
         .site-tabs a b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--line); color: var(--text); font-size: 0.75rem; }
         .site-tabs a:hover { color: var(--text); }
-        .site-tabs a[aria-current="page"] { background: var(--accent); color: #fff; }
-        .site-tabs a[aria-current="page"] b { background: rgba(255, 255, 255, 0.25); color: #fff; }
+        .site-tabs a[aria-current="page"] { background: var(--accent-fill); color: #fff; }
+        .site-tabs a[aria-current="page"] b { background: rgba(0, 0, 0, 0.25); color: #fff; }
         .tour-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px 0 8px; border: 1px solid var(--accent); border-radius: 999px; background: transparent; color: var(--accent-ink); font: 700 0.9rem var(--font-body); cursor: pointer; }
-        .tour-btn > span:first-child { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 0.85rem; }
+        .tour-btn > span:first-child { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-fill); color: #fff; font-size: 0.85rem; }
         .tour-btn:hover { background: var(--accent-soft); }
         @media (max-width: 900px) { .brand__name { display: none; } }
         @media (max-width: 560px) {
@@ -502,6 +504,11 @@
             .site-tabs a { flex: 1; justify-content: center; padding: 0 8px 0 4px; font-size: 0.82rem; }
             .tour-btn__label { display: none; }
             .tour-btn { padding: 0 8px; }
+            /* Phone tap targets: 44px */
+            .site-tabs a { height: 44px; }
+            .tour-btn { min-width: 44px; height: 44px; justify-content: center; }
+            .icon-btn { width: 44px; height: 44px; }
+            .brand { min-width: 44px; min-height: 44px; }
             html { scroll-padding-top: 120px; }
         }
 
@@ -541,25 +548,30 @@
         .mock__play { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: #fff; }
         .mock__play svg { width: 14px; height: 14px; }
         .mock__note { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 4px 10px 4px 4px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 0.78rem; font-weight: 700; }
-        .mock__note b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 0.7rem; }
+        .mock__note b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-fill); color: #fff; font-size: 0.7rem; }
         .mock__note--banner { position: absolute; left: 10px; top: 10px; margin: 0; background: rgba(0, 0, 0, 0.7); color: #fff; }
         @media (max-width: 420px) { .mock__note--banner { font-size: 0.7rem; } }
+        @media (max-width: 560px) {
+            .mock__pause { width: 44px; height: 44px; right: 6px; bottom: 6px; }
+            .mock__credit { right: 58px; }
+            .mock__edit { height: 44px; }
+        }
 
         /* Guided tour */
         .tour { position: fixed; z-index: 80; left: 50%; bottom: 20px; transform: translateX(-50%); width: min(440px, calc(100vw - 32px)); padding: 16px 18px 16px; border: 1px solid var(--accent); border-radius: 18px; background: var(--bg); color: var(--text); box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7), 0 0 0 6px var(--accent-soft); }
         .tour__top { display: flex; justify-content: space-between; align-items: center; }
         .tour__count { color: var(--accent-ink); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
-        .tour__close { width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); font-size: 1.4rem; line-height: 1; cursor: pointer; }
+        .tour__close { width: 44px; height: 44px; margin: -6px -8px -6px 0; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); font-size: 1.4rem; line-height: 1; cursor: pointer; }
         .tour__close:hover { background: var(--surface); color: var(--text); }
         .tour__title { margin: 4px 0 6px; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
         .tour__body { color: var(--text-muted); font-size: 0.98rem; line-height: 1.5; }
         .tour__body b { color: var(--text); }
         .tour__nav { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 10px; }
         .tour__btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-        .tour__btns button, .tour__cta { height: 38px; padding: 0 16px; border-radius: 999px; font: 700 0.9rem var(--font-body); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
+        .tour__btns button, .tour__cta { height: 44px; padding: 0 16px; border-radius: 999px; font: 700 0.9rem var(--font-body); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
         .tour__back { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
         .tour__next { border: 0; background: var(--text); color: var(--bg); }
-        .tour__cta { background: var(--accent); color: #fff; }
+        .tour__cta { background: var(--accent-fill); color: #fff; }
         .tour__cta[hidden], .tour__back[hidden] { display: none; }
         .tour__dots { display: flex; gap: 6px; }
         .tour__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); }

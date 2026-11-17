@@ -55,7 +55,7 @@ export function ImportArchive({ onDone }: { onDone: () => void }) {
           <li>Nothing you do here posts to X or changes your X account. <Link to="/privacy" onClick={onDone}>Privacy notice</Link>.</li>
         </ul>
       </div></div>
-      <input ref={inputRef} type="file" accept=".zip,.js,image/*" multiple className="sr-only" onChange={(event) => void pick(event)} data-testid="archive-files" disabled={busy} />
+      <input ref={inputRef} type="file" accept=".zip,.js,image/*" multiple className="sr-only" tabIndex={-1} aria-label="Choose your X archive files" onChange={(event) => void pick(event)} data-testid="archive-files" disabled={busy} />
       <div className="button-row">
         <button type="button" className="x-follow-cta" onClick={() => inputRef.current?.click()} disabled={busy}>
           {busy ? <><Loader2 size={16} className="spin" aria-hidden="true" /> Reading{progress ? ` ${fmtMB(progress)}` : ''}…</> : <><FolderArchive size={16} aria-hidden="true" /> Pick my archive zip</>}
