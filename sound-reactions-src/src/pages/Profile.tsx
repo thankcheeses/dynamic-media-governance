@@ -145,7 +145,7 @@ function HeaderStudio({ onDone }: { onDone: () => void }) {
 function ProfileBanner({ banner }: { banner: Banner }) {
   switch (banner.kind) {
     case 'none': return <div className="dynamic-header plain-header" role="img" aria-label="No header image" />
-    case 'archive-still': return <div className="dynamic-header"><img className="still" src={banner.src} alt="Your X header image, from your archive" /></div>
+    case 'archive-still': return <div className="dynamic-header"><img className="still" src={banner.src} alt="Your X header image, from your archive" onError={(event) => event.currentTarget.classList.add('is-broken')} /></div>
     case 'playable': return <DynamicHeader key={banner.key} preset={banner.preset} decision={banner.decision} upload={banner.upload} credit={banner.credit} provenance={banner.provenance} />
     default: {
       const { preset, still, credit } = banner
@@ -154,7 +154,7 @@ function ProfileBanner({ banner }: { banner: Banner }) {
         : 'Scanning for flashing before it plays…'
       return <div className="dynamic-header">
         {still
-          ? <img className="still" src={still} alt={`Profile header, still frame: ${preset.description}`} />
+          ? <img className="still" src={still} alt={`Profile header, still frame: ${preset.description}`} onError={(event) => event.currentTarget.classList.add('is-broken')} />
           : <div className="still" role="img" aria-label={`Profile header, not yet playing: ${preset.description}`} />}
         <span className="header-scan-note" role="status">{banner.kind === 'scanning' && <Loader2 size={13} className="spin" aria-hidden="true" />} {note}</span>
         <div className="header-controls"><a className="header-credit" href={credit.pageUrl} target="_blank" rel="noreferrer">via {credit.provider}</a></div>
