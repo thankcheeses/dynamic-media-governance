@@ -249,7 +249,7 @@ test('the welcome tour opens on a first visit, links back to the proposal, and s
 test('the tour drives to each page, resumes where it was closed, and every page ends with a Next card', async ({ page }) => {
   await page.getByRole('button', { name: 'Take the tour' }).click()
   await page.getByRole('button', { name: 'Next', exact: true }).click()
-  await expect(page.getByRole('heading', { name: 'Sound reactions' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Sound reactions', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Next', exact: true }).click()
   await expect(page).toHaveURL(/\/u\/deesaysso$/)
   await expect(page.getByRole('heading', { name: 'Moving banners' })).toBeVisible()

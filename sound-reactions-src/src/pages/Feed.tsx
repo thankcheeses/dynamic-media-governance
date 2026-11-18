@@ -50,8 +50,11 @@ export default function Feed() {
   }, [extra])
 
   return <>
+    <div className="x-feed-intro">
+      <h1>Sound Reactions: GIF profile headers checked for flashing, and sound reactions that never autoplay</h1>
+      <p>This is a browser-only concept prototype, and every account except the owner’s is made up.</p>
+    </div>
     <header className="x-timeline-header">
-      <h1 className="sr-only">Home</h1>
       <div className="x-tabs" role="tablist" aria-label="Timeline">
         {TABS.map(({ id, label }, index) => <button key={id} role="tab" aria-selected={tab === id} className={`${tab === id ? 'active' : ''} ${index > 1 ? 'x-tab-topic' : ''}`} onClick={() => setTab(id)}>
           <span>{label}</span>
@@ -78,7 +81,7 @@ export default function Feed() {
     <footer className="x-feed-end">
       <AudioLines size={20} aria-hidden="true" />
       <p>Expressive by design. <strong>Silent by default.</strong></p>
-      <span>All accounts, posts, counts and sounds are fictional.</span>
+      <span>Every account but the owner's, and every post, count and sound, is fictional.</span>
     </footer>
   </>
 }

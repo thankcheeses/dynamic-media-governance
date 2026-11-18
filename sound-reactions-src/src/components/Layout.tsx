@@ -7,7 +7,6 @@ import { useAppStore } from '../store'
 import { HAS_GENERATED_AUDIO } from '../data'
 import { avatarContent, avatarStyle } from '../avatar'
 import { ownerLook, useIdentity } from '../identity'
-import { Verified } from './PostCard'
 import { profilePath } from '../accounts'
 import { NextStopCard, WelcomeTour } from './WelcomeTour'
 import { TOUR_STEPS } from './tourSteps'
@@ -34,9 +33,9 @@ const trends = [
 ]
 
 const suggestions = [
-  { name: 'Maya Chen', handle: '@mayamakes', initials: 'MC', verified: true },
-  { name: 'Kiara Vibes', handle: '@kiaravibes', initials: 'KV', verified: true },
-  { name: 'Sam Okoye', handle: '@samoko', initials: 'SO', verified: false },
+  { name: 'Maya Chen', handle: '@mayamakes', initials: 'MC' },
+  { name: 'Kiara Vibes', handle: '@kiaravibes', initials: 'KV' },
+  { name: 'Sam Okoye', handle: '@samoko', initials: 'SO' },
 ]
 
 function SearchBox() {
@@ -63,7 +62,7 @@ function WhoToFollow() {
       const on = following.includes(person.handle)
       return <div key={person.handle} className="x-follow-row">
         <Link to={profilePath(person.handle)} className="avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(person.initials)}>{avatarContent(person.initials)}</Link>
-        <Link to={profilePath(person.handle)} className="x-follow-name"><span className="x-follow-top"><strong>{person.name}</strong>{person.verified && <Verified />}</span><span>{person.handle}</span></Link>
+        <Link to={profilePath(person.handle)} className="x-follow-name"><span className="x-follow-top"><strong>{person.name}</strong></span><span>{person.handle}</span></Link>
         <button className={`x-follow-button ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => setFollowing(on ? following.filter((h) => h !== person.handle) : [...following, person.handle])} aria-label={`${on ? 'Unfollow' : 'Follow'} ${person.handle} (fictional, local only)`}>{on ? 'Following' : 'Follow'}</button>
       </div>
     })}
@@ -88,7 +87,7 @@ function AccountDrawer({ onClose }: { onClose: () => void }) {
   return <div className="x-drawer-backdrop" onClick={(event) => { if (event.target === event.currentTarget) onClose() }}>
     <nav className="x-drawer" aria-label="Account menu">
       <Link to="/profile" onClick={onClose} className="avatar x-drawer-avatar" aria-hidden="true" tabIndex={-1} style={avatarStyle(me.initials)}>{avatarContent(me.initials, me.photo)}</Link>
-      <Link to="/profile" onClick={onClose} className="x-drawer-name"><strong>{me.name} {!me.custom && <Verified />}</strong><span>{me.handle}</span></Link>
+      <Link to="/profile" onClick={onClose} className="x-drawer-name"><strong>{me.name}</strong><span>{me.handle}</span></Link>
       <div className="x-drawer-follows"><span><strong>9</strong> Following</span><span><strong>9</strong> Followers</span></div>
       <ul>
         {items.map(({ to, label, icon: Icon }) => <li key={to}><Link to={to} onClick={onClose}><Icon size={24} aria-hidden="true" />{label}</Link></li>)}
@@ -188,7 +187,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <Link to="/audit">Audit log</Link><span aria-hidden="true">·</span>
             <Link to="/privacy">Privacy</Link><span aria-hidden="true">·</span>
             {HAS_GENERATED_AUDIO && <><span>Sounds and voice made with <a href="https://elevenlabs.io" target="_blank" rel="noreferrer">elevenlabs.io</a></span><span aria-hidden="true">·</span></>}
-            <span>© 2026 Independent concept · Not affiliated with X · All accounts fictional</span>
+            <span>© 2026 Independent concept · Not affiliated with X · All accounts but the owner's are fictional</span>
           </nav>
         </div>
       </aside>}
