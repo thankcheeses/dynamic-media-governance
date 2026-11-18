@@ -8,11 +8,11 @@ const imported: ImportedAccount = { handle: '@realme', name: 'Real Me', initials
 const base = { imported: false, identity: null, importAccount: null, importStats: null, posts: SEED_POSTS, highlights: [] as string[] }
 
 describe('profile view-model', () => {
-  it('the owner demo is verified and shows the prototype link', () => {
+  it('the owner demo carries no verified badge and shows the prototype link', () => {
     const r = profileFor({ ...base, handle: '@baynardmalone' })
     expect(r.kind).toBe('profile')
     if (r.kind !== 'profile') return
-    expect(r.model).toMatchObject({ isOwner: true, mine: true, actions: 'owner', account: { verified: true }, shownHandle: '@baynardmalone', followsNote: '(the prototype’s fictional accounts)' })
+    expect(r.model).toMatchObject({ isOwner: true, mine: true, actions: 'owner', account: { verified: false }, shownHandle: '@baynardmalone', followsNote: '(the prototype’s fictional accounts)' })
     expect(r.model.meta.map((m) => m.icon)).toEqual(['link', 'calendar'])
     expect(r.model.meta[1].text).toBe('Prototype profile · October 2026')
   })
@@ -25,7 +25,25 @@ describe('profile view-model', () => {
     expect(r.model.customIdentity).toBe(true)
     expect(r.model.meta[1].text).toBe('Your profile, on this device only')
     expect(displayAuthor(SEED_POSTS[0], identity)).toEqual({ author: 'Sam Visitor', handle: '@samv', initials: 'SV', verified: false, photo: 'data:,me' })
-    expect(displayAuthor(SEED_POSTS[0], null).verified).toBe(true)
+    expect(displayAuthor(SEED_POSTS[0], null).verified).toBe(false)
+  })
+
+  it('no demo or fictional account or post is shown as verified', () => {
+    for (const post of SEED_POSTS) {
+      expect(displayAuthor(post, null).verified).toBe(false)
+      expect(post.quote?.verified ?? false).toBe(false)
+    }
+    for (const handle of ['@baynardmalone', '@mayamakes', '@deesaysso', '@andrewells', '@kiaravibes']) {
+      const r = profileFor({ ...base, handle })
+      if (r.kind !== 'profile') throw new Error('expected a profile')
+      expect(r.model.account.verified).toBe(false)
+    }
+  })
+
+  it('an imported archive shows verified only when its own X data says so', () => {
+    const r = profileFor({ ...base, handle: '@realme', importAccount: { ...imported, verified: true }, importStats: { posts: 1 } })
+    if (r.kind !== 'profile') throw new Error('expected a profile')
+    expect(r.model.account.verified).toBe(true)
   })
 
   it('an imported account hides an unknown Following count and shows archive metadata', () => {

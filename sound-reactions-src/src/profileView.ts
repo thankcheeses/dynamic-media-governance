@@ -73,8 +73,8 @@ export function isImportedHandle(handle: string | undefined, account: ImportedAc
 /**
  * How a post's author is shown. The owner's posts take the visitor's "Make it
  * yours" name and photo; the handle inside the post stays the owner's so
- * profile links and searches keep working. A relabelled account is never shown
- * as verified: the badge belongs to the fictional demo owner, not the visitor.
+ * profile links and searches keep working. Only an imported archive shows the
+ * verified badge, and only when the person's own X data says so.
  */
 export function displayAuthor(post: Pick<Post, 'author' | 'handle' | 'initials' | 'verified' | 'photo'>, identity: Identity | null) {
   const me = post.handle === OWNER_HANDLE && identity ? ownerLook(identity) : null
@@ -91,7 +91,7 @@ function importedAccount(imp: ImportedAccount): ProfileAccount {
 function ownerAccount(found: Account, identity: Identity | null): { account: ProfileAccount; shownHandle: string; custom: boolean } {
   const me = ownerLook(identity)
   return {
-    account: { handle: found.handle, name: me.name, initials: me.initials, verified: !me.custom, bio: me.bio, photo: me.photo, headerId: found.headerId, headerDecision: found.headerDecision, fictional: false },
+    account: { handle: found.handle, name: me.name, initials: me.initials, verified: false, bio: me.bio, photo: me.photo, headerId: found.headerId, headerDecision: found.headerDecision, fictional: false },
     shownHandle: me.handle,
     custom: me.custom,
   }
@@ -108,7 +108,7 @@ export function profileFor(input: ProfileInput): ProfileResolution {
   const owner = isOwner ? ownerAccount(found!, identity) : null
   const account: ProfileAccount = isImported
     ? importedAccount(importAccount!)
-    : owner?.account ?? { handle: found!.handle, name: found!.name, initials: found!.initials, verified: Boolean(found!.verified), bio: found!.bio, headerId: found!.headerId, headerDecision: found!.headerDecision, fictional: found!.fictional }
+    : owner?.account ?? { handle: found!.handle, name: found!.name, initials: found!.initials, verified: false, bio: found!.bio, headerId: found!.headerId, headerDecision: found!.headerDecision, fictional: found!.fictional }
   const mine = isOwner || isImported
   const own = posts.filter((post) => post.handle === account.handle)
   const custom = owner?.custom ?? false

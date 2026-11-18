@@ -457,3 +457,16 @@ The proposal page (`../index.html`) was redesigned around the owner's own link-c
 | WebKit / real devices | **Not run.** GPU cost of the network on a real phone is not measured. |
 | Merge with main (#23, #24) | The new hero copy (scoped to animated headers), the prototype description and the accessibility fixes are carried into the redesign: white text sits on the deeper pink (#d1127a, 5.1:1), and at 390 px wide the site tabs, tour, theme, brand, banner pause and View profile controls measure 44 px; tour buttons are 44 px everywhere. Checks above re-run after the merge. |
 | Hosted build | Rebuilt. |
+
+## 2026-11-18 — Review fixes: a headline, no verified badges on made-up accounts, tour on request
+
+An outside review found three things. The timeline had no visible headline, only a hidden "Home" heading. It now opens with a plain H1 ("Sound Reactions: GIF profile headers checked for flashing, and sound reactions that never autoplay") and one sentence saying it is a browser-only concept prototype where every account except the owner's is made up. The wording follows the proposal page's description of the prototype. Second, the owner and four fictional accounts (@mayamakes, @deesaysso, @andrewells, @kiaravibes) carried a verified checkmark that copies a real platform's trust signal onto people who do not exist. The badge is removed from all seed accounts, seed posts, the quote post, "Who to follow" and the account drawer, and from the owner card on the proposal page. The one place it can still appear is an imported X archive, and only when the person's own `verified.js` says so; its screen-reader label now reads "Verified on X, per your archive". Third, the proposal page opened its guided tour by itself after 0.9 s and scrolled the headline away. It now opens only from its two buttons (Tour, and "Take the 1-minute tour").
+
+| Check | Actual result |
+|---|---|
+| Lint / typecheck | Passed. |
+| Unit tests | 100/100 passed (12 files); new: no seed post, quote or demo account is shown as verified; an imported archive is verified only when its data says so. The owner-profile test now expects no badge. |
+| Playwright, Chromium desktop + mobile | 52/52 passed, with the sandbox's own Chromium build set in a temporary config, as on 2026-11-14. One locator in the tour test now matches the tour heading "Sound reactions" exactly, because the new H1 also contains those words. |
+| WebKit | **Not run** in this environment. |
+| Screenshots | Timeline, a fictional profile, the owner profile and the proposal page checked at 1280×800 and 390×844: no console errors apart from GIPHY/Tenor requests this sandbox blocks, no horizontal overflow, no "Verified" text in the prototype. The committed `screenshots/` set was not regenerated. |
+| Hosted build | Rebuilt. |

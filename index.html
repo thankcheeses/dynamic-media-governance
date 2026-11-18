@@ -203,7 +203,6 @@
         .mock__edit:hover { border-color: var(--pink); background: var(--pink-soft); }
         .mock__who { display: flex; flex-direction: column; padding: 6px 16px 0; line-height: 1.35; }
         .mock__who strong { display: inline-flex; align-items: center; gap: 4px; font-size: 1.12rem; font-weight: 750; letter-spacing: -0.01em; }
-        .mock__badge { width: 18px; height: 18px; color: var(--pink); }
         .mock__who span { color: var(--text-faint); font-size: 0.9rem; }
         .mock__post { margin-top: 14px; padding: 14px 16px 18px; border-top: 1px solid var(--line); }
         .mock__post p { font-size: 0.98rem; line-height: 1.5; }
@@ -471,7 +470,7 @@
                     <a class="mock__edit" href="sound-reactions/#/profile">View profile</a>
                 </div>
                 <div class="mock__who">
-                    <strong>B. Baynard-Malone <svg class="mock__badge" viewBox="0 0 24 24" aria-label="Verified"><path fill="currentColor" d="M12 1.5 14.6 4l3.6-.4.9 3.5 3.2 1.8-1.4 3.3 1.4 3.3-3.2 1.8-.9 3.5-3.6-.4L12 22.5 9.4 20l-3.6.4-.9-3.5-3.2-1.8L3.1 12 1.7 8.7l3.2-1.8.9-3.5L9.4 4z"/><path fill="#fff" d="m10.6 15.6-3.3-3.3 1.3-1.3 2 2 4.9-4.9 1.3 1.3z"/></svg></strong>
+                    <strong>B. Baynard-Malone</strong>
                     <span>@baynardmalone</span>
                 </div>
                 <div class="mock__post">
@@ -803,7 +802,6 @@
             { title: 'Try it yourself', body: 'Open <b>Sound Reactions</b> (tab 2 at the top). Tap anyone’s name to see their moving banner, tap ▶ to hear a reaction, or go to <b>Profile → Edit profile</b> to check a GIF of your own.', target: '#prototype', cta: { label: 'Open Sound Reactions', href: 'sound-reactions/' } },
         ];
         var tourEl = null, tourStep = 0, lastFocus = null;
-        function seen() { try { localStorage.setItem('dmg-tour-seen', '1'); } catch (e) {} }
         function clearSpot() { var old = document.querySelector('.tour-spot'); if (old) old.classList.remove('tour-spot'); }
         function renderTour() {
             var step = TOUR[tourStep];
@@ -826,7 +824,7 @@
         }
         function closeTour() {
             if (!tourEl) return;
-            seen(); clearSpot();
+            clearSpot();
             tourEl.remove(); tourEl = null;
             document.removeEventListener('keydown', tourKeys);
             if (lastFocus) lastFocus.focus();
@@ -850,15 +848,12 @@
             tourEl.querySelector('.tour__next').addEventListener('click', function () {
                 if (tourStep === TOUR.length - 1) closeTour(); else { tourStep++; renderTour(); }
             });
-            tourEl.querySelector('.tour__cta').addEventListener('click', seen);
             document.addEventListener('keydown', tourKeys);
             renderTour();
             tourEl.querySelector('.tour__next').focus();
         }
         Array.prototype.forEach.call(document.querySelectorAll('[data-tour-open]'), function (b) { b.addEventListener('click', openTour); });
-        var tourSeen = false;
-        try { tourSeen = localStorage.getItem('dmg-tour-seen') === '1'; } catch (e) {}
-        if (!tourSeen) setTimeout(openTour, 900);
+        // The tour opens only from its buttons, so the headline is the first thing a visitor sees.
     })();
     </script>
     <script type="module">

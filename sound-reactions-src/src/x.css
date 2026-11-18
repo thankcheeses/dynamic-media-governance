@@ -96,6 +96,9 @@ button, input, textarea, select { font-family: inherit; }
 .x-aside-footer a:hover { text-decoration: underline; }
 
 /* ---------- Timeline ---------- */
+.x-feed-intro { padding: 16px 16px 14px; border-bottom: 1px solid var(--border); }
+.x-feed-intro h1 { margin: 0 0 6px; font-size: 20px; font-weight: 700; line-height: 1.25; letter-spacing: -.01em; text-wrap: balance; }
+.x-feed-intro p { margin: 0; color: var(--muted); font-size: 15px; }
 .x-timeline-header { position: sticky; top: var(--x-banner-h); z-index: var(--z-sticky); border-bottom: 1px solid var(--border); background: color-mix(in srgb, var(--bg) 65%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .x-tabs { display: flex; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
 .x-tabs::-webkit-scrollbar { display: none; }

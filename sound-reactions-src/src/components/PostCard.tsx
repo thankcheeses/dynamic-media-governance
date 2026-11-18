@@ -30,9 +30,9 @@ function Action({ className = '', label, onClick, to, children, pressed }: { cla
   return <button className={`x-action ${className}`} onClick={onClick} aria-label={label} aria-pressed={pressed}>{children}</button>
 }
 
-/** Generic verification check (not X's asset); fictional accounts only. */
+/** Generic check (not X's asset). Shown only for an imported archive whose own X data says verified; never on the demo or fictional accounts. */
 export function Verified() {
-  return <span className="x-verified"><BadgeCheck size={17} fill="var(--accent)" color="var(--bg)" aria-hidden="true" /><span className="sr-only">Verified account</span></span>
+  return <span className="x-verified"><BadgeCheck size={17} fill="var(--accent)" color="var(--bg)" aria-hidden="true" /><span className="sr-only">Verified on X, per your archive</span></span>
 }
 
 function QuoteCard({ quote }: { quote: QuotedPost }) {

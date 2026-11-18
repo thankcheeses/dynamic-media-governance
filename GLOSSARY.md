@@ -26,4 +26,4 @@ Terms the prototype's code and documents use, with the module that owns each one
 
 **Profile view-model** — who a profile page is about and what it shows: display fields, metadata rows, actions, tab contents and empty-state copy (`src/profileView.ts`, `profileFor`). *Mine* means the viewer's own profile: the owner demo or their imported archive.
 
-**Owner** — the one real account in the demo (`@baynardmalone`). "Make it yours" relabels it for display with a visitor's *identity*; a relabelled account is never shown as verified.
+**Owner** — the one real account in the demo (`@baynardmalone`). "Make it yours" relabels it for display with a visitor's *identity*. Neither the owner nor any fictional account shows a verified badge; only an imported archive does, when the person's own X data says so.

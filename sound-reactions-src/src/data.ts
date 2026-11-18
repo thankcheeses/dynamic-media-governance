@@ -74,12 +74,12 @@ export const DEFAULT_CONFIG: GovernanceConfig = {
 
 export const SEED_POSTS: Post[] = [
   {
-    id: 'post-1', author: 'B. Baynard-Malone', handle: '@baynardmalone', initials: 'BB', timestamp: '18m', verified: true, topics: ['sound', 'design'],
+    id: 'post-1', author: 'B. Baynard-Malone', handle: '@baynardmalone', initials: 'BB', timestamp: '18m', topics: ['sound', 'design'],
     body: 'A sound reaction should add tone without demanding attention. Press play if you want it. Read the description if you don’t.',
     reaction: { ...SOUND_LIBRARY[4], id: 'reaction-post-1', count: 128 }, replyCount: 12, repostCount: 31, likeCount: 248, viewCount: 4200, following: true,
   },
   {
-    id: 'post-2', author: 'Maya Chen', handle: '@mayamakes', initials: 'MC', timestamp: '42m', verified: true, topics: ['sound', 'design'],
+    id: 'post-2', author: 'Maya Chen', handle: '@mayamakes', initials: 'MC', timestamp: '42m', topics: ['sound', 'design'],
     body: 'Design critique, out loud: the pause between ideas is part of the idea. This voice post is deliberately different from a reaction chip.',
     voice: VOICE_DEMO, reaction: { ...SOUND_LIBRARY[0], id: 'reaction-post-2', count: 64 }, replyCount: 8, repostCount: 17, likeCount: 193, viewCount: 2800, following: true,
   },
@@ -94,14 +94,14 @@ export const SEED_POSTS: Post[] = [
     reaction: { ...SOUND_LIBRARY[1], id: 'reaction-post-4', count: 37 }, replyCount: 19, repostCount: 9, likeCount: 141, viewCount: 1900, following: false,
   },
   {
-    id: 'post-5', author: 'Dee Carter', handle: '@deesaysso', initials: 'DC', timestamp: '1h', verified: true, topics: [],
+    id: 'post-5', author: 'Dee Carter', handle: '@deesaysso', initials: 'DC', timestamp: '1h', topics: [],
     body: 'the group chat said 7pm. it is 9:40. everyone is “on the way” 🙃',
     reaction: { ...SOUND_LIBRARY[2], id: 'reaction-post-5', count: 412 }, replyCount: 57, repostCount: 88, likeCount: 1931, viewCount: 48200, following: true,
   },
   {
-    id: 'post-6', author: 'Andre Wells', handle: '@andrewells', initials: 'AW', timestamp: '1h', verified: true, topics: [],
+    id: 'post-6', author: 'Andre Wells', handle: '@andrewells', initials: 'AW', timestamp: '1h', topics: [],
     body: 'Yes 😩🤣',
-    quote: { author: 'Kiara Vibes', handle: '@kiaravibes', initials: 'KV', timestamp: '6h', verified: true, body: 'Which one should I open first? 🍷' },
+    quote: { author: 'Kiara Vibes', handle: '@kiaravibes', initials: 'KV', timestamp: '6h', body: 'Which one should I open first? 🍷' },
     reaction: { ...SOUND_LIBRARY[3], id: 'reaction-post-6', count: 23 }, replyCount: 4, repostCount: 2, likeCount: 61, viewCount: 1240, following: true,
   },
   {
