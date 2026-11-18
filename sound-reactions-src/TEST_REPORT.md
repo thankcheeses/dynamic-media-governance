@@ -429,6 +429,19 @@ The timeline's "What's happening?" row was a picture of a post box that only lin
 | Emoji rendering | **Not tested on real devices.** Emoji are drawn by the device's own font, so a phone with an older system font can show a blank box for the newest ones. |
 | Hosted build | Rebuilt. |
 
+## 2026-11-14 — Owner header without a third-party character; proposal heading scoped to headers
+
+The owner profile's default header was a SpongeBob GIF hot-loaded from GIPHY, and a second SpongeBob GIF (Tenor) was the header of a fictional account. Both presets are removed from `src/headers.ts`. The owner's default is now "Code scrolling" (`code-loop`), a plain code-editor loop that shows no character or person. It is still a remotely hosted GIPHY GIF, because the thing the owner profile demonstrates is a hosted GIF being fetched and flash-scanned in the browser before it may play; an in-repository file would not show that. The two fictional accounts that used the removed or moved presets (@theotypes, @samoko) now show the repository's own rendered headers (`sea-glass`, `violet-hour`). A saved pick of a removed preset falls back to the default. The proposal page's eyebrow, H1 and lede now describe animated profile headers, with Sound Reactions named as the prototype, and its section 07 copy names the new owner header.
+
+| Check | Actual result |
+|---|---|
+| Lint / typecheck | Passed. |
+| Unit tests | 98/98 passed (12 files); the hosted-pick tests now name `code-loop` and `paid-in-full`, and expect at least 6 browser-scanned presets (was 8). |
+| Playwright, Chromium desktop + mobile | 52/52 passed, run with `--trace off`, `browserName: 'chromium'` and the sandbox's own Chromium build set in a temporary config (the pinned Playwright browser build is not installed here). The studio regression test now picks "Making it rain" (Tenor). |
+| WebKit | **Not run** in this environment. |
+| The new owner GIF fetched from GIPHY | **Not tested.** GIPHY is not reachable from this environment; the e2e tests serve the local calm GIF in its place, as before. Its flash-scan result on the real file is therefore unknown until it is opened in a browser with network access. |
+| Remaining third-party clips | Not changed: "Making it rain" (a film clip, Tenor) and "Right now!" (a sports broadcast clip, GIPHY) still play on fictional accounts. |
+| Hosted build | Rebuilt; `sound-reactions/` matches a fresh build. |
 ## 2026-11-18 — Premium visual pass: type, colour, 3D hero
 
 The proposal page (`../index.html`) was redesigned around the owner's own link-card system: near-black tinted toward violet, violet for the proposal and pink for Sound Reactions, with a live three.js version of the cards' node network behind the hero (`proposal/constellation.ts` → `../assets/constellation.js`, 122 KB gzipped, loaded after first paint). Type is self-hosted (`../fonts/`): Inter with its optical-size axis, Newsreader italic for accent lines, JetBrains Mono for labels; the page no longer loads Google Fonts. Numbered kickers on every section, identical card grids, stat boxes and a side-stripe callout were replaced by a sticky contents rail, editorial rows, an isometric layer diagram, a step track and a spec sheet. All copy and claims are unchanged. The prototype got the same type system (opsz Inter, mono eyebrows, serif-italic second sentence on two-sentence slide titles), a violet hint on the proposal tab, and its one side-stripe callout became a tinted box.
@@ -442,4 +455,5 @@ The proposal page (`../index.html`) was redesigned around the owner's own link-c
 | Proposal page, console and overflow | No console errors; no horizontal overflow at 1440 and 390. |
 | 3D hero behaviour | Renders (WebGL via SwiftShader in headless Chromium); runs on screen, stops off-screen, stops on "Pause background"; under reduced motion it draws one still frame and the pause button is hidden. |
 | WebKit / real devices | **Not run.** GPU cost of the network on a real phone is not measured. |
+| Merge with main (#23, #24) | The new hero copy (scoped to animated headers), the prototype description and the accessibility fixes are carried into the redesign: white text sits on the deeper pink (#d1127a, 5.1:1), and at 390 px wide the site tabs, tour, theme, brand, banner pause and View profile controls measure 44 px; tour buttons are 44 px everywhere. Checks above re-run after the merge. |
 | Hosted build | Rebuilt. |

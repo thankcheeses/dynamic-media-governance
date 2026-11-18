@@ -96,7 +96,7 @@ export function ReactionPicker({ post, onClose }: { post: Post; onClose: () => v
       </label>
       <button className="x-board-shuffle" onClick={surprise}><Shuffle size={16} aria-hidden="true" /> Surprise me</button>
       <button className="x-board-shuffle" onClick={() => fileRef.current?.click()} disabled={uploading}><Upload size={16} aria-hidden="true" /> {uploading ? 'Reading…' : 'Upload your own'}</button>
-      <input ref={fileRef} type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.webm" className="sr-only" onChange={(event) => void pickFile(event)} data-testid="sound-upload" />
+      <input ref={fileRef} type="file" accept="audio/*,.mp3,.m4a,.wav,.ogg,.webm" className="sr-only" tabIndex={-1} aria-label="Upload a sound file" onChange={(event) => void pickFile(event)} data-testid="sound-upload" />
     </div>
     {uploadError && <p className="import-error" role="alert">{uploadError}</p>}
 

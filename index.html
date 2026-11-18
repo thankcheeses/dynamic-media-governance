@@ -48,7 +48,7 @@
             --violet-soft: oklch(0.80 0.125 291 / 0.12);
             --violet-line: oklch(0.80 0.125 291 / 0.38);
             --on-violet: oklch(0.155 0.012 285);
-            --pink: #f0158a;
+            --pink: #d1127a; /* fills behind white text: 5.1:1 (#f0158a gives 4.05:1) */
             --pink-ink: oklch(0.76 0.17 355);
             --pink-soft: rgba(240, 21, 138, 0.12);
             --on-pink: #fff;
@@ -147,7 +147,11 @@
             .site-tabs { order: 3; width: 100%; }
             .site-tabs a { flex: 1; justify-content: center; padding: 0 8px 0 4px; font-size: 0.8rem; }
             .tour-btn__label { display: none; }
-            .tour-btn { padding: 0 8px; }
+            .tour-btn { padding: 0 8px; min-width: 44px; height: 44px; justify-content: center; }
+            /* Phone tap targets: 44px */
+            .site-tabs a { height: 44px; }
+            .icon-btn { width: 44px; height: 44px; }
+            .brand { min-width: 44px; min-height: 44px; }
             html { scroll-padding-top: 124px; }
         }
 
@@ -214,6 +218,7 @@
         .mock__note b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--pink); color: #fff; font: 600 0.68rem/1 var(--font-mono); }
         .mock__note--banner { position: absolute; left: 10px; top: 10px; margin: 0; background: rgba(0, 0, 0, 0.72); color: #fff; }
         @media (max-width: 420px) { .mock__note--banner { font-size: 0.68rem; } }
+        @media (max-width: 560px) { .mock__pause { width: 44px; height: 44px; right: 6px; bottom: 6px; } .mock__credit { right: 58px; bottom: 16px; } .mock__edit { height: 44px; } }
 
         /* ---------- Document: contents rail + sections ---------- */
         .doc { display: grid; grid-template-columns: minmax(0, 1fr); }
@@ -379,14 +384,14 @@
         @keyframes tour-in { from { opacity: 0; transform: translate(-50%, 12px); } }
         .tour__top { display: flex; justify-content: space-between; align-items: center; }
         .tour__count { color: var(--violet-ink); font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
-        .tour__close { width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); font-size: 1.4rem; line-height: 1; cursor: pointer; }
+        .tour__close { width: 44px; height: 44px; margin: -6px -8px -6px 0; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); font-size: 1.4rem; line-height: 1; cursor: pointer; }
         .tour__close:hover { background: var(--violet-soft); color: var(--text); }
         .tour__title { margin: 6px 0 6px; font-size: 1.3rem; font-weight: 680; letter-spacing: -0.022em; }
         .tour__body { color: var(--text-muted); font-size: 0.98rem; line-height: 1.5; }
         .tour__body b { color: var(--text); font-weight: 600; }
         .tour__nav { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 10px; }
         .tour__btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-        .tour__btns button, .tour__cta { height: 38px; padding: 0 16px; border-radius: 999px; font: 600 0.9rem var(--font-sans); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
+        .tour__btns button, .tour__cta { height: 44px; padding: 0 16px; border-radius: 999px; font: 600 0.9rem var(--font-sans); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
         .tour__back { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
         .tour__next { border: 0; background: var(--violet); color: var(--on-violet); }
         .tour__cta { background: var(--pink); color: var(--on-pink); }
@@ -438,9 +443,9 @@
         <div class="hero__sky" id="constellation" aria-hidden="true"></div>
         <div class="wrap hero__inner">
             <div class="hero__content">
-                <p class="kicker rise">Policy proposal <i></i> independent <i></i> for X product &amp; engineering</p>
-                <h1 class="rise" style="--d: 80ms">Moving profile banners and sound reactions, <em>made safe.</em></h1>
-                <p class="hero__lede rise" style="--d: 160ms">People keep asking X for GIF banners and quick sound reactions. Fast flashing can cause seizures, and sound can be used to harass. This is the safety layer to ship them with: specified with numbers, built as a working prototype, and testable today.</p>
+                <p class="kicker rise">Independent policy proposal <i></i> for platforms such as X</p>
+                <h1 class="rise" style="--d: 80ms">Animated profile headers, <em>made safe.</em></h1>
+                <p class="hero__lede rise" style="--d: 160ms">People keep asking for GIF profile banners. Fast flashing can cause seizures, so animated headers need a safety layer before they ship. This is that layer: specified with numbers and built into Sound Reactions, a working prototype that also covers short sound reactions, testable today.</p>
                 <div class="hero__actions rise" style="--d: 240ms">
                     <a class="btn btn--pink" href="sound-reactions/">Try it live
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -675,7 +680,7 @@
                             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                         </span>
                         <div class="proto__copy">
-                        <p>The banner shown here is “Violet hour”, one of the prototype’s own rendered sample headers: 15 fps on a 10-second loop, with 0 general and 0 red flashes per second in the build-time scan, under the limit of 3. In the prototype, the owner’s profile plays a GIF hosted on GIPHY; this proposal assumes a platform would serve GIFs from its own or a partner’s media host, so the prototype fetches that GIF and runs the flash scan in your browser before it is allowed to play. Two more real GIFs play from Tenor on other profiles; one runs at 20 fps and is drawn at the 15 fps cap.</p>
+                        <p>The banner shown here is “Violet hour”, one of the prototype’s own rendered sample headers: 15 fps on a 10-second loop, with 0 general and 0 red flashes per second in the build-time scan, under the limit of 3. In the prototype, the owner’s profile plays a plain code-scrolling GIF hosted on GIPHY; this proposal assumes a platform would serve GIFs from its own or a partner’s media host, so the prototype fetches that GIF and runs the flash scan in your browser before it is allowed to play. Other profiles play GIFs from GIPHY and Tenor, each scanned the same way and drawn at no more than 15 fps.</p>
                         <p>Open a profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s banner, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
                         </div>
                     </div>

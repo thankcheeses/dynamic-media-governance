@@ -48,7 +48,7 @@ describe('dynamic header screening', () => {
   })
   it('scans every hosted GIF, the owner’s picks included, in the browser before it plays', async () => {
     const { HEADER_PRESETS } = await import('../headers')
-    const owner = ['jellyfish-strut', 'spongebob-computer', 'paid-in-full'].map((id) => HEADER_PRESETS.find((p) => p.id === id)!)
+    const owner = ['code-loop', 'paid-in-full'].map((id) => HEADER_PRESETS.find((p) => p.id === id)!)
     for (const preset of owner) {
       expect(preset.scanInBrowser).toBe(true)
       expect(preset.measured).toBeFalsy()
@@ -59,7 +59,7 @@ describe('dynamic header screening', () => {
   it('leaves unmeasured hosted picks to the browser scan, with a GIF and a still to scan from', async () => {
     const { HEADER_PRESETS } = await import('../headers')
     const picked = HEADER_PRESETS.filter((p) => p.scanInBrowser)
-    expect(picked.length).toBeGreaterThanOrEqual(8)
+    expect(picked.length).toBeGreaterThanOrEqual(6)
     for (const preset of picked) {
       expect(preset.measured).toBeFalsy()
       expect(preset.hosted?.gif).toMatch(/^https:\/\/media\d?\.(giphy|tenor)\.com\//)
