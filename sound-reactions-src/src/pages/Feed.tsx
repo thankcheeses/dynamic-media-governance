@@ -81,7 +81,7 @@ export default function Feed() {
     <footer className="x-feed-end">
       <AudioLines size={20} aria-hidden="true" />
       <p>Expressive by design. <strong>Silent by default.</strong></p>
-      <span>All accounts, posts, counts and sounds are fictional.</span>
+      <span>Every account but the owner's, and every post, count and sound, is fictional.</span>
     </footer>
   </>
 }

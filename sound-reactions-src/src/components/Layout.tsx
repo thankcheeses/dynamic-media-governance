@@ -187,7 +187,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <Link to="/audit">Audit log</Link><span aria-hidden="true">·</span>
             <Link to="/privacy">Privacy</Link><span aria-hidden="true">·</span>
             {HAS_GENERATED_AUDIO && <><span>Sounds and voice made with <a href="https://elevenlabs.io" target="_blank" rel="noreferrer">elevenlabs.io</a></span><span aria-hidden="true">·</span></>}
-            <span>© 2026 Independent concept · Not affiliated with X · All accounts fictional</span>
+            <span>© 2026 Independent concept · Not affiliated with X · All accounts but the owner's are fictional</span>
           </nav>
         </div>
       </aside>}
