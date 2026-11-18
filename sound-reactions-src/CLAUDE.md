@@ -62,7 +62,7 @@ If Chromium is not discovered automatically, set `CHROME_PATH` to a local Chromi
 - `src/emoji.ts` + `src/components/EmojiPicker.tsx`: the full Unicode emoji set (`unicode-emoji-json`, lazy-loaded from the bundle, never fetched from another site), name search and the insert-at-cursor rule; used by the post box and the composer.
 - `src/components/ReactionPicker.tsx`: sound preview/selection and prior-hour reaction rate count.
 - Domain vocabulary and decisions: `../GLOSSARY.md` and `../docs/adr/`. Use the glossary's words in code, tests and copy.
-- `src/journey.ts`: the ordered stops of the walkthrough and the tour's saved progress. `src/components/tourSteps.tsx` holds the tour copy; `WelcomeTour.tsx` renders the tour (Next opens each step's page; closing resumes later) and the Next card at the foot of every page. Typeface: Inter, self-hosted from the bundle (never Chirp).
+- `src/journey.ts`: the ordered stops of the walkthrough and the tour's saved progress. `src/components/tourSteps.tsx` holds the tour copy; `WelcomeTour.tsx` renders the tour (Next opens each step's page; closing resumes later) and the Next card at the foot of every page. Typeface: Inter with its optical-size axis (`@fontsource-variable/inter/opsz.css`, so titles get the Display cut), Newsreader italic for accent lines (slide titles' second sentence) and JetBrains Mono for labels, all self-hosted from the bundle (never Chirp).
 - `src/components/Layout.tsx`: persistent concept banner, responsive shell, drawer, tour state and the phone-only tour pill. (Audio settings and visibility handling moved into `src/audio.ts`.)
 - `src/pages/Composer.tsx`: media selection, live preflight and real/simulated recording flows.
 - `src/pages/Governance.tsx`: editable policy controls, review queue and decisions.
@@ -90,6 +90,7 @@ If Chromium is not discovered automatically, set `CHROME_PATH` to a local Chromi
 - `src/components/ImportArchive.tsx`: the import dialog (steps, consent text, file picker). `src/pages/Privacy.tsx`: the privacy notice.
 - `src/motion.ts`: all anime.js motion (bursts, pad press, landing, staggers); whether it may run comes from `src/motionPolicy.ts`.
 - `src/components/SoundOrb.tsx`: lazy three.js title-slide orb; reads analyser levels only.
+- `proposal/constellation.ts`: the proposal page's three.js hero network (`npm run build:proposal` writes `../assets/constellation.js`; commit the output). Silent, no flashing, paused off-screen, in hidden tabs and by the viewer, one still frame under reduced motion.
 - `scripts/generate-audio.mjs` + `scripts/audio-catalog.mjs`: ElevenLabs generation (`NODE_USE_ENV_PROXY=1 node --env-file=.env.local scripts/generate-audio.mjs`). Writes `public/audio/*.mp3` and `src/audio-manifest.json`; the app uses files automatically when listed.
 
 Routes: `/`, `/compose`, `/compare`, `/governance`, `/audit`, `/settings`, `/presentation`, `/privacy`, `/profile` (owner), `/u/:handle` (other accounts) and `/me` (the viewer's imported X archive, or the import landing when nothing is imported).

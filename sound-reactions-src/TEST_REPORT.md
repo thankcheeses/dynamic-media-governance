@@ -428,3 +428,18 @@ The timeline's "What's happening?" row was a picture of a post box that only lin
 | Screenshots | Post box with the picker open inspected at 390×844 and 1280×900; the panel stays inside the screen on the phone size. |
 | Emoji rendering | **Not tested on real devices.** Emoji are drawn by the device's own font, so a phone with an older system font can show a blank box for the newest ones. |
 | Hosted build | Rebuilt. |
+
+## 2026-11-18 — Premium visual pass: type, colour, 3D hero
+
+The proposal page (`../index.html`) was redesigned around the owner's own link-card system: near-black tinted toward violet, violet for the proposal and pink for Sound Reactions, with a live three.js version of the cards' node network behind the hero (`proposal/constellation.ts` → `../assets/constellation.js`, 122 KB gzipped, loaded after first paint). Type is self-hosted (`../fonts/`): Inter with its optical-size axis, Newsreader italic for accent lines, JetBrains Mono for labels; the page no longer loads Google Fonts. Numbered kickers on every section, identical card grids, stat boxes and a side-stripe callout were replaced by a sticky contents rail, editorial rows, an isometric layer diagram, a step track and a spec sheet. All copy and claims are unchanged. The prototype got the same type system (opsz Inter, mono eyebrows, serif-italic second sentence on two-sentence slide titles), a violet hint on the proposal tab, and its one side-stripe callout became a tinted box.
+
+| Check | Actual result |
+|---|---|
+| Lint / typecheck | Passed (typecheck now includes `proposal/`). |
+| Unit tests | 98/98 passed. |
+| Playwright, Chromium desktop + mobile | 52/52 passed. |
+| Proposal page, axe (WCAG 2.2 A/AA tags) | No violations in dark and light at 1440×900 and 390×844. |
+| Proposal page, console and overflow | No console errors; no horizontal overflow at 1440 and 390. |
+| 3D hero behaviour | Renders (WebGL via SwiftShader in headless Chromium); runs on screen, stops off-screen, stops on "Pause background"; under reduced motion it draws one still frame and the pause button is hidden. |
+| WebKit / real devices | **Not run.** GPU cost of the network on a real phone is not measured. |
+| Hosted build | Rebuilt. |

@@ -8,6 +8,10 @@
  * Layout: nav 275 · timeline 600 · aside 350 (+30 gutter); collapses at 1280/1000/700.
  */
 :root {
+  /* Inter with its optical-size axis: titles get the tighter Display cut automatically. */
+  --font-serif: "Newsreader Variable", Georgia, serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
+  --violet: #a294ff; /* the proposal's hue, as on its link card */
   --font-ui: "Inter Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --x-gray: #71767B;          /* post metadata on pure black: 4.6:1 */
   --x-ink-on-accent: #0F1419; /* text/icons placed on --accent: 6.9:1 */
@@ -25,7 +29,7 @@
   --z-modal: 60;
 }
 .theme-dim { --x-gray: #8B98A5; --x-input: #273340; --x-row-hover: rgba(255, 255, 255, 0.03); }
-body, .app { font-family: var(--font-ui); font-size: 15px; line-height: 20px; font-feature-settings: "ss01", "cv11"; -webkit-font-smoothing: antialiased; }
+body, .app { font-family: var(--font-ui); font-optical-sizing: auto; font-size: 15px; line-height: 20px; font-feature-settings: "ss01", "cv11"; -webkit-font-smoothing: antialiased; }
 button, input, textarea, select { font-family: inherit; }
 
 /* Persistent concept label: required on every screen. */
@@ -579,6 +583,7 @@ a.x-follow-name:hover strong { text-decoration: underline; }
 .site-tabs a { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 4px; border-radius: 9999px; color: var(--x-gray); font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; }
 .site-tabs a b { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #2F3336; color: var(--text); font-size: 11px; }
 .site-tabs a:hover { color: var(--text); }
+.site-tabs a:not([aria-current="page"]):hover b { background: var(--violet); color: #0F1419; }
 .site-tabs a[aria-current="page"] { background: var(--accent); color: var(--x-ink-on-accent); }
 .site-tabs a[aria-current="page"] b { background: rgba(0, 0, 0, 0.18); color: var(--x-ink-on-accent); }
 .tour-button { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 4px; border: 1px solid var(--accent); border-radius: 9999px; background: transparent; color: var(--text); font-size: 13px; font-weight: 700; letter-spacing: 0; cursor: pointer; }

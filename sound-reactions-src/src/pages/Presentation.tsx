@@ -6,6 +6,13 @@ import { audioController, useAudio } from '../audio'
 
 const SoundOrb = lazy(() => import('../components/SoundOrb'))
 
+/** A two-sentence title sets its second sentence in the serif italic, the proposal's accent voice. */
+function accentTitle(title: string): ReactNode {
+  const cut = title.indexOf('. ')
+  if (cut < 0) return title
+  return <>{title.slice(0, cut + 1)} <em>{title.slice(cut + 2)}</em></>
+}
+
 /** Title-slide 3D orb plus an explicit "Hear it" button. Sound starts only on that press. */
 function HeroVisual() {
   const { state } = useAudio()
@@ -56,5 +63,5 @@ export default function Presentation() {
     return () => window.removeEventListener('keydown', keys)
   }, [])
   const slide = slides[index]
-  return <div className="presentation-page"><header className="presentation-top"><span>Independent proposal · Sound Reactions</span><strong>{index + 1} / {slides.length}</strong></header><section className="slide" aria-labelledby="slide-title" tabIndex={-1}><span className="eyebrow">{slide.kicker}</span><h1 id="slide-title">{slide.title}</h1><div className="slide-content">{slide.content}</div></section><footer className="presentation-controls"><button className="secondary-button" onClick={previous} disabled={index === 0}><ArrowLeft size={18} /> Previous</button><div className="slide-dots" aria-label="Choose slide">{slides.map((item, dot) => <button key={item.title} className={dot === index ? 'active' : ''} onClick={() => setIndex(dot)} aria-label={`Go to slide ${dot + 1}: ${item.title}`} aria-current={dot === index ? 'step' : undefined} />)}</div><button className="primary-button" onClick={next} disabled={index === slides.length - 1}>Next <ArrowRight size={18} /></button></footer><details className="presenter-notes"><summary>Presenter notes</summary><p>{slide.notes}</p></details></div>
+  return <div className="presentation-page"><header className="presentation-top"><span>Independent proposal · Sound Reactions</span><strong>{index + 1} / {slides.length}</strong></header><section className="slide" aria-labelledby="slide-title" tabIndex={-1}><span className="eyebrow">{slide.kicker}</span><h1 id="slide-title">{accentTitle(slide.title)}</h1><div className="slide-content">{slide.content}</div></section><footer className="presentation-controls"><button className="secondary-button" onClick={previous} disabled={index === 0}><ArrowLeft size={18} /> Previous</button><div className="slide-dots" aria-label="Choose slide">{slides.map((item, dot) => <button key={item.title} className={dot === index ? 'active' : ''} onClick={() => setIndex(dot)} aria-label={`Go to slide ${dot + 1}: ${item.title}`} aria-current={dot === index ? 'step' : undefined} />)}</div><button className="primary-button" onClick={next} disabled={index === slides.length - 1}>Next <ArrowRight size={18} /></button></footer><details className="presenter-notes"><summary>Presenter notes</summary><p>{slide.notes}</p></details></div>
 }
