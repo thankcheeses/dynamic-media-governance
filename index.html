@@ -17,567 +17,400 @@
     <meta name="twitter:image" content="https://thankcheeses.github.io/dynamic-media-governance/og/dynamic-media-governance-proposal.png">
     <meta name="twitter:creator" content="@baynardmalone">
     <meta name="color-scheme" content="dark light">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap">
+    <meta name="theme-color" content="#0b0b12">
+    <link rel="preload" href="fonts/inter-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <script>
+        // Apply a saved theme before first paint, so a light-theme visitor never sees a dark flash.
+        try { var t = localStorage.getItem('dmg-theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+    </script>
     <style>
+        /* Self-hosted type (SIL Open Font License; licences in fonts/). Nothing is fetched from a font host. */
+        @font-face { font-family: "Inter Var"; font-style: normal; font-weight: 100 900; font-display: swap; src: url(fonts/inter-latin-opsz-normal.woff2) format("woff2-variations"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+        @font-face { font-family: "Inter Var"; font-style: normal; font-weight: 100 900; font-display: swap; src: url(fonts/inter-latin-ext-opsz-normal.woff2) format("woff2-variations"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+        @font-face { font-family: "Newsreader Var"; font-style: italic; font-weight: 200 800; font-display: swap; src: url(fonts/newsreader-latin-opsz-italic.woff2) format("woff2-variations"); }
+        @font-face { font-family: "JetBrains Mono Var"; font-style: normal; font-weight: 100 800; font-display: swap; src: url(fonts/jetbrains-mono-latin-wght-normal.woff2) format("woff2-variations"); }
+
+        /*
+         * Colour follows the owner's link-card system: near-black tinted toward violet,
+         * violet for the proposal, pink for Sound Reactions, amber and teal only in the network.
+         */
         :root {
-            --bg: #000000;
-            --bg-raised: #000000;
-            --surface: #000000;
-            --surface-solid: #000000;
-            --line: #2f3336;
-            --line-strong: #536471;
-            --text: #e7e9ea;
-            --text-muted: #8b98a5;
-            --text-faint: #71767b;
-            --accent: #f0158a;
-            --accent-hover: #ff3fa4;
-            --accent-fill: #d1127a; /* behind white text: 5.1:1 (the brighter --accent gives 4.05:1) */
-            --accent-fill-hover: #b30d68;
-            --accent-soft: rgba(240, 21, 138, 0.10);
-            --accent-ink: #ff4fae;
-            --on-accent: #ffffff;
-            --danger: #ff6b7a;
-            --danger-soft: rgba(255, 107, 122, 0.1);
-            --danger-line: rgba(255, 107, 122, 0.4);
-            --glow: rgba(240, 21, 138, 0.07);
-            --shadow: 0 0 0 1px rgba(255, 255, 255, 0.02), 0 24px 48px -28px rgba(0, 0, 0, 0.8);
+            --bg: oklch(0.155 0.012 285);
+            --bg-raised: oklch(0.185 0.015 285);
+            --bg-sunk: oklch(0.13 0.01 285);
+            --line: oklch(0.285 0.016 285);
+            --line-strong: oklch(0.40 0.022 285);
+            --text: oklch(0.955 0.006 285);
+            --text-muted: oklch(0.79 0.018 285);
+            --text-faint: oklch(0.66 0.02 285);
+            --violet: oklch(0.80 0.125 291);
+            --violet-ink: oklch(0.82 0.11 291);
+            --violet-soft: oklch(0.80 0.125 291 / 0.12);
+            --violet-line: oklch(0.80 0.125 291 / 0.38);
+            --on-violet: oklch(0.155 0.012 285);
+            --pink: #d1127a; /* fills behind white text: 5.1:1 (#f0158a gives 4.05:1) */
+            --pink-ink: oklch(0.76 0.17 355);
+            --pink-soft: rgba(240, 21, 138, 0.12);
+            --on-pink: #fff;
+            --danger: oklch(0.74 0.15 20);
+            --danger-soft: oklch(0.74 0.15 20 / 0.1);
+            --danger-line: oklch(0.74 0.15 20 / 0.42);
+            --node-1: #a294ff; --node-2: #ff5aa8; --node-3: #f5b84a; --node-4: #45d6c6; --node-blend: additive;
 
-            --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-            --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-            --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+            --font-sans: "Inter Var", "Inter Variable", Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+            --font-serif: "Newsreader Var", Newsreader, Georgia, "Times New Roman", serif;
+            --font-mono: "JetBrains Mono Var", "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
-            --step--1: clamp(0.8rem, 0.78rem + 0.1vw, 0.875rem);
-            --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.0625rem);
-            --step-1: clamp(1.15rem, 1.05rem + 0.4vw, 1.375rem);
-            --step-2: clamp(1.4rem, 1.2rem + 0.9vw, 1.9rem);
-            --step-3: clamp(2rem, 1.5rem + 2.2vw, 3.1rem);
-            --step-4: clamp(2.3rem, 1.4rem + 3.4vw, 4.1rem);
+            --step--1: clamp(0.82rem, 0.8rem + 0.1vw, 0.875rem);
+            --step-0: clamp(1rem, 0.96rem + 0.18vw, 1.0625rem);
+            --step-1: clamp(1.15rem, 1.06rem + 0.42vw, 1.375rem);
+            --step-2: clamp(1.4rem, 1.2rem + 0.95vw, 1.95rem);
+            --step-3: clamp(2rem, 1.45rem + 2.4vw, 3.3rem);
+            --step-4: clamp(2.5rem, 1.6rem + 3.3vw, 4.5rem);
 
-            --gutter: clamp(16px, 4vw, 40px);
-            --radius: 16px;
-            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --gutter: clamp(18px, 4.4vw, 48px);
+            --radius: 14px;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --z-sticky: 50; --z-progress: 60; --z-tour: 80; --z-skip: 100;
         }
-
         :root[data-theme="light"] {
-            --bg: #ffffff;
-            --bg-raised: #f7f9f9;
-            --surface: #f7f9f9;
-            --surface-solid: #ffffff;
-            --line: #eff3f4;
-            --line-strong: #cfd9de;
-            --text: #0f1419;
-            --text-muted: #536471;
-            --text-faint: #5d6b77;
-            --accent: #d1127a;
-            --accent-hover: #b30d68;
-            --accent-soft: rgba(209, 18, 122, 0.09);
-            --accent-ink: #c0106f;
-            --danger: #c4242d;
-            --danger-soft: rgba(196, 36, 45, 0.07);
-            --danger-line: rgba(196, 36, 45, 0.3);
-            --glow: rgba(209, 18, 122, 0.08);
-            --shadow: 0 1px 2px rgba(15, 20, 25, 0.06), 0 18px 40px -28px rgba(15, 20, 25, 0.25);
+            --bg: oklch(0.985 0.004 285);
+            --bg-raised: oklch(0.965 0.006 285);
+            --bg-sunk: oklch(0.95 0.008 285);
+            --line: oklch(0.90 0.01 285);
+            --line-strong: oklch(0.78 0.018 285);
+            --text: oklch(0.21 0.022 285);
+            --text-muted: oklch(0.40 0.022 285);
+            --text-faint: oklch(0.49 0.022 285);
+            --violet: oklch(0.50 0.21 290);
+            --violet-ink: oklch(0.47 0.2 290);
+            --violet-soft: oklch(0.50 0.21 290 / 0.08);
+            --violet-line: oklch(0.50 0.21 290 / 0.35);
+            --on-violet: #fff;
+            --pink: #c8106f;
+            --pink-ink: #b30d63;
+            --pink-soft: rgba(200, 16, 111, 0.08);
+            --danger: oklch(0.52 0.19 25);
+            --danger-soft: oklch(0.52 0.19 25 / 0.07);
+            --danger-line: oklch(0.52 0.19 25 / 0.35);
+            --node-1: #5b45e0; --node-2: #c8106f; --node-3: #b77700; --node-4: #0f8f83; --node-blend: normal;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
-
         html { scroll-behavior: smooth; scroll-padding-top: 88px; -webkit-text-size-adjust: 100%; }
-
         body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--font-body);
-            font-size: var(--step-0);
-            line-height: 1.65;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-            overflow-x: hidden;
-            transition: background-color 0.4s var(--ease), color 0.4s var(--ease);
+            margin: 0; background: var(--bg); color: var(--text);
+            font: 400 var(--step-0) / 1.65 var(--font-sans);
+            font-optical-sizing: auto; font-feature-settings: "cv11", "ss03";
+            -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; overflow-x: hidden;
         }
-
         a { color: inherit; }
         strong { color: var(--text); font-weight: 600; }
-        h1, h2, h3, p { margin: 0; }
+        h1, h2, h3, h4, p, figure, dl, dd { margin: 0; }
+        h1, h2, h3 { text-wrap: balance; }
+        p { text-wrap: pretty; }
+        ::selection { background: var(--violet); color: var(--on-violet); }
+        :focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; border-radius: 6px; }
 
-        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
-
-        .skip-link {
-            position: absolute; left: 16px; top: -48px; z-index: 100;
-            padding: 10px 16px; border-radius: 10px;
-            background: var(--accent); color: var(--bg); font-weight: 600; text-decoration: none;
-            transition: top 0.2s var(--ease);
-        }
+        .skip-link { position: absolute; left: 16px; top: -60px; z-index: var(--z-skip); padding: 10px 16px; border-radius: 10px; background: var(--violet); color: var(--on-violet); font-weight: 600; text-decoration: none; transition: top 0.2s var(--ease-out); }
         .skip-link:focus { top: 12px; }
+        .wrap { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 var(--gutter); }
+        .mono { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.02em; }
 
-        .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
-
-        .eyebrow {
-            font-family: var(--font-mono); font-size: 0.72rem; font-weight: 500;
-            letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent-ink);
-        }
-
-        /* ---------- Progress + nav ---------- */
-        .progress {
-            position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60;
-            background: var(--accent); transform-origin: 0 50%; transform: scaleX(0);
-        }
-
-        .nav {
-            position: sticky; top: 0; z-index: 50;
-            background: color-mix(in srgb, var(--bg) 78%, transparent);
-            backdrop-filter: blur(14px) saturate(160%);
-            -webkit-backdrop-filter: blur(14px) saturate(160%);
-            border-bottom: 1px solid var(--line);
-        }
-        .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
-        .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; min-width: 0; }
-        .brand__mark {
-            width: 28px; height: 28px; border-radius: 8px; flex: none;
-            border: 1px solid var(--line-strong);
-            display: grid; place-items: center;
-            background: radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 70%);
-        }
-        .brand__mark svg { width: 16px; height: 16px; }
-        .brand__name { font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .badge {
-            font-family: var(--font-mono); font-size: 0.68rem; color: var(--text-muted);
-            padding: 3px 8px; border: 1px solid var(--line); border-radius: 999px; flex: none;
-        }
-        .nav__links { display: flex; align-items: center; gap: 4px; }
-        .nav__links a {
-            font-size: 0.875rem; color: var(--text-muted); text-decoration: none;
-            padding: 8px 12px; border-radius: 999px;
-            transition: color 0.2s, background-color 0.2s;
-        }
-        .nav__links a:hover { color: var(--text); }
-        .nav__links a[aria-current="true"] { color: var(--text); background: var(--accent-soft); }
-
-        .icon-btn {
-            display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none;
-            border-radius: 999px; border: 1px solid var(--line); background: transparent;
-            color: var(--text-muted); cursor: pointer;
-            transition: color 0.2s, border-color 0.2s, background-color 0.2s;
-        }
+        /* ---------- Progress + site bar ---------- */
+        .progress { position: fixed; inset: 0 0 auto 0; height: 2px; z-index: var(--z-progress); background: var(--violet); transform-origin: 0 50%; transform: scaleX(0); }
+        .nav { position: sticky; top: 0; z-index: var(--z-sticky); background: color-mix(in oklch, var(--bg) 88%, transparent); backdrop-filter: blur(16px) saturate(150%); -webkit-backdrop-filter: blur(16px) saturate(150%); border-bottom: 1px solid var(--line); }
+        .nav__inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 62px; }
+        .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; min-width: 0; }
+        .monogram { width: 30px; height: 30px; flex: none; display: grid; place-items: center; border: 1.5px solid var(--violet); border-radius: 8px; color: var(--violet-ink); font: 700 0.8rem/1 var(--font-sans); letter-spacing: -0.02em; text-transform: none; }
+        .brand__name { font-weight: 600; font-size: 0.95rem; letter-spacing: -0.012em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .nav__right { display: flex; align-items: center; gap: 8px; }
+        .site-tabs { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg-sunk); }
+        .site-tabs a { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 15px 0 6px; border-radius: 999px; color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.88rem; white-space: nowrap; transition: background-color 0.2s, color 0.2s; }
+        .site-tabs a b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--line); color: var(--text); font: 600 0.72rem/1 var(--font-mono); }
+        .site-tabs a:hover { color: var(--text); }
+        .site-tabs a[aria-current="page"] { background: var(--violet); color: var(--on-violet); }
+        .site-tabs a[aria-current="page"] b { background: color-mix(in oklch, var(--on-violet) 18%, transparent); color: var(--on-violet); }
+        .site-tabs a.is-sr:hover b { background: var(--pink); color: var(--on-pink); }
+        .tour-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 15px 0 8px; border: 1px solid var(--violet-line); border-radius: 999px; background: transparent; color: var(--violet-ink); font: 600 0.88rem var(--font-sans); cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+        .tour-btn > span:first-child { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--violet); color: var(--on-violet); font-size: 0.8rem; font-weight: 700; }
+        .tour-btn:hover { background: var(--violet-soft); border-color: var(--violet); }
+        .icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; flex: none; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); cursor: pointer; transition: color 0.2s, border-color 0.2s; }
         .icon-btn:hover { color: var(--text); border-color: var(--line-strong); }
         .icon-btn svg { width: 18px; height: 18px; }
         .theme-icon--sun { display: none; }
         #theme-toggle[data-mode="light"] .theme-icon--sun { display: block; }
         #theme-toggle[data-mode="light"] .theme-icon--moon { display: none; }
-
-        .nav__right { display: flex; align-items: center; gap: 8px; }
-
-        @media (max-width: 760px) {
-            .nav__links { display: none; }
+        @media (max-width: 920px) { .brand__name { display: none; } }
+        @media (max-width: 560px) {
+            .nav__inner { flex-wrap: wrap; height: auto; padding-top: 8px; padding-bottom: 8px; }
+            .site-tabs { order: 3; width: 100%; }
+            .site-tabs a { flex: 1; justify-content: center; padding: 0 8px 0 4px; font-size: 0.8rem; }
+            .tour-btn__label { display: none; }
+            .tour-btn { padding: 0 8px; min-width: 44px; height: 44px; justify-content: center; }
+            /* Phone tap targets: 44px */
+            .site-tabs a { height: 44px; }
+            .icon-btn { width: 44px; height: 44px; }
+            .brand { min-width: 44px; min-height: 44px; }
+            html { scroll-padding-top: 124px; }
         }
 
         /* ---------- Hero ---------- */
         .hero { position: relative; isolation: isolate; overflow: hidden; border-bottom: 1px solid var(--line); }
-        .hero__bg {
-            position: absolute; inset: 0; z-index: -2;
-            background: radial-gradient(55% 60% at 80% 45%, var(--glow), transparent 70%);
-        }
-        .hero__canvas {
-            position: absolute; z-index: -1;
-            right: 0; top: 50%; transform: translateY(-50%);
-            width: min(64vw, 720px); aspect-ratio: 1;
-            pointer-events: none;
-        }
-        .hero__canvas canvas { width: 100% !important; height: 100% !important; display: block; }
-        .hero__inner { padding-top: clamp(64px, 12vw, 148px); padding-bottom: clamp(88px, 10vw, 120px); }
-        .hero__content { max-width: 720px; }
-        .hero h1 {
-            font-family: var(--font-display); font-weight: 400;
-            font-size: var(--step-4); line-height: 0.98; letter-spacing: -0.02em;
-            margin-top: 22px;
-        }
-        .hero h1 em { font-style: italic; color: var(--accent-ink); }
-        .hero__lede { margin-top: 26px; font-size: var(--step-1); color: var(--text-muted); max-width: 34ch; line-height: 1.5; }
-        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 36px; }
-        .chip {
-            font-size: 0.8rem; color: var(--text-muted);
-            padding: 6px 12px; border-radius: 999px;
-            border: 1px solid var(--line); background: var(--surface);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        }
-        .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
-        .btn {
-            display: inline-flex; align-items: center; gap: 8px; min-height: 46px;
-            padding: 0 22px; border-radius: 999px; text-decoration: none;
-            font-size: 0.92rem; font-weight: 600;
-            transition: transform 0.25s var(--ease), background-color 0.2s, border-color 0.2s;
-        }
-        .btn:hover { transform: translateY(-1px); }
-        .btn:active { transform: translateY(0) scale(0.98); }
-        .btn--primary { background: var(--text); color: var(--bg); }
-        .btn--primary:hover { background: var(--accent); color: #fffdf8; }
-        .btn--ghost { border: 1px solid var(--line-strong); color: var(--text); }
-        .btn--ghost:hover { border-color: var(--accent); }
-        .btn svg { width: 16px; height: 16px; }
-
-        .motion-toggle {
-            position: absolute; right: var(--gutter); bottom: 20px;
-            display: inline-flex; align-items: center; gap: 8px; min-height: 36px;
-            padding: 0 14px; border-radius: 999px;
-            border: 1px solid var(--line); background: var(--surface); color: var(--text-muted);
-            font: 500 0.75rem var(--font-body); cursor: pointer;
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-        }
+        .hero__sky { position: absolute; inset: 0; z-index: -1; pointer-events: none;
+            background: radial-gradient(60% 70% at 82% 42%, var(--violet-soft), transparent 70%);
+            -webkit-mask-image: linear-gradient(90deg, transparent 30%, #000 64%); mask-image: linear-gradient(90deg, transparent 30%, #000 64%); }
+        .hero__sky canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; }
+        .hero__inner { display: grid; grid-template-columns: 1fr; gap: clamp(40px, 6vw, 72px); align-items: center; padding-top: clamp(48px, 9vw, 120px); padding-bottom: clamp(64px, 9vw, 120px); }
+        @media (min-width: 1000px) { .hero__inner { grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr); } }
+        .kicker { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--violet-ink); font: 500 0.76rem/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+        .kicker i { width: 4px; height: 4px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+        .hero h1 { margin-top: 22px; font-size: var(--step-4); font-weight: 680; line-height: 0.98; letter-spacing: -0.034em; }
+        .hero h1 em { display: inline-block; font: italic 420 1.08em/0.9 var(--font-serif); letter-spacing: -0.01em; color: var(--violet-ink); padding-right: 0.06em; }
+        .hero__lede { margin-top: 28px; max-width: 46ch; font-size: var(--step-1); line-height: 1.55; color: var(--text-muted); }
+        .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 34px; }
+        .btn { display: inline-flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 24px; border-radius: 999px; border: 0; text-decoration: none; font: 600 0.95rem var(--font-sans); cursor: pointer; transition: transform 0.35s var(--ease-out), background-color 0.2s, border-color 0.2s, box-shadow 0.35s var(--ease-out); }
+        .btn svg { width: 16px; height: 16px; transition: transform 0.35s var(--ease-out); }
+        .btn:hover svg { transform: translateX(3px); }
+        .btn:active { transform: scale(0.98); }
+        .btn--pink { background: var(--pink); color: var(--on-pink); box-shadow: 0 0 0 0 var(--pink-soft); }
+        .btn--pink:hover { box-shadow: 0 0 0 6px var(--pink-soft); }
+        .btn--ghost { background: transparent; color: var(--text); border: 1px solid var(--line-strong); }
+        .btn--ghost:hover { border-color: var(--violet); background: var(--violet-soft); }
+        .mapped { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--text-faint); font: 500 0.76rem/1.4 var(--font-mono); letter-spacing: 0.04em; }
+        .mapped span:first-child { color: var(--text-muted); }
+        .motion-toggle { position: absolute; right: var(--gutter); bottom: 18px; display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px 0 11px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in oklch, var(--bg) 70%, transparent); color: var(--text-muted); font: 500 0.75rem var(--font-mono); cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
         .motion-toggle:hover { color: var(--text); border-color: var(--line-strong); }
         .motion-toggle[hidden] { display: none; }
         .motion-toggle svg { width: 12px; height: 12px; }
-
-        @media (max-width: 760px) {
-            .hero__canvas { width: 120vw; right: -50vw; top: 30%; opacity: 0.55; }
+        @media (max-width: 999px) {
+            .hero__sky { -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 30%, transparent 62%); mask-image: linear-gradient(180deg, #000 0%, #000 30%, transparent 62%); opacity: 0.7; }
         }
 
-        /* ---------- Sections ---------- */
-        main > section { padding: clamp(72px, 10vw, 128px) 0; border-bottom: 1px solid var(--line); }
-        .section-head { display: grid; gap: 18px; margin-bottom: clamp(36px, 5vw, 56px); max-width: 760px; }
-        .section-num { display: flex; align-items: center; gap: 12px; }
-        .section-num::after { content: ""; height: 1px; width: 48px; background: var(--line-strong); }
-        .section-head h2 {
-            font-family: var(--font-display); font-weight: 400;
-            font-size: var(--step-3); line-height: 1.05; letter-spacing: -0.015em;
-        }
-        .section-head p { color: var(--text-muted); max-width: 62ch; }
-
-        .prose { max-width: 66ch; color: var(--text-muted); }
-        .prose p + p, .prose p + ul, .prose ul + p { margin-top: 1.1em; }
-
-        .summary { display: grid; grid-template-columns: 1fr; gap: clamp(32px, 5vw, 72px); }
-        @media (min-width: 900px) { .summary { grid-template-columns: 1.1fr 0.9fr; } }
-        .summary__lead { font-family: var(--font-display); font-size: var(--step-2); line-height: 1.25; color: var(--text); }
-        .objectives { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; counter-reset: obj; }
-        .objectives li {
-            counter-increment: obj;
-            display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start;
-            padding: 20px 22px; border-radius: var(--radius);
-            border: 1px solid var(--line); background: var(--surface);
-            color: var(--text);
-        }
-        .objectives li::before {
-            content: counter(obj, decimal-leading-zero);
-            font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-ink);
-            padding-top: 4px;
-        }
-        .summary__note { margin-top: 28px; padding-left: 18px; border-left: 2px solid var(--accent); color: var(--text-muted); }
-
-        /* Cards */
-        .grid { display: grid; gap: 16px; }
-        .grid--3 { grid-template-columns: 1fr; }
-        .grid--2 { grid-template-columns: 1fr; }
-        .grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        @media (min-width: 760px) {
-            .grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        }
-        @media (min-width: 960px) { .grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-
-        .card {
-            position: relative; overflow: hidden;
-            padding: clamp(22px, 2.6vw, 30px); border-radius: var(--radius);
-            border: 1px solid var(--line); background: var(--surface);
-            box-shadow: var(--shadow);
-            transition: border-color 0.3s var(--ease), transform 0.4s var(--ease);
-        }
-        .card::before {
-            content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
-            background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%), var(--accent-soft), transparent 60%);
-            transition: opacity 0.3s var(--ease);
-        }
-        .card:hover { border-color: var(--line-strong); }
-        .card:hover::before { opacity: 1; }
-        .card > * { position: relative; }
-        .card__icon {
-            width: 40px; height: 40px; border-radius: 12px; margin-bottom: 20px;
-            display: grid; place-items: center;
-            background: var(--accent-soft); color: var(--accent-ink);
-        }
-        .card__icon svg { width: 20px; height: 20px; }
-        .card__label { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); margin-bottom: 10px; }
-        .card h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.35; }
-        .card p { margin-top: 10px; font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; }
-
-        /* Layers */
-        .layers .card { padding-top: 28px; }
-        .layers .card__index {
-            font-family: var(--font-display); font-size: 3.5rem; line-height: 1;
-            color: var(--line-strong); position: absolute; right: 22px; top: 18px;
-        }
-
-        /* Subsection */
-        .sub { margin-top: clamp(56px, 7vw, 88px); }
-        .sub:first-of-type { margin-top: 0; }
-        .sub__head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
-        .sub__num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-ink); padding: 4px 10px; border-radius: 999px; background: var(--accent-soft); }
-        .sub__head h3 { font-size: var(--step-1); font-weight: 600; letter-spacing: -0.015em; }
-        .sub__intro { color: var(--text-muted); max-width: 66ch; margin-bottom: 28px; }
-
-        /* Flow diagram */
-        .flow {
-            border: 1px solid var(--line); border-radius: calc(var(--radius) + 4px);
-            background: var(--bg-raised); padding: clamp(18px, 3vw, 32px);
-        }
-        .flow__title { margin-bottom: 20px; }
-        .flow__track { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: 1fr; }
-        @media (min-width: 900px) { .flow__track { grid-template-columns: repeat(4, minmax(0, 1fr)) auto; align-items: stretch; } }
-        .flow__step {
-            position: relative; padding: 18px 18px 16px; border-radius: 14px;
-            border: 1px solid var(--line-strong); background: var(--surface-solid);
-        }
-        .flow__step small { display: block; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; color: var(--text-faint); }
-        .flow__step strong { display: block; margin-top: 6px; font-size: 1rem; }
-        .flow__step span { display: block; margin-top: 2px; font-size: 0.85rem; color: var(--text-muted); }
-        .flow__step--block { border-color: var(--danger-line); background: var(--danger-soft); }
-        .flow__step--block strong, .flow__step--block span { color: var(--danger); }
-        .flow__step:not(:last-child)::after {
-            content: ""; position: absolute; background: var(--accent);
-            left: 50%; bottom: -12px; width: 1px; height: 12px;
-        }
-        @media (min-width: 900px) {
-            .flow__step--block { align-self: center; }
-            .flow__step:not(:last-child)::after { left: auto; right: -12px; bottom: auto; top: 50%; width: 12px; height: 1px; }
-        }
-
-        /* Metrics */
-        .metric { padding: 20px 22px; }
-        .metric__label { font-size: 0.78rem; color: var(--text-faint); }
-        .metric__value {
-            margin-top: 8px; font-family: var(--font-display); font-weight: 400;
-            font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.3rem); line-height: 1.05; letter-spacing: -0.01em;
-            font-variant-numeric: tabular-nums;
-        }
-        .metric__value--sm { font-size: clamp(1.2rem, 1rem + 0.8vw, 1.5rem); line-height: 1.2; }
-        .metrics { margin-top: 16px; }
-
-        .note a { color: var(--accent-ink); }
-        .note { margin-top: 20px; font-size: 0.9rem; color: var(--text-muted); max-width: 72ch; }
-
-        /* Strikes */
-        .strikes { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 12px; }
-        .strike {
-            display: grid; grid-template-columns: 56px 1fr; gap: 18px; align-items: start;
-            padding: 20px 22px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--surface);
-        }
-        .strike__n { position: relative; height: 40px; display: flex; align-items: flex-end; gap: 4px; }
-        .strike__n i { display: block; width: 10px; border-radius: 3px; background: var(--line-strong); }
-        .strike__n i:nth-child(1) { height: 14px; }
-        .strike__n i:nth-child(2) { height: 24px; }
-        .strike__n i:nth-child(3) { height: 36px; }
-        .strike[data-level="1"] .strike__n i:nth-child(-n+1),
-        .strike[data-level="2"] .strike__n i:nth-child(-n+2),
-        .strike[data-level="3"] .strike__n i:nth-child(-n+3) { background: var(--accent); }
-        .strike h4 { margin: 0; font-size: 0.98rem; font-weight: 600; }
-        .strike p { margin-top: 4px; font-size: 0.92rem; color: var(--text-muted); }
-
-        /* Timeline */
-        .timeline { position: relative; list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
-        @media (min-width: 860px) {
-            .timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
-            .timeline::before {
-                content: ""; position: absolute; left: 28px; right: 28px; top: 27px; height: 1px;
-                background: linear-gradient(90deg, var(--accent), var(--line-strong));
-            }
-        }
-        .phase { position: relative; }
-        .phase__dot {
-            width: 56px; height: 56px; border-radius: 999px; display: grid; place-items: center;
-            border: 1px solid var(--accent); background: var(--bg);
-            font-family: var(--font-display); font-size: 1.5rem; color: var(--accent-ink);
-            position: relative; z-index: 1;
-        }
-        .phase .card { margin-top: 16px; }
-        .phase__gate {
-            display: inline-flex; margin-top: 14px; font-family: var(--font-mono); font-size: 0.72rem;
-            color: var(--accent-ink); padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line-strong);
-        }
-
-        /* Limitations */
-        .limits { display: grid; gap: 0; border-top: 1px solid var(--line); }
-        .limit {
-            display: grid; grid-template-columns: 1fr; gap: 8px;
-            padding: 24px 0; border-bottom: 1px solid var(--line);
-        }
-        @media (min-width: 760px) { .limit { grid-template-columns: 280px 1fr; gap: 32px; } }
-        .limit h3 { font-size: 1rem; font-weight: 600; }
-        .limit p { color: var(--text-muted); font-size: 0.95rem; }
-
-        /* Regulatory */
-        .reg .card__tag { display: inline-flex; margin-top: 18px; font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-faint); }
-
-        /* Prototype */
-        .proto {
-            display: grid; grid-template-columns: 1fr; gap: 28px; align-items: center;
-            padding: clamp(24px, 4vw, 44px); border-radius: calc(var(--radius) + 6px);
-            border: 1px solid var(--line-strong); background: var(--surface-solid);
-            box-shadow: var(--shadow); text-decoration: none; color: inherit;
-            transition: border-color 0.3s var(--ease), transform 0.4s var(--ease);
-        }
-        .proto:hover { border-color: var(--accent); transform: translateY(-2px); }
-        @media (min-width: 860px) { .proto { grid-template-columns: 1.2fr 0.8fr; } }
-        .proto h3 { font-family: var(--font-display); font-weight: 400; font-size: var(--step-2); line-height: 1.1; }
-        .proto p { margin-top: 12px; color: var(--text-muted); max-width: 56ch; }
-        .proto__cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-weight: 600; color: var(--accent-ink); }
-        .proto__cta svg { width: 16px; height: 16px; transition: transform 0.3s var(--ease); }
-        .proto:hover .proto__cta svg { transform: translateX(3px); }
-        .proto__wave { display: flex; align-items: center; justify-content: center; gap: 6px; height: 120px; }
-        .proto__wave span { display: block; width: 6px; border-radius: 3px; background: var(--accent); opacity: 0.85; }
-        .proto__wave span:nth-child(odd) { background: var(--text); opacity: 0.18; }
-        .proto__wave span:nth-child(1) { height: 22px; }
-        .proto__wave span:nth-child(2) { height: 48px; }
-        .proto__wave span:nth-child(3) { height: 70px; }
-        .proto__wave span:nth-child(4) { height: 38px; }
-        .proto__wave span:nth-child(5) { height: 96px; }
-        .proto__wave span:nth-child(6) { height: 60px; }
-        .proto__wave span:nth-child(7) { height: 112px; }
-        .proto__wave span:nth-child(8) { height: 74px; }
-        .proto__wave span:nth-child(9) { height: 88px; }
-        .proto__wave span:nth-child(10) { height: 42px; }
-        .proto__wave span:nth-child(11) { height: 64px; }
-        .proto__wave span:nth-child(12) { height: 30px; }
-        .proto__wave span:nth-child(13) { height: 52px; }
-        .proto__wave span:nth-child(14) { height: 18px; }
-
-        .proto__media { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 1; background: #1a1513; }
-        .proto__media video { display: block; width: 100%; height: 100%; object-fit: cover; }
-        .proto__chip { position: absolute; left: 10px; top: 10px; padding: 3px 9px; border-radius: 999px; background: rgba(20, 16, 14, 0.7); color: #f2efe7; font: 600 0.72rem var(--font-body); }
-        @media (min-width: 860px) { .proto { grid-template-columns: 1fr 1fr; } }
-
-        /* Footer */
-        .footer { padding: 40px 0 56px; color: var(--text-faint); font-size: 0.82rem; }
-        .footer__inner { display: flex; flex-direction: column; gap: 10px; }
-        @media (min-width: 760px) { .footer__inner { flex-direction: row; justify-content: space-between; align-items: center; } }
-
-        /* Reveal */
-        .reveal { opacity: 1; transform: none; }
-        .js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); transition-delay: var(--d, 0ms); }
-        .js .reveal.is-in { opacity: 1; transform: none; }
-
-        @media (prefers-reduced-motion: reduce) {
-            html { scroll-behavior: auto; }
-            .js .reveal { opacity: 1; transform: none; transition: none; }
-            *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
-        }
-
-        /* ===== X-style magenta theme (overrides) ===== */
-        body { line-height: 1.6; }
-        .hero h1, .section-head h2, .summary__lead, .metric__value, .proto h3, .phase__dot, .layers .card__index {
-            font-family: var(--font-display); font-weight: 800; letter-spacing: -0.035em;
-        }
-        .hero h1 { font-size: var(--step-4); line-height: 1.02; margin-top: 16px; }
-        .hero h1 em { font-style: normal; color: var(--accent-ink); }
-        .section-head h2 { font-size: var(--step-3); line-height: 1.08; }
-        .summary__lead { font-weight: 700; letter-spacing: -0.02em; line-height: 1.35; }
-        .metric__value { font-weight: 800; }
-        .layers .card__index { color: var(--accent-soft); font-size: 4rem; }
-        .eyebrow { font-family: var(--font-body); font-weight: 800; letter-spacing: 0.08em; font-size: 0.78rem; }
-        .btn { font-weight: 700; min-height: 48px; }
-        .btn--primary { background: var(--accent-fill); color: var(--on-accent, #fff); }
-        .btn--primary:hover { background: var(--accent-fill-hover); color: #fff; }
-        .btn--ghost { border-color: var(--line-strong); background: transparent; }
-        button.btn { font-family: inherit; font-size: 0.92rem; cursor: pointer; color: var(--text); }
-        .card { box-shadow: none; }
-        .card:hover { border-color: var(--accent); }
-        .progress { height: 3px; }
-
-        /* Site bar: the same two tabs on both pages */
-        .nav { background: color-mix(in srgb, var(--bg) 86%, transparent); }
-        .nav__inner { height: 60px; gap: 12px; }
-        .brand__mark { color: var(--accent); border-color: var(--accent-soft); background: var(--accent-soft); }
-        .brand__mark svg { color: var(--accent); }
-        .site-tabs { display: flex; gap: 6px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); }
-        .site-tabs a { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px 0 6px; border-radius: 999px; color: var(--text-muted); text-decoration: none; font-weight: 700; font-size: 0.9rem; white-space: nowrap; transition: background-color 0.2s, color 0.2s; }
-        .site-tabs a b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--line); color: var(--text); font-size: 0.75rem; }
-        .site-tabs a:hover { color: var(--text); }
-        .site-tabs a[aria-current="page"] { background: var(--accent-fill); color: #fff; }
-        .site-tabs a[aria-current="page"] b { background: rgba(0, 0, 0, 0.25); color: #fff; }
-        .tour-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px 0 8px; border: 1px solid var(--accent); border-radius: 999px; background: transparent; color: var(--accent-ink); font: 700 0.9rem var(--font-body); cursor: pointer; }
-        .tour-btn > span:first-child { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--accent-fill); color: #fff; font-size: 0.85rem; }
-        .tour-btn:hover { background: var(--accent-soft); }
-        @media (max-width: 900px) { .brand__name { display: none; } }
-        @media (max-width: 560px) {
-            .nav__inner { flex-wrap: wrap; height: auto; padding-top: 8px; padding-bottom: 8px; }
-            .site-tabs { order: 3; width: 100%; }
-            .site-tabs a { flex: 1; justify-content: center; padding: 0 8px 0 4px; font-size: 0.82rem; }
-            .tour-btn__label { display: none; }
-            .tour-btn { padding: 0 8px; }
-            /* Phone tap targets: 44px */
-            .site-tabs a { height: 44px; }
-            .tour-btn { min-width: 44px; height: 44px; justify-content: center; }
-            .icon-btn { width: 44px; height: 44px; }
-            .brand { min-width: 44px; min-height: 44px; }
-            html { scroll-padding-top: 120px; }
-        }
-
-        /* Hero: text plus a live preview of the proposal */
-        .hero__bg { background: radial-gradient(50% 60% at 78% 40%, var(--glow), transparent 70%), radial-gradient(40% 50% at 10% 100%, var(--accent-soft), transparent 70%); }
-        .hero__inner { display: grid; grid-template-columns: 1fr; gap: clamp(32px, 5vw, 64px); align-items: center; padding-top: clamp(40px, 8vw, 96px); padding-bottom: clamp(48px, 8vw, 96px); }
-        @media (min-width: 980px) { .hero__inner { grid-template-columns: 1.05fr 0.95fr; } }
-        .hero__lede { max-width: 46ch; font-size: var(--step-1); }
-        .hero__actions { margin-top: 28px; }
-        .chips { margin-top: 28px; }
-        .chip { background: transparent; }
-
-        .mock { margin: 0; border: 1px solid var(--line); border-radius: 20px; background: var(--bg); overflow: hidden; box-shadow: 0 30px 80px -40px var(--glow), var(--shadow); }
+        /* The profile mock: the proposal shown, not described */
+        .mock { position: relative; border: 1px solid var(--line-strong); border-radius: 18px; background: var(--bg); overflow: hidden; box-shadow: 0 0 0 6px color-mix(in oklch, var(--bg) 60%, transparent), 0 40px 80px -48px oklch(0 0 0 / 0.9); }
         .mock__banner { position: relative; aspect-ratio: 3 / 1; background: #1a1513; }
         .mock__banner video { display: block; width: 100%; height: 100%; object-fit: cover; }
         .mock__pause { position: absolute; right: 10px; bottom: 10px; width: 34px; height: 34px; display: grid; place-items: center; border: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.62); color: #fff; cursor: pointer; }
         .mock__pause svg { width: 14px; height: 14px; }
         .mock__pause[aria-pressed="true"] svg { display: none; }
-        .mock__pause[aria-pressed="true"]::before { content: ""; width: 0; height: 0; border-left: 11px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
+        .mock__pause[aria-pressed="true"]::before { content: ""; border-left: 11px solid #fff; border-top: 7px solid transparent; border-bottom: 7px solid transparent; margin-left: 3px; }
         .mock__credit { position: absolute; right: 52px; bottom: 17px; padding: 3px 9px; border-radius: 999px; background: rgba(0, 0, 0, 0.62); color: #fff; font-size: 0.72rem; font-weight: 600; text-decoration: none; }
         .mock__credit:hover, .mock__credit:focus-visible { background: rgba(0, 0, 0, 0.8); text-decoration: underline; }
         .mock__head { display: flex; justify-content: space-between; align-items: flex-start; padding: 0 16px; }
-        .mock__avatar { width: 88px; height: 88px; margin-top: -44px; border-radius: 50%; border: 4px solid var(--bg); object-fit: cover; position: relative; background: var(--surface); }
-        .mock__edit { margin-top: 12px; height: 34px; display: inline-flex; align-items: center; padding: 0 16px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); font-weight: 700; font-size: 0.88rem; text-decoration: none; }
-        .mock__edit:hover { background: var(--accent-soft); border-color: var(--accent); }
-        .mock__who { display: flex; flex-direction: column; padding: 6px 16px 0; }
-        .mock__who strong { display: inline-flex; align-items: center; gap: 4px; font-size: 1.15rem; font-weight: 800; }
-        .mock__badge { width: 18px; height: 18px; color: var(--accent); }
-        .mock__who span { color: var(--text-faint); font-size: 0.92rem; }
+        .mock__avatar { width: 84px; height: 84px; margin-top: -42px; border-radius: 50%; border: 4px solid var(--bg); object-fit: cover; position: relative; background: var(--bg-raised); }
+        .mock__edit { margin-top: 12px; height: 34px; display: inline-flex; align-items: center; padding: 0 16px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); font-weight: 600; font-size: 0.86rem; text-decoration: none; }
+        .mock__edit:hover { border-color: var(--pink); background: var(--pink-soft); }
+        .mock__who { display: flex; flex-direction: column; padding: 6px 16px 0; line-height: 1.35; }
+        .mock__who strong { display: inline-flex; align-items: center; gap: 4px; font-size: 1.12rem; font-weight: 750; letter-spacing: -0.01em; }
+        .mock__badge { width: 18px; height: 18px; color: var(--pink); }
+        .mock__who span { color: var(--text-faint); font-size: 0.9rem; }
         .mock__post { margin-top: 14px; padding: 14px 16px 18px; border-top: 1px solid var(--line); }
-        .mock__post p { font-size: 0.98rem; }
-        .mock__chip { display: inline-flex; align-items: center; gap: 10px; margin-top: 10px; padding: 6px 16px 6px 6px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); text-decoration: none; }
-        .mock__chip:hover { border-color: var(--accent); }
+        .mock__post p { font-size: 0.98rem; line-height: 1.5; }
+        .mock__chip { display: inline-flex; align-items: center; gap: 10px; margin-top: 12px; padding: 6px 16px 6px 6px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--text); text-decoration: none; transition: border-color 0.2s; }
+        .mock__chip:hover { border-color: var(--pink); }
         .mock__chip span:last-child { display: flex; flex-direction: column; line-height: 1.2; }
-        .mock__chip strong { font-size: 0.92rem; }
-        .mock__chip small { color: var(--text-faint); font-size: 0.75rem; }
-        .mock__play { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: #fff; }
+        .mock__chip strong { font-size: 0.9rem; }
+        .mock__chip small { color: var(--text-faint); font-size: 0.74rem; }
+        .mock__play { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--pink); color: #fff; }
         .mock__play svg { width: 14px; height: 14px; }
-        .mock__note { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 4px 10px 4px 4px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); font-size: 0.78rem; font-weight: 700; }
-        .mock__note b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent-fill); color: #fff; font-size: 0.7rem; }
-        .mock__note--banner { position: absolute; left: 10px; top: 10px; margin: 0; background: rgba(0, 0, 0, 0.7); color: #fff; }
-        @media (max-width: 420px) { .mock__note--banner { font-size: 0.7rem; } }
-        @media (max-width: 560px) {
-            .mock__pause { width: 44px; height: 44px; right: 6px; bottom: 6px; }
-            .mock__credit { right: 58px; }
-            .mock__edit { height: 44px; }
+        .mock__note { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; padding: 4px 11px 4px 4px; border-radius: 999px; background: var(--pink-soft); color: var(--pink-ink); font-size: 0.76rem; font-weight: 600; }
+        .mock__note b { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--pink); color: #fff; font: 600 0.68rem/1 var(--font-mono); }
+        .mock__note--banner { position: absolute; left: 10px; top: 10px; margin: 0; background: rgba(0, 0, 0, 0.72); color: #fff; }
+        @media (max-width: 420px) { .mock__note--banner { font-size: 0.68rem; } }
+        @media (max-width: 560px) { .mock__pause { width: 44px; height: 44px; right: 6px; bottom: 6px; } .mock__credit { right: 58px; bottom: 16px; } .mock__edit { height: 44px; } }
+
+        /* ---------- Document: contents rail + sections ---------- */
+        .doc { display: grid; grid-template-columns: minmax(0, 1fr); }
+        @media (min-width: 1120px) { .doc { grid-template-columns: 200px minmax(0, 1fr); gap: 64px; } }
+        .rail { display: none; }
+        @media (min-width: 1120px) {
+            .rail { display: block; position: sticky; top: 96px; align-self: start; padding-top: clamp(80px, 9vw, 120px); }
+            .rail p { margin-bottom: 14px; color: var(--text-faint); font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+            .rail ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: rail; }
+            .rail a { counter-increment: rail; display: grid; grid-template-columns: 28px 1fr; align-items: baseline; padding: 7px 10px 7px 8px; border-radius: 8px; color: var(--text-faint); text-decoration: none; font-size: 0.86rem; line-height: 1.3; transition: color 0.2s, background-color 0.2s; }
+            .rail a::before { content: counter(rail, decimal-leading-zero); font: 500 0.7rem/1 var(--font-mono); color: var(--line-strong); transition: color 0.2s; }
+            .rail a:hover { color: var(--text); }
+            .rail a[aria-current="true"] { color: var(--text); background: var(--violet-soft); }
+            .rail a[aria-current="true"]::before { color: var(--violet-ink); }
+        }
+        main > section { padding: clamp(72px, 9vw, 124px) 0; border-bottom: 1px solid var(--line); }
+        main > section:last-child { border-bottom: 0; }
+        .head { display: grid; gap: 18px; max-width: 780px; margin-bottom: clamp(36px, 5vw, 60px); }
+        .head h2 { font-size: var(--step-3); font-weight: 660; line-height: 1.04; letter-spacing: -0.03em; }
+        .head p { color: var(--text-muted); max-width: 62ch; font-size: var(--step-1); line-height: 1.55; }
+        .sub { margin-top: clamp(64px, 8vw, 96px); }
+        .sub h3 { font-size: var(--step-2); font-weight: 640; letter-spacing: -0.022em; line-height: 1.15; }
+        .sub > p { margin-top: 14px; color: var(--text-muted); max-width: 66ch; }
+        .label { color: var(--text-faint); font: 500 0.74rem/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+        .note { margin-top: 22px; max-width: 72ch; font-size: 0.92rem; color: var(--text-muted); }
+        .note a { color: var(--violet-ink); }
+
+        /* Summary */
+        .summary { display: grid; gap: clamp(40px, 6vw, 80px); }
+        @media (min-width: 900px) { .summary { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); } }
+        .summary__lead { font-size: var(--step-2); font-weight: 450; line-height: 1.38; letter-spacing: -0.016em; color: var(--text); max-width: 34ch; }
+        .pull { margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--line); font: italic 400 var(--step-2) / 1.3 var(--font-serif); color: var(--violet-ink); max-width: 30ch; }
+        .numbered { list-style: none; margin: 0; padding: 0; counter-reset: n; }
+        .numbered > li { counter-increment: n; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 4px 12px; padding: 18px 0; border-top: 1px solid var(--line); color: var(--text); }
+        .numbered > li:last-child { border-bottom: 1px solid var(--line); }
+        .numbered > li::before { content: counter(n, decimal-leading-zero); padding-top: 4px; color: var(--violet-ink); font: 500 0.76rem/1.4 var(--font-mono); }
+        .summary .label { margin-bottom: 12px; }
+        .deliver { margin-top: clamp(56px, 7vw, 88px); }
+        .deliver__grid { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 28px 40px; }
+        @media (min-width: 860px) { .deliver__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        .deliver__grid li { padding-top: 18px; border-top: 1px solid var(--line-strong); color: var(--text-muted); font-size: 0.95rem; }
+        .deliver__grid strong { display: block; margin-bottom: 8px; font-size: 1.05rem; letter-spacing: -0.01em; }
+
+        /* Rows: risks, limits, regulation */
+        .rows { border-top: 1px solid var(--line); }
+        .row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px 40px; padding: clamp(22px, 3vw, 30px) 0; border-bottom: 1px solid var(--line); }
+        @media (min-width: 820px) { .row { grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr); } .row--tag { grid-template-columns: minmax(0, 0.36fr) minmax(0, 1fr) minmax(0, 0.24fr); } }
+        .row h3 { font-size: 1.12rem; font-weight: 620; letter-spacing: -0.014em; line-height: 1.35; }
+        .row p { color: var(--text-muted); max-width: 64ch; }
+        .row .tag { justify-self: start; color: var(--violet-ink); font: 500 0.74rem/1.5 var(--font-mono); letter-spacing: 0.02em; }
+        @media (min-width: 820px) { .row .tag { justify-self: end; text-align: right; } }
+        .risk .row h3 { font-size: var(--step-1); }
+        .risk .row h3 small { display: block; margin-bottom: 6px; color: var(--violet-ink); font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.04em; }
+
+        /* Framework: three layers, drawn as a stack */
+        .layers { display: grid; gap: clamp(32px, 5vw, 64px); align-items: center; }
+        @media (min-width: 900px) { .layers { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); } }
+        .stack { position: relative; height: clamp(250px, 32vw, 340px); perspective: 1400px; }
+        .stack__plate { position: absolute; left: 50%; top: 50%; width: min(260px, 64vw); aspect-ratio: 1; margin: calc(min(260px, 64vw) / -2) 0 0 calc(min(260px, 64vw) / -2);
+            border: 1px solid var(--violet-line); border-radius: 18px;
+            background: linear-gradient(140deg, color-mix(in oklch, var(--violet) 26%, transparent), color-mix(in oklch, var(--violet) 6%, transparent));
+            transform: rotateX(58deg) rotateZ(-40deg) translateZ(calc(var(--i) * 52px - 52px));
+            transition: transform 0.6s var(--ease-out), background-color 0.3s, border-color 0.3s, box-shadow 0.4s var(--ease-out);
+            display: grid; place-items: end start; padding: 16px; }
+        .stack__plate span { color: var(--violet-ink); font: 600 1.4rem/1 var(--font-mono); opacity: 0.75; }
+        .stack__plate:nth-child(1) { --i: 0; }
+        .stack__plate:nth-child(2) { --i: 1; }
+        .stack__plate:nth-child(3) { --i: 2; }
+        .layers:has(.layer:nth-child(1):hover) .stack__plate:nth-child(1),
+        .layers:has(.layer:nth-child(2):hover) .stack__plate:nth-child(2),
+        .layers:has(.layer:nth-child(3):hover) .stack__plate:nth-child(3) {
+            border-color: var(--violet); box-shadow: 0 0 40px -6px var(--violet-line);
+            transform: rotateX(58deg) rotateZ(-40deg) translateZ(calc(var(--i) * 52px - 30px));
+            background: linear-gradient(140deg, color-mix(in oklch, var(--violet) 46%, transparent), color-mix(in oklch, var(--violet) 12%, transparent));
+        }
+        .layer { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 4px 14px; padding: 22px 12px 22px 0; border-top: 1px solid var(--line); border-radius: 2px; transition: background-color 0.3s; }
+        .layer:last-child { border-bottom: 1px solid var(--line); }
+        .layer > span { grid-row: span 2; padding-top: 4px; color: var(--violet-ink); font: 500 0.76rem/1.4 var(--font-mono); }
+        .layer h3 { font-size: 1.2rem; font-weight: 620; letter-spacing: -0.016em; }
+        .layer p { color: var(--text-muted); }
+
+        /* Flow: steps on one track, with the hard block as a branch */
+        .flow { margin-top: 30px; padding: clamp(20px, 3vw, 32px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-raised); }
+        .flow .label { margin-bottom: 22px; }
+        .flow__track { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; position: relative; }
+        .flow__step { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 2px 14px; padding-bottom: 22px; }
+        .flow__step::before { content: ""; position: absolute; left: 7px; top: 18px; bottom: 0; width: 1px; background: var(--violet-line); }
+        .flow__step:last-child::before { display: none; }
+        .flow__step i { width: 15px; height: 15px; margin-top: 4px; border-radius: 50%; border: 1.5px solid var(--violet); background: var(--bg-raised); position: relative; }
+        .flow__step small { display: block; color: var(--text-faint); font: 500 0.7rem/1.4 var(--font-mono); letter-spacing: 0.08em; }
+        .flow__step strong { display: block; font-size: 1rem; }
+        .flow__step span { display: block; color: var(--text-muted); font-size: 0.88rem; }
+        .flow__step > div { grid-column: 2; }
+        .flow__step--block i { border-color: var(--danger); background: var(--danger-soft); }
+        .flow__step--block strong, .flow__step--block span { color: var(--danger); }
+        @media (min-width: 900px) {
+            .flow__track { grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(0, 0.9fr); }
+            .flow__step { grid-template-columns: 1fr; padding: 0 16px 0 0; }
+            .flow__step > div { grid-column: 1; margin-top: 14px; }
+            .flow__step::before { left: 15px; right: 0; top: 11px; bottom: auto; width: auto; height: 1px; }
+            .flow__step:nth-child(4)::before { background: linear-gradient(90deg, var(--violet-line), var(--danger-line)); border-top: 1px dashed transparent; }
+            .flow__step--block { padding-left: 16px; border-left: 1px dashed var(--danger-line); }
         }
 
+        /* Spec sheet: the numbers, set like a data sheet */
+        .spec { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); border-top: 1px solid var(--line-strong); }
+        .spec > div { padding: 18px 20px 20px 0; border-bottom: 1px solid var(--line); }
+        .spec dt { color: var(--text-faint); font: 500 0.72rem/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+        .spec dd { margin-top: 10px; font-size: clamp(1.5rem, 1.15rem + 1.2vw, 2.1rem); font-weight: 640; line-height: 1.05; letter-spacing: -0.026em; font-variant-numeric: tabular-nums; }
+        .spec dd.sm { font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem); line-height: 1.25; letter-spacing: -0.012em; }
+        .spec dd.code { font-family: var(--font-mono); font-weight: 500; letter-spacing: -0.02em; font-size: clamp(1.05rem, 0.98rem + 0.4vw, 1.25rem); }
+
+        /* Strikes */
+        .strikes { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--line); }
+        .strike { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 18px; align-items: start; padding: 20px 0; border-bottom: 1px solid var(--line); }
+        .strike__n { height: 36px; display: flex; align-items: flex-end; gap: 4px; }
+        .strike__n i { display: block; width: 9px; border-radius: 2px; background: var(--line-strong); }
+        .strike__n i:nth-child(1) { height: 12px; }
+        .strike__n i:nth-child(2) { height: 22px; }
+        .strike__n i:nth-child(3) { height: 34px; }
+        .strike[data-level="1"] .strike__n i:nth-child(-n+1), .strike[data-level="2"] .strike__n i:nth-child(-n+2), .strike[data-level="3"] .strike__n i:nth-child(-n+3) { background: var(--violet); }
+        .strike h4 { margin: 0; font-size: 1rem; font-weight: 620; }
+        .strike p { margin-top: 4px; color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Rollout */
+        .rollout { list-style: none; margin: 0; padding: 0; display: grid; gap: 32px; }
+        @media (min-width: 860px) { .rollout { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; } }
+        .phase { position: relative; }
+        .phase__mark { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+        .phase__mark b { flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid var(--violet); color: var(--violet-ink); font: 600 1rem/1 var(--font-mono); background: var(--bg); }
+        .phase__mark::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--violet-line), transparent); }
+        .phase:last-child .phase__mark::after { background: none; }
+        .phase h3 { font-size: 1.2rem; font-weight: 620; letter-spacing: -0.016em; }
+        .phase p { margin-top: 8px; color: var(--text-muted); font-size: 0.95rem; }
+        .phase__gate { display: inline-flex; margin-top: 14px; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--violet-line); color: var(--violet-ink); font: 500 0.72rem/1.4 var(--font-mono); }
+
+        /* Prototype feature: the one card on the page, in Sound Reactions' pink */
+        .proto { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(24px, 4vw, 48px); align-items: start; padding: clamp(22px, 3.6vw, 40px); border: 1px solid var(--line-strong); border-radius: 18px; background: var(--bg-raised); color: inherit; text-decoration: none; transition: border-color 0.3s, box-shadow 0.5s var(--ease-out); }
+        .proto:hover { border-color: var(--pink); box-shadow: 0 0 0 6px var(--pink-soft); }
+        @media (min-width: 900px) { .proto__body { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 0 40px; } .proto__body > :not(.proto__copy) { grid-column: 1; } .proto__copy { grid-column: 2; grid-row: 1 / span 3; } .proto__copy p:first-child { margin-top: 0; } }
+        .proto__kicker { color: var(--pink-ink); font: 500 0.74rem/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; }
+        .proto h3 { margin-top: 12px; font-size: var(--step-2); font-weight: 650; letter-spacing: -0.024em; line-height: 1.12; }
+        .proto p { margin-top: 14px; color: var(--text-muted); font-size: 0.95rem; max-width: 64ch; }
+        .proto__cta { justify-self: start; align-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; font-weight: 600; color: var(--pink-ink); }
+        .proto__cta svg { width: 16px; height: 16px; transition: transform 0.35s var(--ease-out); }
+        .proto:hover .proto__cta svg { transform: translateX(4px); }
+        .proto__media { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 1; background: #1a1513; }
+        .proto__body { align-self: start; }
+        .proto__media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .proto__chip { position: absolute; left: 10px; top: 10px; padding: 3px 10px; border-radius: 999px; background: rgba(10, 8, 14, 0.74); color: #f4f2f8; font: 500 0.7rem/1.6 var(--font-mono); }
+
+        /* Footer */
+        .footer { padding: 48px 0 64px; border-top: 1px solid var(--line); color: var(--text-faint); font-size: 0.84rem; }
+        .footer__inner { display: grid; gap: 20px; }
+        @media (min-width: 820px) { .footer__inner { grid-template-columns: auto 1fr; align-items: center; gap: 32px; } }
+        .footer__who { display: flex; align-items: center; gap: 12px; color: var(--text-muted); font: 500 0.76rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
+        .footer__meta { display: grid; gap: 6px; }
+        @media (min-width: 820px) { .footer__meta { justify-items: end; text-align: right; } }
+        .footer a { color: var(--text-muted); }
+
         /* Guided tour */
-        .tour { position: fixed; z-index: 80; left: 50%; bottom: 20px; transform: translateX(-50%); width: min(440px, calc(100vw - 32px)); padding: 16px 18px 16px; border: 1px solid var(--accent); border-radius: 18px; background: var(--bg); color: var(--text); box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.7), 0 0 0 6px var(--accent-soft); }
+        .tour { position: fixed; z-index: var(--z-tour); left: 50%; bottom: 20px; transform: translateX(-50%); width: min(440px, calc(100vw - 32px)); padding: 16px 18px; border: 1px solid var(--violet-line); border-radius: 16px; background: var(--bg-raised); color: var(--text); box-shadow: 0 24px 60px -16px oklch(0 0 0 / 0.75); animation: tour-in 0.45s var(--ease-out) both; }
+        @keyframes tour-in { from { opacity: 0; transform: translate(-50%, 12px); } }
         .tour__top { display: flex; justify-content: space-between; align-items: center; }
-        .tour__count { color: var(--accent-ink); font-size: 0.78rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
+        .tour__count { color: var(--violet-ink); font: 500 0.72rem/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; }
         .tour__close { width: 44px; height: 44px; margin: -6px -8px -6px 0; border: 0; border-radius: 50%; background: transparent; color: var(--text-muted); font-size: 1.4rem; line-height: 1; cursor: pointer; }
-        .tour__close:hover { background: var(--surface); color: var(--text); }
-        .tour__title { margin: 4px 0 6px; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; }
+        .tour__close:hover { background: var(--violet-soft); color: var(--text); }
+        .tour__title { margin: 6px 0 6px; font-size: 1.3rem; font-weight: 680; letter-spacing: -0.022em; }
         .tour__body { color: var(--text-muted); font-size: 0.98rem; line-height: 1.5; }
-        .tour__body b { color: var(--text); }
+        .tour__body b { color: var(--text); font-weight: 600; }
         .tour__nav { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 10px; }
         .tour__btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-        .tour__btns button, .tour__cta { height: 44px; padding: 0 16px; border-radius: 999px; font: 700 0.9rem var(--font-body); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
+        .tour__btns button, .tour__cta { height: 44px; padding: 0 16px; border-radius: 999px; font: 600 0.9rem var(--font-sans); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
         .tour__back { border: 1px solid var(--line-strong); background: transparent; color: var(--text); }
-        .tour__next { border: 0; background: var(--text); color: var(--bg); }
-        .tour__cta { background: var(--accent-fill); color: #fff; }
+        .tour__next { border: 0; background: var(--violet); color: var(--on-violet); }
+        .tour__cta { background: var(--pink); color: var(--on-pink); }
         .tour__cta[hidden], .tour__back[hidden] { display: none; }
         .tour__dots { display: flex; gap: 6px; }
         .tour__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line-strong); }
-        .tour__dots i.on { background: var(--accent); }
-        .tour-spot { outline: 3px solid var(--accent); outline-offset: 6px; border-radius: 20px; box-shadow: 0 0 0 12px var(--accent-soft); transition: outline-color 0.3s; }
-        main > section.tour-spot { outline-offset: -6px; }
+        .tour__dots i.on { background: var(--violet); width: 18px; border-radius: 4px; }
+        .tour-spot { outline: 2px solid var(--violet); outline-offset: 8px; border-radius: 18px; transition: outline-color 0.3s; }
+        main section.tour-spot { outline-offset: -8px; }
+
+        /* Motion: only the hero animates in, once, on load. Content below is never hidden waiting for a scroll. */
+        @media (prefers-reduced-motion: no-preference) {
+            .hero .rise { animation: rise 0.9s var(--ease-out) both; animation-delay: var(--d, 0ms); }
+            @keyframes rise { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+        }
     </style>
 </head>
 <body>
@@ -588,14 +421,12 @@
     <header class="nav">
         <div class="wrap nav__inner">
             <a class="brand" href="#top" aria-label="Dynamic Media Governance, back to top">
-                <span class="brand__mark" aria-hidden="true">
-                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5 14 5v6l-6 3.5L2 11V5z"/><path d="M8 5.2 11 7v3.2L8 12 5 10.2V7z" opacity=".6"/></svg>
-                </span>
+                <span class="monogram" aria-hidden="true">Bb</span>
                 <span class="brand__name">Dynamic Media Governance</span>
             </a>
             <nav class="site-tabs" aria-label="Site">
                 <a href="./" aria-current="page"><b>1</b><span>The proposal</span></a>
-                <a href="sound-reactions/"><b>2</b><span>Try it: Sound Reactions</span></a>
+                <a class="is-sr" href="sound-reactions/"><b>2</b><span>Try it: Sound Reactions</span></a>
             </nav>
             <div class="nav__right">
                 <button class="tour-btn" type="button" data-tour-open aria-label="Take the tour"><span aria-hidden="true">?</span><span class="tour-btn__label">Tour</span></button>
@@ -609,27 +440,22 @@
 
     <!-- Hero -->
     <div class="hero" id="top">
-        <div class="hero__bg" aria-hidden="true"></div>
+        <div class="hero__sky" id="constellation" aria-hidden="true"></div>
         <div class="wrap hero__inner">
             <div class="hero__content">
-                <div class="eyebrow reveal">Independent policy proposal · for platforms such as X</div>
-                <h1 class="reveal" style="--d: 80ms">Animated profile headers, <em>made safe.</em></h1>
-                <p class="hero__lede reveal" style="--d: 160ms">People keep asking for GIF profile banners. Fast flashing can cause seizures, so animated headers need a safety layer before they ship. This is that layer: specified with numbers and built into Sound Reactions, a working prototype that also covers short sound reactions, testable today.</p>
-                <div class="hero__actions reveal" style="--d: 240ms">
-                    <a class="btn btn--primary" href="sound-reactions/">Try it live
+                <p class="kicker rise">Independent policy proposal <i></i> for platforms such as X</p>
+                <h1 class="rise" style="--d: 80ms">Animated profile headers, <em>made safe.</em></h1>
+                <p class="hero__lede rise" style="--d: 160ms">People keep asking for GIF profile banners. Fast flashing can cause seizures, so animated headers need a safety layer before they ship. This is that layer: specified with numbers and built into Sound Reactions, a working prototype that also covers short sound reactions, testable today.</p>
+                <div class="hero__actions rise" style="--d: 240ms">
+                    <a class="btn btn--pink" href="sound-reactions/">Try it live
                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
                     </a>
                     <button class="btn btn--ghost" type="button" data-tour-open>Take the 1-minute tour</button>
                 </div>
-                <div class="chips reveal" style="--d: 320ms" aria-label="Mapped to">
-                    <span class="chip">WCAG 2.2</span>
-                    <span class="chip">EU DSA</span>
-                    <span class="chip">EU AI Act</span>
-                    <span class="chip">NIST Privacy Framework</span>
-                </div>
+                <p class="mapped rise" style="--d: 320ms"><span>Mapped to</span><span>WCAG 2.2</span><span>EU DSA</span><span>EU AI Act</span><span>NIST Privacy Framework</span></p>
             </div>
 
-            <figure class="mock reveal" style="--d: 200ms" id="preview" aria-label="Preview of the proposal: a profile with a GIF banner and a sound reaction">
+            <figure class="mock rise" style="--d: 200ms" id="preview" aria-label="Preview of the proposal: a profile with a GIF banner and a sound reaction">
                 <div class="mock__banner">
                     <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/violet-hour.jpg" aria-label="Animated banner: a lavender crystal turning slowly inside a wireframe shell, with two thin orbits, on a dark violet background.">
                         <source src="sound-reactions/headers/violet-hour.webm" type="video/webm">
@@ -641,7 +467,7 @@
                     <span class="mock__note mock__note--banner"><b>1</b> GIF banner, checked for seizure-risk flashing</span>
                 </div>
                 <div class="mock__head">
-                    <img class="mock__avatar" src="sound-reactions/avatars/bb.jpg" alt="" width="88" height="88">
+                    <img class="mock__avatar" src="sound-reactions/avatars/bb.jpg" alt="" width="84" height="84">
                     <a class="mock__edit" href="sound-reactions/#/profile">View profile</a>
                 </div>
                 <div class="mock__who">
@@ -658,319 +484,231 @@
                 </div>
             </figure>
         </div>
+        <button class="motion-toggle" type="button" id="motion-toggle" aria-pressed="false" hidden>
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="3.5" y="2.5" width="3" height="11" rx="1"/><rect x="9.5" y="2.5" width="3" height="11" rx="1"/></svg>
+            <span>Pause background</span>
+        </button>
     </div>
 
-    <main id="main">
+    <div class="wrap doc">
+        <nav class="rail" aria-label="Sections of the proposal">
+            <p>Contents</p>
+            <ol>
+                <li><a href="#summary">Summary</a></li>
+                <li><a href="#problem">The real problem</a></li>
+                <li><a href="#framework">Framework</a></li>
+                <li><a href="#controls">Core controls</a></li>
+                <li><a href="#rollout">Staged rollout</a></li>
+                <li><a href="#risk">Limitations</a></li>
+                <li><a href="#regulatory">Regulation</a></li>
+                <li><a href="#prototype">See it working</a></li>
+            </ol>
+        </nav>
 
-        <!-- Executive Summary -->
-        <section aria-labelledby="summary-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">Executive summary</div>
-                    <h2 id="summary-title" class="reveal" style="--d: 60ms">Ship the creative feature. Build the safety layer first.</h2>
+        <main id="main">
+
+            <!-- Executive Summary -->
+            <section id="summary" aria-labelledby="summary-title">
+                <div class="head reveal">
+                    <h2 id="summary-title">Ship the creative feature. Build the safety layer first.</h2>
                 </div>
                 <div class="summary">
                     <div class="reveal">
                         <p class="summary__lead">If X introduces dynamic profile headers and sound reactions, the creative upside is obvious. So are the new risks in accessibility, abuse prevention and regulatory exposure that static images do not carry. This proposal is written for the product and engineering teams who would own that launch; X has announced no such feature, and nothing here claims otherwise.</p>
-                        <p class="summary__note">This is not about restricting creative features. It is about building the minimum safety and compliance infrastructure the platform will eventually need — before it becomes expensive or harmful to users.</p>
+                        <p class="pull">This is not about restricting creative features. It is about building the minimum safety and compliance infrastructure the platform will eventually need — before it becomes expensive or harmful to users.</p>
                     </div>
-                    <div class="reveal" style="--d: 100ms">
-                        <p class="prose" style="margin-bottom: 18px">This framework establishes a practical governance layer to allow dynamic headers to ship responsibly. It prioritizes three core objectives:</p>
-                        <ol class="objectives">
+                    <div class="reveal">
+                        <p class="label">Three core objectives</p>
+                        <p style="color: var(--text-muted); margin-bottom: 14px">This framework establishes a practical governance layer to allow dynamic headers to ship responsibly. It prioritizes three core objectives:</p>
+                        <ol class="numbered">
                             <li>Protecting users from photosensitive epilepsy risk through mandatory pre-upload analysis</li>
                             <li>Reducing abuse surface with technical guardrails and identity-linked accountability</li>
                             <li>Meeting WCAG 2.2 accessibility guidance and obligations under the EU DSA and EU AI Act before enforcement creates liability</li>
                         </ol>
                     </div>
-                    <div class="reveal builders" style="--d: 140ms">
-                        <p class="prose" style="margin-bottom: 10px"><strong>What you get, if you are the team that would build this</strong></p>
-                        <ol class="objectives">
-                            <li>Upload-time controls with concrete numbers: 15 fps, 10 s loops, 8 MB, 3 flashes a second (general and red), 8 s reactions, 140 s voice posts, and an eight-check preflight. All of them are editable policy, not hard-coded opinion.</li>
-                            <li>A working reference implementation in the browser: the flash scan (WCAG 2.2 general and red-flash rules, CIE 1976 UCS), the header player rules, the reaction and voice-post players, a review queue and an audit log, with unit and end-to-end tests you can run from the repository.</li>
-                            <li>An honest boundary. Abuse and copyright checks are labelled SIMULATED, the scan is a screen rather than a certified analyser, and the identity layer is a proposal. The places that need X's own services are marked, not papered over.</li>
-                        </ol>
+                </div>
+                <div class="deliver reveal builders">
+                    <p class="label">What you get, if you are the team that would build this</p>
+                    <ul class="deliver__grid">
+                        <li><strong>Concrete numbers</strong>Upload-time controls with concrete numbers: 15 fps, 10 s loops, 8 MB, 3 flashes a second (general and red), 8 s reactions, 140 s voice posts, and an eight-check preflight. All of them are editable policy, not hard-coded opinion.</li>
+                        <li><strong>A working reference</strong>A working reference implementation in the browser: the flash scan (WCAG 2.2 general and red-flash rules, CIE 1976 UCS), the header player rules, the reaction and voice-post players, a review queue and an audit log, with unit and end-to-end tests you can run from the repository.</li>
+                        <li><strong>An honest boundary</strong>Abuse and copyright checks are labelled SIMULATED, the scan is a screen rather than a certified analyser, and the identity layer is a proposal. The places that need X's own services are marked, not papered over.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- The Problem -->
+            <section id="problem" aria-labelledby="problem-title">
+                <div class="head reveal">
+                    <h2 id="problem-title">Motion changes the risk profile.</h2>
+                    <p>Static profile headers carry relatively low operational and regulatory risk. Dynamic and interactive media fundamentally change the risk profile in three material ways:</p>
+                </div>
+                <div class="rows risk">
+                    <article class="row reveal"><h3><small>Health</small>Photosensitive epilepsy risk</h3><p>High-frequency animation and strobing content can trigger seizures in susceptible users. Current upload systems have no preemptive protection mechanism.</p></article>
+                    <article class="row reveal"><h3><small>Abuse</small>Abuse vector expansion</h3><p>High-velocity, unverified media uploads create new attack surfaces for harassment, impersonation, and coordinated abuse campaigns.</p></article>
+                    <article class="row reveal"><h3><small>Law</small>Regulatory exposure</h3><p>EU DSA obligations already apply to Very Large Online Platforms like X, and the EU AI Act adds transparency rules for AI-generated audio and video (Article 50).</p></article>
+                </div>
+            </section>
+
+            <!-- Proposed Framework -->
+            <section id="framework" aria-labelledby="framework-title">
+                <div class="head reveal">
+                    <h2 id="framework-title">Three layers, each one load-bearing.</h2>
+                    <p>A layered governance approach designed to balance creator velocity with user safety and regulatory compliance.</p>
+                </div>
+                <div class="layers">
+                    <div class="stack reveal" aria-hidden="true">
+                        <div class="stack__plate"><span>1</span></div>
+                        <div class="stack__plate"><span>2</span></div>
+                        <div class="stack__plate"><span>3</span></div>
                     </div>
+                    <ol class="reveal" style="list-style: none; margin: 0; padding: 0">
+                        <li class="layer"><span>Layer 1</span><h3>Media Safety Screening</h3><p>Mandatory Photosensitive Epilepsy Analysis (PEA) before any dynamic media is published.</p></li>
+                        <li class="layer"><span>Layer 2</span><h3>Technical Guardrails</h3><p>Hard constraints on file size, frame rate, duration, and playback behavior.</p></li>
+                        <li class="layer"><span>Layer 3</span><h3>Identity &amp; Accountability</h3><p>Strictly opt-in biometric anchoring with a clear, proportionate enforcement model.</p></li>
+                    </ol>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- The Problem -->
-        <section id="problem" aria-labelledby="problem-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">01 · The real problem</div>
-                    <h2 id="problem-title" class="reveal" style="--d: 60ms">Motion changes the risk profile.</h2>
-                    <p class="reveal" style="--d: 120ms">Static profile headers carry relatively low operational and regulatory risk. Dynamic and interactive media fundamentally change the risk profile in three material ways:</p>
-                </div>
-                <div class="grid grid--3">
-                    <article class="card reveal">
-                        <div class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
-                        <h3>Photosensitive Epilepsy Risk</h3>
-                        <p>High-frequency animation and strobing content can trigger seizures in susceptible users. Current upload systems have no preemptive protection mechanism.</p>
-                    </article>
-                    <article class="card reveal" style="--d: 80ms">
-                        <div class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 7v5c0 5 3.8 8.5 9 9 5.2-.5 9-4 9-9V7z"/><path d="M12 8v5M12 16h.01"/></svg></div>
-                        <h3>Abuse Vector Expansion</h3>
-                        <p>High-velocity, unverified media uploads create new attack surfaces for harassment, impersonation, and coordinated abuse campaigns.</p>
-                    </article>
-                    <article class="card reveal" style="--d: 160ms">
-                        <div class="card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 7h14M5 7l-3 7a3 3 0 0 0 6 0zM19 7l-3 7a3 3 0 0 0 6 0zM8 21h8"/></svg></div>
-                        <h3>Regulatory Exposure</h3>
-                        <p>EU DSA obligations already apply to Very Large Online Platforms like X, and the EU AI Act adds transparency rules for AI-generated audio and video (Article 50).</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- Proposed Framework -->
-        <section id="framework" aria-labelledby="framework-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">02 · Proposed framework</div>
-                    <h2 id="framework-title" class="reveal" style="--d: 60ms">Three layers, each one load-bearing.</h2>
-                    <p class="reveal" style="--d: 120ms">A layered governance approach designed to balance creator velocity with user safety and regulatory compliance.</p>
-                </div>
-                <div class="grid grid--3 layers">
-                    <article class="card reveal">
-                        <span class="card__index" aria-hidden="true">1</span>
-                        <div class="card__label">Layer 1</div>
-                        <h3>Media Safety Screening</h3>
-                        <p>Mandatory Photosensitive Epilepsy Analysis (PEA) before any dynamic media is published.</p>
-                    </article>
-                    <article class="card reveal" style="--d: 80ms">
-                        <span class="card__index" aria-hidden="true">2</span>
-                        <div class="card__label">Layer 2</div>
-                        <h3>Technical Guardrails</h3>
-                        <p>Hard constraints on file size, frame rate, duration, and playback behavior.</p>
-                    </article>
-                    <article class="card reveal" style="--d: 160ms">
-                        <span class="card__index" aria-hidden="true">3</span>
-                        <div class="card__label">Layer 3</div>
-                        <h3>Identity &amp; Accountability</h3>
-                        <p>Strictly opt-in biometric anchoring with a clear, proportionate enforcement model.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <!-- Core Controls -->
-        <section id="controls" aria-labelledby="controls-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">03 · Core controls</div>
-                    <h2 id="controls-title" class="reveal" style="--d: 60ms">What actually runs at upload time.</h2>
+            <!-- Core Controls -->
+            <section id="controls" aria-labelledby="controls-title">
+                <div class="head reveal">
+                    <h2 id="controls-title">What actually runs at upload time.</h2>
                 </div>
 
-                <!-- Media Vetting -->
-                <div class="sub">
-                    <div class="sub__head reveal">
-                        <span class="sub__num">03.1</span>
-                        <h3>Media Vetting &amp; Safety Screening</h3>
-                    </div>
-                    <p class="sub__intro reveal">All dynamic media must pass a Photosensitive Epilepsy Analysis (PEA) before publication. This is a hard blocking control.</p>
-
-                    <figure class="flow reveal" style="margin: 0" aria-labelledby="flow-title">
-                        <figcaption class="eyebrow flow__title" id="flow-title">PEA + provisional publish flow</figcaption>
+                <div class="sub" style="margin-top: 0">
+                    <h3 class="reveal">Media vetting &amp; safety screening</h3>
+                    <p class="reveal">All dynamic media must pass a Photosensitive Epilepsy Analysis (PEA) before publication. This is a hard blocking control.</p>
+                    <figure class="flow reveal" aria-labelledby="flow-title">
+                        <figcaption class="label" id="flow-title">PEA + provisional publish flow</figcaption>
                         <ol class="flow__track">
-                            <li class="flow__step"><small>STEP 01</small><strong>PEA Scan</strong><span>10–20 seconds</span></li>
-                            <li class="flow__step"><small>STEP 02</small><strong>Result</strong><span>PASS / FAIL</span></li>
-                            <li class="flow__step"><small>STEP 03</small><strong>Provisional Publish</strong><span>+ Warning Label</span></li>
-                            <li class="flow__step"><small>STEP 04</small><strong>Manual Review</strong><span>24hr SLA</span></li>
-                            <li class="flow__step flow__step--block"><strong>Hard Block</strong><span>Severe cases only</span></li>
+                            <li class="flow__step"><i aria-hidden="true"></i><div><small>STEP 01</small><strong>PEA Scan</strong><span>10–20 seconds</span></div></li>
+                            <li class="flow__step"><i aria-hidden="true"></i><div><small>STEP 02</small><strong>Result</strong><span>PASS / FAIL</span></div></li>
+                            <li class="flow__step"><i aria-hidden="true"></i><div><small>STEP 03</small><strong>Provisional Publish</strong><span>+ Warning Label</span></div></li>
+                            <li class="flow__step"><i aria-hidden="true"></i><div><small>STEP 04</small><strong>Manual Review</strong><span>24hr SLA</span></div></li>
+                            <li class="flow__step flow__step--block"><i aria-hidden="true"></i><div><small>BRANCH</small><strong>Hard Block</strong><span>Severe cases only</span></div></li>
                         </ol>
                     </figure>
-
-                    <div class="grid grid--4 metrics">
-                        <div class="card metric reveal"><div class="metric__label">Scan Time</div><div class="metric__value">10–20s</div></div>
-                        <div class="card metric reveal" style="--d: 60ms"><div class="metric__label">Publish Gate</div><div class="metric__value">PASS required</div></div>
-                        <div class="card metric reveal" style="--d: 120ms"><div class="metric__label">Flash Threshold</div><div class="metric__value">≤ 3 per second</div></div>
-                        <div class="card metric reveal" style="--d: 180ms"><div class="metric__label">Red Flash Rule</div><div class="metric__value metric__value--sm">R/(R+G+B) ≥ 0.8</div></div>
-                    </div>
+                    <dl class="spec reveal">
+                        <div><dt>Scan time</dt><dd>10–20 s</dd></div>
+                        <div><dt>Publish gate</dt><dd>PASS required</dd></div>
+                        <div><dt>Flash threshold</dt><dd>≤ 3 per second</dd></div>
+                        <div><dt>Red flash rule</dt><dd class="code">R/(R+G+B) ≥ 0.8</dd></div>
+                    </dl>
                     <p class="note reveal">The scan is a simplified screen based on WCAG 2.3.1’s general and red flash thresholds, not a certified photosensitive epilepsy analysis. A PASS means the clip stayed under these limits in this check; it is not a safety guarantee.</p>
                 </div>
 
-                <!-- Technical Guardrails -->
                 <div class="sub">
-                    <div class="sub__head reveal">
-                        <span class="sub__num">03.2</span>
-                        <h3>Technical Guardrails</h3>
-                    </div>
-                    <div class="grid grid--4">
-                        <div class="card metric reveal"><div class="metric__label">Maximum File Size</div><div class="metric__value">8 MB</div></div>
-                        <div class="card metric reveal" style="--d: 60ms"><div class="metric__label">Maximum Frame Rate</div><div class="metric__value">15 fps</div></div>
-                        <div class="card metric reveal" style="--d: 120ms"><div class="metric__label">Maximum Loop Duration</div><div class="metric__value">10 seconds</div></div>
-                        <div class="card metric reveal" style="--d: 180ms"><div class="metric__label">Playback Behavior</div><div class="metric__value metric__value--sm">Auto-pause on scroll + low power mode</div></div>
-                    </div>
+                    <h3 class="reveal">Technical guardrails</h3>
+                    <dl class="spec reveal">
+                        <div><dt>Maximum file size</dt><dd>8 MB</dd></div>
+                        <div><dt>Maximum frame rate</dt><dd>15 fps</dd></div>
+                        <div><dt>Maximum loop duration</dt><dd>10 seconds</dd></div>
+                        <div><dt>Playback behavior</dt><dd class="sm">Auto-pause on scroll + low power mode</dd></div>
+                    </dl>
                     <p class="note reveal">All uploads are transcoded server-side from GIF to WebM/VP9. We expect this to cut file size by roughly 60–80% (an estimate from typical GIF-to-VP9 results, not a measured benchmark) and to improve playback on lower-end Android devices.</p>
                 </div>
 
-                <!-- Identity Layer -->
                 <div class="sub">
-                    <div class="sub__head reveal">
-                        <span class="sub__num">03.3</span>
-                        <h3>Identity &amp; Abuse Prevention</h3>
-                    </div>
-                    <p class="sub__intro reveal">Dynamic media carries meaningfully higher abuse risk than static images. This framework uses a <strong>strictly opt-in</strong> identity anchor through an ID-verification vendor such as AU10TIX; whether X already uses one for this purpose is not assumed here. Users who decline verification retain full access to static headers and all non-dynamic profile features.</p>
-
-                    <div class="eyebrow reveal" style="color: var(--text-muted)">Three-strike enforcement model</div>
+                    <h3 class="reveal">Identity &amp; abuse prevention</h3>
+                    <p class="reveal">Dynamic media carries meaningfully higher abuse risk than static images. This framework uses a <strong>strictly opt-in</strong> identity anchor through an ID-verification vendor such as AU10TIX; whether X already uses one for this purpose is not assumed here. Users who decline verification retain full access to static headers and all non-dynamic profile features.</p>
+                    <p class="label reveal" style="margin-top: 32px">Three-strike enforcement model</p>
                     <ol class="strikes">
-                        <li class="strike reveal" data-level="1">
-                            <span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span>
-                            <div><h4>Strike 1</h4><p>Warning + temporary restriction on dynamic uploads</p></div>
-                        </li>
-                        <li class="strike reveal" data-level="2" style="--d: 80ms">
-                            <span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span>
-                            <div><h4>Strike 2</h4><p>12-hour suspension of dynamic media upload capability</p></div>
-                        </li>
-                        <li class="strike reveal" data-level="3" style="--d: 160ms">
-                            <span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span>
-                            <div><h4>Strike 3</h4><p>Permanent suspension reserved exclusively for verified malicious patterns (automated probing, coordinated attacks). Standard users receive a 7-day suspension + mandatory compliance review.</p></div>
-                        </li>
+                        <li class="strike reveal" data-level="1"><span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span><div><h4>Strike 1</h4><p>Warning + temporary restriction on dynamic uploads</p></div></li>
+                        <li class="strike reveal" data-level="2"><span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span><div><h4>Strike 2</h4><p>12-hour suspension of dynamic media upload capability</p></div></li>
+                        <li class="strike reveal" data-level="3"><span class="strike__n" aria-hidden="true"><i></i><i></i><i></i></span><div><h4>Strike 3</h4><p>Permanent suspension reserved exclusively for verified malicious patterns (automated probing, coordinated attacks). Standard users receive a 7-day suspension + mandatory compliance review.</p></div></li>
                     </ol>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Staged Rollout -->
-        <section id="rollout" aria-labelledby="rollout-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">04 · Staged rollout</div>
-                    <h2 id="rollout-title" class="reveal" style="--d: 60ms">Expand only when the gate holds.</h2>
+            <!-- Staged Rollout -->
+            <section id="rollout" aria-labelledby="rollout-title">
+                <div class="head reveal">
+                    <h2 id="rollout-title">Expand only when the gate holds.</h2>
                 </div>
-                <ol class="timeline">
-                    <li class="phase reveal">
-                        <div class="phase__dot" aria-hidden="true">1</div>
-                        <div class="card">
-                            <h3>Premium+ Subscribers</h3>
-                            <p>Limited 30-day rollout. Monitor CPU/GPU load, false positive rate, and user complaints.</p>
-                            <span class="phase__gate">30-day gate</span>
-                        </div>
-                    </li>
-                    <li class="phase reveal" style="--d: 100ms">
-                        <div class="phase__dot" aria-hidden="true">2</div>
-                        <div class="card">
-                            <h3>All Verified Accounts</h3>
-                            <p>Expanded rollout with strict A/B testing. Gate: complaint volume below 0.5%.</p>
-                            <span class="phase__gate">&lt;0.5% complaints</span>
-                        </div>
-                    </li>
-                    <li class="phase reveal" style="--d: 200ms">
-                        <div class="phase__dot" aria-hidden="true">3</div>
-                        <div class="card">
-                            <h3>General Availability</h3>
-                            <p>Full platform rollout with automatic low-power mode and reduced bitrate for limited-data users.</p>
-                            <span class="phase__gate">Full availability</span>
-                        </div>
-                    </li>
+                <ol class="rollout">
+                    <li class="phase reveal"><div class="phase__mark" aria-hidden="true"><b>1</b></div><h3>Premium+ Subscribers</h3><p>Limited 30-day rollout. Monitor CPU/GPU load, false positive rate, and user complaints.</p><span class="phase__gate">30-day gate</span></li>
+                    <li class="phase reveal"><div class="phase__mark" aria-hidden="true"><b>2</b></div><h3>All Verified Accounts</h3><p>Expanded rollout with strict A/B testing. Gate: complaint volume below 0.5%.</p><span class="phase__gate">&lt;0.5% complaints</span></li>
+                    <li class="phase reveal"><div class="phase__mark" aria-hidden="true"><b>3</b></div><h3>General Availability</h3><p>Full platform rollout with automatic low-power mode and reduced bitrate for limited-data users.</p><span class="phase__gate">Full availability</span></li>
                 </ol>
-            </div>
-        </section>
+            </section>
 
-        <!-- Risk & Limitations -->
-        <section id="risk" aria-labelledby="risk-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">05 · Risk &amp; limitations</div>
-                    <h2 id="risk-title" class="reveal" style="--d: 60ms">What this framework does not solve.</h2>
-                    <p class="reveal" style="--d: 120ms">This framework is intentionally scoped. The following limitations are acknowledged:</p>
+            <!-- Risk & Limitations -->
+            <section id="risk" aria-labelledby="risk-title">
+                <div class="head reveal">
+                    <h2 id="risk-title">What this framework does not solve.</h2>
+                    <p>This framework is intentionally scoped. The following limitations are acknowledged:</p>
                 </div>
-                <div class="limits">
-                    <div class="limit reveal"><h3>Client-side rendering attacks</h3><p>This framework governs upload-time controls. Malicious client-side injection after scanning requires platform-level sandboxing.</p></div>
-                    <div class="limit reveal"><h3>Steganography</h3><p>Automated PEA scanning has known technical limitations against hidden triggers. Behavioral signals provide a secondary detection layer.</p></div>
-                    <div class="limit reveal"><h3>Biometric data concentration</h3><p>Scoped exclusively to dynamic media uploads. Static headers remain unaffected. This proposal assumes verification data is deleted within 30 days; the actual period would be set by the platform and its vendor.</p></div>
-                    <div class="limit reveal"><h3>Artistic false positives</h3><p>The provisional publish model was specifically designed to protect legitimate creators from overly aggressive automated blocking.</p></div>
+                <div class="rows">
+                    <div class="row reveal"><h3>Client-side rendering attacks</h3><p>This framework governs upload-time controls. Malicious client-side injection after scanning requires platform-level sandboxing.</p></div>
+                    <div class="row reveal"><h3>Steganography</h3><p>Automated PEA scanning has known technical limitations against hidden triggers. Behavioral signals provide a secondary detection layer.</p></div>
+                    <div class="row reveal"><h3>Biometric data concentration</h3><p>Scoped exclusively to dynamic media uploads. Static headers remain unaffected. This proposal assumes verification data is deleted within 30 days; the actual period would be set by the platform and its vendor.</p></div>
+                    <div class="row reveal"><h3>Artistic false positives</h3><p>The provisional publish model was specifically designed to protect legitimate creators from overly aggressive automated blocking.</p></div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Regulatory Alignment -->
-        <section id="regulatory" aria-labelledby="reg-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">06 · Regulatory alignment</div>
-                    <h2 id="reg-title" class="reveal" style="--d: 60ms">Mapped precisely, claimed carefully.</h2>
+            <!-- Regulatory Alignment -->
+            <section id="regulatory" aria-labelledby="reg-title">
+                <div class="head reveal">
+                    <h2 id="reg-title">Mapped precisely, claimed carefully.</h2>
                 </div>
-                <div class="grid grid--2 reg">
-                    <article class="card reveal">
-                        <h3>WCAG 2.2</h3>
-                        <p>Used as the accessibility benchmark, including the general and red flash thresholds. ADA Title II covers state and local governments, so it is not cited as binding on X.</p>
-                        <span class="card__tag">Benchmark</span>
-                    </article>
-                    <article class="card reveal" style="--d: 80ms">
-                        <h3>EU Digital Services Act</h3>
-                        <p>Articles 16, 17 and 20 (notice and action, statements of reasons, internal complaints) mapped to header moderation; Articles 34 and 35 to systemic risk assessment and mitigation.</p>
-                        <span class="card__tag">Art. 16 · 17 · 20 · 34 · 35</span>
-                    </article>
-                    <article class="card reveal">
-                        <h3>EU AI Act</h3>
-                        <p>Article 50 transparency rules applied to AI-generated or AI-altered media. The Article 14 human-oversight rules cover high-risk systems, not content moderation, so human review here is a design choice, not a legal requirement.</p>
-                        <span class="card__tag">Art. 50</span>
-                    </article>
-                    <article class="card reveal" style="--d: 80ms">
-                        <h3>NIST Privacy Framework 1.0</h3>
-                        <p>Govern, Control, and Communicate functions mapped to dynamic media workflows.</p>
-                        <span class="card__tag">Govern · Control · Communicate</span>
-                    </article>
+                <div class="rows">
+                    <article class="row row--tag reveal"><h3>WCAG 2.2</h3><p>Used as the accessibility benchmark, including the general and red flash thresholds. ADA Title II covers state and local governments, so it is not cited as binding on X.</p><span class="tag">Benchmark</span></article>
+                    <article class="row row--tag reveal"><h3>EU Digital Services Act</h3><p>Articles 16, 17 and 20 (notice and action, statements of reasons, internal complaints) mapped to header moderation; Articles 34 and 35 to systemic risk assessment and mitigation.</p><span class="tag">Art. 16 · 17 · 20 · 34 · 35</span></article>
+                    <article class="row row--tag reveal"><h3>EU AI Act</h3><p>Article 50 transparency rules applied to AI-generated or AI-altered media. The Article 14 human-oversight rules cover high-risk systems, not content moderation, so human review here is a design choice, not a legal requirement.</p><span class="tag">Art. 50</span></article>
+                    <article class="row row--tag reveal"><h3>NIST Privacy Framework 1.0</h3><p>Govern, Control, and Communicate functions mapped to dynamic media workflows.</p><span class="tag">Govern · Control · Communicate</span></article>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Prototype -->
-        <section id="prototype" aria-labelledby="proto-title">
-            <div class="wrap">
-                <div class="section-head">
-                    <div class="eyebrow section-num reveal">07 · See it working</div>
-                    <h2 id="proto-title" class="reveal" style="--d: 60ms">Dynamic headers and sound reactions, governed by this framework.</h2>
-                    <p class="reveal" style="--d: 120ms">A browser-only concept prototype of the two features this framework covers. A dynamic GIF profile header that must pass the photosensitivity scan and guardrails before it goes live, and short sound reactions that never autoplay, carry captions and pass a preflight check.</p>
+            <!-- Prototype -->
+            <section id="prototype" aria-labelledby="proto-title">
+                <div class="head reveal">
+                    <h2 id="proto-title">Dynamic headers and sound reactions, governed by this framework.</h2>
+                    <p>A browser-only concept prototype of the two features this framework covers. A dynamic GIF profile header that must pass the photosensitivity scan and guardrails before it goes live, and short sound reactions that never autoplay, carry captions and pass a preflight check.</p>
                 </div>
                 <a class="proto reveal" href="sound-reactions/#/profile">
-                    <div class="proto__body">
-                        <div class="card__label">Sound Reactions · concept prototype</div>
-                        <h3>See a GIF banner pass the scan</h3>
-                        <p>The banner on the right is “Violet hour”, one of the prototype’s own rendered sample headers: 15 fps on a 10-second loop, with 0 general and 0 red flashes per second in the build-time scan, under the limit of 3. In the prototype, the owner’s profile plays a plain code-scrolling GIF hosted on GIPHY; this proposal assumes a platform would serve GIFs from its own or a partner’s media host, so the prototype fetches that GIF and runs the flash scan in your browser before it is allowed to play. Other profiles play GIFs from GIPHY and Tenor, each scanned the same way and drawn at no more than 15 fps. Open a profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s banner, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
-                        <span class="proto__cta">Open Sound Reactions
-                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-                        </span>
-                    </div>
                     <div class="proto__media">
                         <video data-header-video muted playsinline loop preload="metadata" poster="sound-reactions/headers/violet-hour.jpg" aria-label="Animated banner: a lavender crystal turning slowly inside a wireframe shell, with two thin orbits, on a dark violet background.">
-                        <source src="sound-reactions/headers/violet-hour.webm" type="video/webm">
+                            <source src="sound-reactions/headers/violet-hour.webm" type="video/webm">
                         </video>
                         <span class="proto__chip">Sample header · 0 flashes per second · scan passed</span>
                     </div>
+                    <div class="proto__body">
+                        <p class="proto__kicker">Sound Reactions · concept prototype</p>
+                        <h3>See a GIF banner pass the scan</h3>
+                        <span class="proto__cta">Open Sound Reactions
+                            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+                        </span>
+                        <div class="proto__copy">
+                        <p>The banner shown here is “Violet hour”, one of the prototype’s own rendered sample headers: 15 fps on a 10-second loop, with 0 general and 0 red flashes per second in the build-time scan, under the limit of 3. In the prototype, the owner’s profile plays a plain code-scrolling GIF hosted on GIPHY; this proposal assumes a platform would serve GIFs from its own or a partner’s media host, so the prototype fetches that GIF and runs the flash scan in your browser before it is allowed to play. Other profiles play GIFs from GIPHY and Tenor, each scanned the same way and drawn at no more than 15 fps.</p>
+                        <p>Open a profile, tap Edit profile and scan the other samples or a GIF or video of your own (it never leaves your browser) to see which are blocked, rejected or published with a warning. Tap any name in the feed to see that person’s banner, then try sound reactions. All other accounts are fictional; the abuse and copyright checks are labeled as simulated.</p>
+                        </div>
+                    </div>
                 </a>
                 <p class="note reveal">Not affiliated with X. Source code is in the <a href="https://github.com/thankcheeses/dynamic-media-governance/tree/main/sound-reactions-src">sound-reactions-src</a> folder of this repository.</p>
-            </div>
-        </section>
-    </main>
+            </section>
+        </main>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="wrap footer__inner">
-            <div>Dynamic Media Accessibility &amp; Governance Framework • v2.1 • March 2026</div>
-            <div>Independent policy proposal by <a href="https://www.linkedin.com/in/brianna-baynard" target="_blank" rel="noopener">Brianna Baynard</a> • Not affiliated with or commissioned by X</div>
+            <div class="footer__who"><span class="monogram" aria-hidden="true">Bb</span><span>Brianna Baynard · AIGP</span></div>
+            <div class="footer__meta">
+                <div>Dynamic Media Accessibility &amp; Governance Framework · v2.1 · March 2026</div>
+                <div>Independent policy proposal by <a href="https://www.linkedin.com/in/brianna-baynard" target="_blank" rel="noopener">Brianna Baynard</a> · Not affiliated with or commissioned by X</div>
+            </div>
         </div>
     </footer>
 
     <script>
     (function () {
         var root = document.documentElement;
-        root.classList.add('js');
-
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
         // ---------- Theme ----------
-        function readTheme() { try { return localStorage.getItem('dmg-theme'); } catch (e) { return null; } }
         function writeTheme(v) { try { localStorage.setItem('dmg-theme', v); } catch (e) {} }
-        var saved = readTheme();
-        if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
-
-        function currentTheme() {
-            var t = root.getAttribute('data-theme');
-            if (t) return t;
-            return 'dark';
-        }
+        function currentTheme() { return root.getAttribute('data-theme') || 'dark'; }
         var themeBtn = document.getElementById('theme-toggle');
         function syncThemeLabel() {
             themeBtn.setAttribute('data-mode', currentTheme());
@@ -982,22 +720,10 @@
             root.setAttribute('data-theme', next);
             writeTheme(next);
             syncThemeLabel();
+            document.dispatchEvent(new CustomEvent('dmg:theme'));
         });
 
-        // ---------- Reveal on scroll ----------
-        var reveals = document.querySelectorAll('.reveal');
-        if ('IntersectionObserver' in window && !reduceMotion.matches) {
-            var io = new IntersectionObserver(function (entries) {
-                entries.forEach(function (e) {
-                    if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
-                });
-            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-            reveals.forEach(function (el) { io.observe(el); });
-        } else {
-            reveals.forEach(function (el) { el.classList.add('is-in'); });
-        }
-
-        // ---------- Reading progress + active nav ----------
+        // ---------- Reading progress + contents rail ----------
         var bar = document.querySelector('.progress');
         var ticking = false;
         function onScroll() {
@@ -1012,18 +738,18 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
-        var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav__links a'));
+        var railLinks = Array.prototype.slice.call(document.querySelectorAll('.rail a'));
         if ('IntersectionObserver' in window) {
             var sectionIO = new IntersectionObserver(function (entries) {
                 entries.forEach(function (e) {
                     if (!e.isIntersecting) return;
-                    navLinks.forEach(function (a) {
+                    railLinks.forEach(function (a) {
                         if (a.getAttribute('href') === '#' + e.target.id) a.setAttribute('aria-current', 'true');
                         else a.removeAttribute('aria-current');
                     });
                 });
-            }, { rootMargin: '-45% 0px -50% 0px' });
-            navLinks.forEach(function (a) {
+            }, { rootMargin: '-40% 0px -55% 0px' });
+            railLinks.forEach(function (a) {
                 var s = document.querySelector(a.getAttribute('href'));
                 if (s) sectionIO.observe(s);
             });
@@ -1133,20 +859,31 @@
         var tourSeen = false;
         try { tourSeen = localStorage.getItem('dmg-tour-seen') === '1'; } catch (e) {}
         if (!tourSeen) setTimeout(openTour, 900);
-
-        // ---------- Card spotlight (pointer devices only) ----------
-        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-            document.querySelectorAll('.card').forEach(function (card) {
-                card.addEventListener('pointermove', function (e) {
-                    var r = card.getBoundingClientRect();
-                    card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-                    card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-                });
-            });
-        }
     })();
     </script>
-
-
+    <script type="module">
+        // The hero network: three.js, loaded after first paint. It never blocks the page:
+        // without WebGL the plain gradient stays, and under reduced motion it is one still frame.
+        const host = document.getElementById('constellation');
+        const toggle = document.getElementById('motion-toggle');
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const start = async () => {
+            try {
+                const { mountConstellation } = await import('./assets/constellation.js');
+                const sky = mountConstellation(host, { reducedMotion: reduce });
+                if (!sky) return;
+                document.addEventListener('dmg:theme', () => sky.refreshColors());
+                if (reduce) return;
+                toggle.hidden = false;
+                toggle.addEventListener('click', () => {
+                    const paused = toggle.getAttribute('aria-pressed') !== 'true';
+                    toggle.setAttribute('aria-pressed', String(paused));
+                    toggle.querySelector('span').textContent = paused ? 'Play background' : 'Pause background';
+                    sky.setPaused(paused);
+                });
+            } catch (e) { /* the gradient stays */ }
+        };
+        if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1200 }); else setTimeout(start, 300);
+    </script>
 </body>
 </html>

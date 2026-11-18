@@ -5,6 +5,12 @@ Sound Reactions prototype (`sound-reactions-src/`, built into `sound-reactions/`
 Rules for working on the prototype are in `sound-reactions-src/CLAUDE.md`; read them
 before touching anything under that folder.
 
+The proposal page is plain HTML with no build step, except its 3D hero: `assets/constellation.js` is
+built from `sound-reactions-src/proposal/constellation.ts` with `npm run build:proposal` (run it in
+`sound-reactions-src` and commit the output). Fonts are self-hosted in `fonts/` (OFL licences beside
+them); the page fetches nothing from a font host. Colour follows the owner's link cards: violet for
+the proposal, pink for Sound Reactions.
+
 ## Agent skills
 
 ### Issue tracker
