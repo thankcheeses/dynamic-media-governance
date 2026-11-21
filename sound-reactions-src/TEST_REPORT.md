@@ -470,3 +470,16 @@ An outside review found three things. The timeline had no visible headline, only
 | WebKit | **Not run** in this environment. |
 | Screenshots | Timeline, a fictional profile, the owner profile and the proposal page checked at 1280×800 and 390×844: no console errors apart from GIPHY/Tenor requests this sandbox blocks, no horizontal overflow, no "Verified" text in the prototype. The committed `screenshots/` set was not regenerated. |
 | Hosted build | Rebuilt. |
+
+## 2026-11-18 — Phone profile buttons, broken banner stills, privacy page type
+
+Found by screenshotting every route at 1440×900 and 390×844 after the visual pass. On a phone the owner profile's four buttons (Share, Make it yours, Use my X archive, Edit profile) were squeezed into one row, so their labels broke onto three lines and covered the name; they are now two per row with one-line labels. When a hosted banner still could not load (its host unreachable), the browser drew the image's alt text across the banner; the image now hides itself on error, keeps its alt text for screen readers, and the banner's own note still says why. The privacy notice gained a styled title, a 68-character measure and section spacing.
+
+| Check | Actual result |
+|---|---|
+| Lint / typecheck | Passed. |
+| Unit tests | 100/100 passed. |
+| Playwright, Chromium desktop + mobile | 52/52 passed. |
+| Screenshots | Profile at 390 and 360 px wide, privacy at 1440 and 390: no overlap, no stray alt text. |
+| WebKit | **Not run.** |
+| Hosted build | Rebuilt. |

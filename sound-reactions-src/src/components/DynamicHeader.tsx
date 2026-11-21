@@ -105,7 +105,7 @@ function HostedSources({ hosted }: { hosted: HostedHeader }) {
 
 /** A still frame of a header, used for thumbnails. Never animates. */
 export function HeaderThumb({ preset }: { preset: HeaderPreset }) {
-  if (preset.hosted?.still) return <img className="header-thumb" src={preset.hosted.still} alt="" decoding="async" />
+  if (preset.hosted?.still) return <img className="header-thumb" src={preset.hosted.still} alt="" decoding="async" onError={(event) => event.currentTarget.classList.add('is-broken')} />
   // A video that is never played shows only its first frame.
   if (preset.hosted) return <video className="header-thumb" muted playsInline preload="metadata" aria-hidden="true" tabIndex={-1}><HostedSources hosted={preset.hosted} /></video>
   if (preset.media) return <img className="header-thumb" src={asset(preset.media.poster)} alt="" decoding="async" />
